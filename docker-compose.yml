@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: rev3rso-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: rev3rso
+      POSTGRES_USER: rev3rso_user
+      POSTGRES_PASSWORD: rev3rso_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rev3rso_user -d rev3rso"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rev3rso-network
+    restart: unless-stopped
+
+  # PgAdmin (Database Management)
+  pgadmin:
+    image: dpage/pgadmin4:6.15
+    container_name: rev3rso-pgadmin
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@rev3rso.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_password
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - rev3rso-network
+    restart: unless-stopped
+
+  # Application Server (Tomcat)
+  app:
+    image: tomcat:9-jdk11
+    container_name: rev3rso-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target/REV3RSO.war:/usr/local/tomcat/webapps/REV3RSO.war
+      - ./src/main/resources/application.properties:/usr/local/tomcat/webapps/REV3RSO/WEB-INF/classes/application.properties
+      - ./uploads:/usr/local/tomcat/uploads
+    environment:
+      JAVA_OPTS: "-Xms512m -Xmx1024m -Djava.security.egd=file:/dev/./urandom"
+      CATALINA_OPTS: "-Ddb.url=jdbc:postgresql://postgres:5432/rev3rso -Ddb.username=rev3rso_user -Ddb.password=rev3rso_password"
+    networks:
+      - rev3rso-network
+    restart: unless-stopped
+
+  # Mailhog (Email Testing)
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: rev3rso-mailhog
+    ports:
+      - "1025:1025" # SMTP server
+      - "8025:8025" # Web UI
+    networks:
+      - rev3rso-network
+    restart: unless-stopped
+
+networks:
+  rev3rso-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  pgadmin_data:

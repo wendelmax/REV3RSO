@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/">REV3RSO</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Início</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/leiloes">Leilões</a>
+                </li>
+                {#if usuarioLogado}
+                    {#if usuarioLogado.tipoUsuario == 'COMPRADOR'}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/leiloes/meus">Meus Leilões</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/leiloes/criar">Criar Leilão</a>
+                        </li>
+                    {#elseif usuarioLogado.tipoUsuario == 'FORNECEDOR'}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/leiloes/participando">Participando</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/propostas/minhas">Minhas Propostas</a>
+                        </li>
+                    {/if}
+                    
+                    {#if usuarioLogado.administrador}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarAdminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Administração
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarAdminDropdown">
+                                <li><a class="dropdown-item" href="/admin/usuarios">Usuários</a></li>
+                                <li><a class="dropdown-item" href="/admin/leiloes">Leilões</a></li>
+                                <li><a class="dropdown-item" href="/admin/categorias">Categorias</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/admin/relatorios">Relatórios</a></li>
+                            </ul>
+                        </li>
+                    {/if}
+                {/if}
+                <li class="nav-item">
+                    <a class="nav-link" href="/sobre">Sobre</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contato">Contato</a>
+                </li>
+            </ul>
+            
+            <div class="d-flex">
+                {#if usuarioLogado}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> {usuarioLogado.nome}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="/perfil">Meu Perfil</a></li>
+                            <li><a class="dropdown-item" href="/notificacoes">Notificações</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/usuarios/logout">Sair</a></li>
+                        </ul>
+                    </div>
+                {#else}
+                    <a href="/usuarios/login" class="btn btn-outline-light me-2">Login</a>
+                    <a href="/usuarios/registrar" class="btn btn-light">Cadastre-se</a>
+                {/if}
+            </div>
+        </div>
+    </div>
+</nav>

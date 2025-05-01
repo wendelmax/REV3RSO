@@ -1,0 +1,35 @@
+/* Estilos para os templates administrativos */
+
+/* Estilos para o gap entre elementos */
+.filter-gap {
+    gap: 10px;
+}
+
+/* Estilos para as tabelas de ações */
+.action-column {
+    width: 100px;
+    text-align: center;
+}
+
+/* Estilos para cabeçalho de estatísticas */
+.stats-header {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Estilos para painéis de estatísticas */
+.stats-panel {
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Estilos para formulários de edição */
+.edit-form-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}

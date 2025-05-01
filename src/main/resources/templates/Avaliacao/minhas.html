@@ -1,0 +1,66 @@
+{#include main}
+  {#title}Minhas Avaliações{/title}
+
+  {#content}
+  <div class="container mt-4">
+    <h1>Minhas Avaliações</h1>
+    
+    {#if avaliacoes.isEmpty()}
+      <div class="alert alert-info">
+        Você ainda não realizou nenhuma avaliação.
+      </div>
+    {#else}
+      <div class="list-group mt-4">
+        {#for avaliacao in avaliacoes}
+          <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">
+                Avaliação para: {avaliacao.avaliado.nome}
+                <small class="text-muted">({avaliacao.avaliado.tipoUsuario == 'FORNECEDOR' ? 'Fornecedor' : 'Comprador'})</small>
+              </h5>
+              <small>
+                {avaliacao.dataCriacao.format('dd/MM/yyyy HH:mm')}
+              </small>
+            </div>
+            
+            <div class="mb-2">
+              <strong>Leilão:</strong> <a href="/leiloes/{avaliacao.leilao.id}">{avaliacao.leilao.titulo}</a>
+            </div>
+            
+            <div class="mb-2">
+              <strong>Nota:</strong>
+              <span class="ms-2">
+                {#for i in 1..5}
+                  {#if i <= avaliacao.nota}
+                    <i class="bi bi-star-fill text-warning"></i>
+                  {#else}
+                    <i class="bi bi-star text-muted"></i>
+                  {/if}
+                {/for}
+              </span>
+            </div>
+            
+            <div class="mb-2">
+              <strong>Comentário:</strong>
+              <p class="mb-1">{avaliacao.comentario}</p>
+            </div>
+            
+            {#if avaliacao.replica != null}
+              <div class="mb-0 mt-3">
+                <div class="alert alert-light">
+                  <strong>Réplica de {avaliacao.avaliado.nome}:</strong>
+                  <p class="mb-0">{avaliacao.replica}</p>
+                </div>
+              </div>
+            {/if}
+          </div>
+        {/for}
+      </div>
+    {/if}
+    
+    <div class="mt-4">
+      <a href="/" class="btn btn-primary">Voltar ao Início</a>
+    </div>
+  </div>
+  {/content}
+{/include}

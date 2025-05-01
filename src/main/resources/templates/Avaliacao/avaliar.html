@@ -1,0 +1,91 @@
+{#include main}
+  {#title}Avaliar {avaliado.tipoUsuario == 'FORNECEDOR' ? 'Fornecedor' : 'Comprador'}{/title}
+
+  {#content}
+  <div class="container mt-4">
+    <h1>Avaliar {avaliado.tipoUsuario == 'FORNECEDOR' ? 'Fornecedor' : 'Comprador'}</h1>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h3 class="mb-0">Informações do Leilão</h3>
+      </div>
+      <div class="card-body">
+        <h4>{leilao.titulo}</h4>
+        <p><strong>Período:</strong> {leilao.dataInicio.format('dd/MM/yyyy HH:mm')} a {leilao.dataFim.format('dd/MM/yyyy HH:mm')}</p>
+        <p><strong>Status:</strong> <span class="badge bg-info">{leilao.status}</span></p>
+        <p><strong>Quantidade:</strong> {leilao.quantidade} {leilao.unidadeMedida}</p>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Avaliando: {avaliado.nome}</h3>
+      </div>
+      <div class="card-body">
+        {#if avaliado.tipoUsuario == 'FORNECEDOR'}
+          <p><strong>Empresa:</strong> {avaliado.razaoSocial}</p>
+          <p><strong>Pontuação atual:</strong> {avaliado.pontuacao}</p>
+        {#else}
+          <p><strong>Empresa/Órgão:</strong> {avaliado.razaoSocial}</p>
+        {/if}
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Formulário de Avaliação</h3>
+      </div>
+      <div class="card-body">
+        <form action="/avaliacoes/salvar" method="post">
+          <input type="hidden" name="leilaoId" value="{leilao.id}">
+          <input type="hidden" name="avaliadoId" value="{avaliado.id}">
+          
+          <div class="mb-3">
+            <label for="nota" class="form-label">Nota</label>
+            <div class="rating">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="nota" id="nota1" value="1" required>
+                <label class="form-check-label" for="nota1">1 - Muito ruim</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="nota" id="nota2" value="2">
+                <label class="form-check-label" for="nota2">2 - Ruim</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="nota" id="nota3" value="3">
+                <label class="form-check-label" for="nota3">3 - Regular</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="nota" id="nota4" value="4">
+                <label class="form-check-label" for="nota4">4 - Bom</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="nota" id="nota5" value="5">
+                <label class="form-check-label" for="nota5">5 - Excelente</label>
+              </div>
+            </div>
+            {#if validationFailed.containsKey('nota')}
+              <div class="invalid-feedback d-block">{validationFailed.get('nota').message}</div>
+            {/if}
+          </div>
+          
+          <div class="mb-3">
+            <label for="comentario" class="form-label">Comentário</label>
+            <textarea class="form-control {#if validationFailed.containsKey('comentario')}is-invalid{/if}" 
+                      id="comentario" name="comentario" rows="5" required 
+                      placeholder="Descreva sua experiência com {avaliado.tipoUsuario == 'FORNECEDOR' ? 'este fornecedor' : 'este comprador'}"></textarea>
+            {#if validationFailed.containsKey('comentario')}
+              <div class="invalid-feedback">{validationFailed.get('comentario').message}</div>
+            {/if}
+          </div>
+          
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="/leiloes/{leilao.id}" class="btn btn-secondary me-md-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Enviar Avaliação</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {/content}
+{/include}

@@ -1,0 +1,208 @@
+{#include main}
+  {#title}Gerenciamento de Formas de Pagamento{/title}
+
+  {#head}
+  <link rel="stylesheet" href="/css/admin.css">
+  {/head}
+
+  {#content}
+  <div class="container-fluid py-4">
+    <div class="row mb-4">
+      <div class="col-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{uri:Admin.dashboard}">Painel Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Formas de Pagamento</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card mb-4">
+          <div class="card-header bg-warning d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Formas de Pagamento</h3>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead class="table-dark">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Leilões</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#for forma in formasPagamento}
+                  <tr>
+                    <td>{forma.id}</td>
+                    <td>{forma.nome}</td>
+                    <td>{forma.descricao}</td>
+                    <td>
+                      <span class="badge bg-primary">{forma.leiloes != null ? forma.leiloes.size() : 0}</span>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditarForma" 
+                            data-forma-id="{forma.id}" 
+                            data-forma-nome="{forma.nome}" 
+                            data-forma-descricao="{forma.descricao}"
+                            title="Editar forma de pagamento {forma.nome}">
+                          <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalExcluirForma"
+                            data-forma-id="{forma.id}"
+                            data-forma-nome="{forma.nome}"
+                            data-forma-count="{forma.leiloes != null ? forma.leiloes.size() : 0}"
+                            title="Excluir forma de pagamento {forma.nome}">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {/for}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex justify-content-between">
+              <div>
+                Total: <strong>{formasPagamento.size()}</strong> formas de pagamento
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Adicionar Forma de Pagamento</h4>
+          </div>
+          <div class="card-body">
+            <form action="{uri:Admin.adicionarFormaPagamento}" method="post">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="descricao" class="form-label">Descrição</label>
+                <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
+              </div>
+              
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-plus-circle"></i> Adicionar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Editar Forma de Pagamento -->
+  <div class="modal fade" id="modalEditarForma" tabindex="-1" aria-labelledby="modalEditarFormaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="modalEditarFormaLabel">Editar Forma de Pagamento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="formEditarForma" action="#" method="post">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="editNome" class="form-label">Nome <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editNome" name="nome" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="editDescricao" class="form-label">Descrição</label>
+              <textarea class="form-control" id="editDescricao" name="descricao" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Excluir Forma de Pagamento -->
+  <div class="modal fade" id="modalExcluirForma" tabindex="-1" aria-labelledby="modalExcluirFormaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="modalExcluirFormaLabel">Excluir Forma de Pagamento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="formExcluirForma" action="#" method="post">
+          <div class="modal-body">
+            <p>Você está prestes a excluir a forma de pagamento: <strong id="nomeFormaExcluir"></strong>.</p>
+            
+            <div id="formaComLeiloes" class="alert alert-warning d-none">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Esta forma de pagamento está associada a <strong id="countLeiloesForma">0</strong> leilão(ões). 
+              Se você excluí-la, esses leilões não terão mais esta forma de pagamento associada.
+            </div>
+            
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Esta ação não pode ser desfeita.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  {#insert moreScripts}
+  <script>
+    // Configuração do modal de editar forma de pagamento
+    document.getElementById('modalEditarForma').addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const formaId = button.getAttribute('data-forma-id');
+      const formaNome = button.getAttribute('data-forma-nome');
+      const formaDescricao = button.getAttribute('data-forma-descricao');
+      
+      document.getElementById('editNome').value = formaNome;
+      document.getElementById('editDescricao').value = formaDescricao;
+      document.getElementById('formEditarForma').action = '{uri:Admin.atualizarFormaPagamento("' + formaId + '")}';
+    });
+    
+    // Configuração do modal de excluir forma de pagamento
+    document.getElementById('modalExcluirForma').addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const formaId = button.getAttribute('data-forma-id');
+      const formaNome = button.getAttribute('data-forma-nome');
+      const leiloesCount = parseInt(button.getAttribute('data-forma-count'));
+      
+      document.getElementById('nomeFormaExcluir').textContent = formaNome;
+      document.getElementById('formExcluirForma').action = '{uri:Admin.removerFormaPagamento("' + formaId + '")}';
+      
+      // Mostrar aviso se a forma tiver leilões associados
+      const formaComLeiloes = document.getElementById('formaComLeiloes');
+      if (leiloesCount > 0) {
+        document.getElementById('countLeiloesForma').textContent = leiloesCount;
+        formaComLeiloes.classList.remove('d-none');
+      } else {
+        formaComLeiloes.classList.add('d-none');
+      }
+    });
+  </script>
+  {/insert}
+  {/content}
+{/include}

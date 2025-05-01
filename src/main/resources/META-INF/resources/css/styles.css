@@ -1,0 +1,118 @@
+/* Estilos gerais */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* Estilos do navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Estilos de cards */
+.card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    font-weight: 500;
+}
+
+/* Estilos para mensagens */
+.mensagens-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.mensagem-card {
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+}
+
+.resposta-card {
+    margin-left: 30px;
+    border-left: 4px solid #28a745;
+}
+
+/* Estilos para formulários */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+/* Estilos para paginação */
+.pagination {
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Estilos para mensagens de alerta */
+.alert {
+    border-radius: 8px;
+    padding: 12px 20px;
+}
+
+/* Estilos para leilões */
+.leilao-status-aberto {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.leilao-status-fechado {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.leilao-status-pendente {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+/* Estilos para tabelas */
+.table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .resposta-card {
+        margin-left: 15px;
+    }
+}

@@ -1,0 +1,60 @@
+{#include main}
+  {#title}Responder Mensagem - {mensagem.leilao.titulo}{/title}
+
+  {#content}
+  <div class="container mt-4">
+    <h1>Responder Mensagem</h1>
+    <h2 class="mb-3">{mensagem.leilao.titulo}</h2>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h3 class="mb-0">Pergunta Original</h3>
+      </div>
+      <div class="card-body">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">
+            {#if mensagem.tipo == 'PERGUNTA_COMPRADOR'}
+              <span class="badge bg-primary">Comprador pergunta</span>
+            {#else}
+              <span class="badge bg-success">Fornecedor pergunta</span>
+            {/if}
+          </h5>
+          <small>
+            {mensagem.dataCriacao.format('dd/MM/yyyy HH:mm')}
+          </small>
+        </div>
+        
+        <div class="mb-2">
+          <strong>{mensagem.autor.nome}:</strong>
+          <p class="mb-1">{mensagem.conteudo}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Sua Resposta</h3>
+      </div>
+      <div class="card-body">
+        <form action="/mensagens/responder" method="post">
+          <input type="hidden" name="mensagemId" value="{mensagem.id}">
+          
+          <div class="mb-3">
+            <label for="conteudo" class="form-label">Resposta</label>
+            <textarea class="form-control {#if validationFailed.containsKey('conteudo')}is-invalid{/if}" 
+                      id="conteudo" name="conteudo" rows="5" required></textarea>
+            {#if validationFailed.containsKey('conteudo')}
+              <div class="invalid-feedback">{validationFailed.get('conteudo').message}</div>
+            {/if}
+          </div>
+          
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="/mensagens/leilao/{mensagem.leilao.id}" class="btn btn-secondary me-md-2">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Enviar Resposta</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {/content}
+{/include}

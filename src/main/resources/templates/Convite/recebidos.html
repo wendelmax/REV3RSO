@@ -1,0 +1,133 @@
+{#include main}
+  {#title}Convites Recebidos{/title}
+
+  {#content}
+  <div class="container mt-4">
+    <h1>Convites Recebidos</h1>
+    
+    {#if convites.isEmpty()}
+      <div class="alert alert-info">
+        Você ainda não recebeu nenhum convite para participar de leilões fechados.
+      </div>
+    {#else}
+      <div class="mb-3">
+        <ul class="nav nav-tabs" id="convitesTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pendentes-tab" data-bs-toggle="tab" data-bs-target="#pendentes" type="button" role="tab" aria-controls="pendentes" aria-selected="true">
+              Pendentes
+              <span class="badge bg-warning text-dark ms-1">{convites.stream().filter(c -> c.status == convite.Status.PENDENTE).count()}</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="respondidos-tab" data-bs-toggle="tab" data-bs-target="#respondidos" type="button" role="tab" aria-controls="respondidos" aria-selected="false">
+              Respondidos
+              <span class="badge bg-secondary ms-1">{convites.stream().filter(c -> c.status != convite.Status.PENDENTE).count()}</span>
+            </button>
+          </li>
+        </ul>
+        
+        <div class="tab-content" id="convitesTabContent">
+          <div class="tab-pane fade show active mt-3" id="pendentes" role="tabpanel" aria-labelledby="pendentes-tab">
+            {#if convites.stream().filter(c -> c.status == convite.Status.PENDENTE).count() == 0}
+              <div class="alert alert-info">
+                Não há convites pendentes de resposta.
+              </div>
+            {#else}
+              <div class="list-group">
+                {#for convite in convites.stream().filter(c -> c.status == convite.Status.PENDENTE).toList()}
+                  <div class="card mb-3 border-warning">
+                    <div class="card-header bg-warning bg-opacity-10">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                          <span class="badge bg-warning text-dark me-2">Pendente</span>
+                          {convite.leilao.titulo}
+                        </h5>
+                        <small>{convite.dataEnvio.format('dd/MM/yyyy HH:mm')}</small>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <p><strong>Comprador:</strong> {convite.leilao.criador.nome}</p>
+                          <p><strong>Empresa:</strong> {convite.leilao.criador.razaoSocial}</p>
+                        </div>
+                        <div class="col-md-6">
+                          <p><strong>Início:</strong> {convite.leilao.dataInicio.format('dd/MM/yyyy HH:mm')}</p>
+                          <p><strong>Término:</strong> {convite.leilao.dataFim.format('dd/MM/yyyy HH:mm')}</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <p><strong>Descrição:</strong> {convite.leilao.descricao}</p>
+                          <p><strong>Quantidade:</strong> {convite.leilao.quantidade} {convite.leilao.unidadeMedida}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-footer bg-light d-flex justify-content-end">
+                      <a href="/leiloes/{convite.leilao.id}" class="btn btn-outline-primary me-2">Visualizar Leilão</a>
+                      <a href="/convites/recusar/{convite.id}" class="btn btn-outline-danger me-2"
+                         onclick="return confirm('Tem certeza que deseja recusar este convite?');">Recusar</a>
+                      <a href="/convites/aceitar/{convite.id}" class="btn btn-success">Aceitar</a>
+                    </div>
+                  </div>
+                {/for}
+              </div>
+            {/if}
+          </div>
+          
+          <div class="tab-pane fade mt-3" id="respondidos" role="tabpanel" aria-labelledby="respondidos-tab">
+            {#if convites.stream().filter(c -> c.status != convite.Status.PENDENTE).count() == 0}
+              <div class="alert alert-info">
+                Você ainda não respondeu nenhum convite.
+              </div>
+            {#else}
+              <div class="list-group">
+                {#for convite in convites.stream().filter(c -> c.status != convite.Status.PENDENTE).toList()}
+                  <div class="card mb-3 {#if convite.status == convite.Status.ACEITO}border-success{#else}border-danger{/if}">
+                    <div class="card-header {#if convite.status == convite.Status.ACEITO}bg-success bg-opacity-10{#else}bg-danger bg-opacity-10{/if}">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                          {#if convite.status == convite.Status.ACEITO}
+                            <span class="badge bg-success me-2">Aceito</span>
+                          {#else}
+                            <span class="badge bg-danger me-2">Recusado</span>
+                          {/if}
+                          {convite.leilao.titulo}
+                        </h5>
+                        <div>
+                          <small>Respondido em: {convite.dataResposta.format('dd/MM/yyyy HH:mm')}</small>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <p><strong>Comprador:</strong> {convite.leilao.criador.nome}</p>
+                          <p><strong>Empresa:</strong> {convite.leilao.criador.razaoSocial}</p>
+                        </div>
+                        <div class="col-md-6">
+                          <p><strong>Status do Leilão:</strong> <span class="badge {#switch convite.leilao.status}{#case ABERTO}bg-success{#case ENCERRADO}bg-danger{#case CONCLUIDO}bg-info{#case CANCELADO}bg-warning{/switch}">{convite.leilao.status}</span></p>
+                          <p><strong>Data:</strong> {convite.leilao.dataInicio.format('dd/MM/yyyy HH:mm')} a {convite.leilao.dataFim.format('dd/MM/yyyy HH:mm')}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {#if convite.status == convite.Status.ACEITO}
+                      <div class="card-footer bg-light">
+                        <a href="/leiloes/{convite.leilao.id}" class="btn btn-primary">Ir para o Leilão</a>
+                      </div>
+                    {/if}
+                  </div>
+                {/for}
+              </div>
+            {/if}
+          </div>
+        </div>
+      </div>
+    {/if}
+    
+    <div class="mt-4">
+      <a href="/" class="btn btn-secondary">Voltar ao Início</a>
+    </div>
+  </div>
+  {/content}
+{/include}

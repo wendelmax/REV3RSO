@@ -1,0 +1,76 @@
+{#include main}
+  {#title}Avaliações Recebidas{/title}
+
+  {#content}
+  <div class="container mt-4">
+    <h1>Avaliações Recebidas</h1>
+    
+    {#if avaliacoes.isEmpty()}
+      <div class="alert alert-info">
+        Você ainda não recebeu nenhuma avaliação.
+      </div>
+    {#else}
+      <div class="list-group mt-4">
+        {#for avaliacao in avaliacoes}
+          <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">
+                Avaliado por: {avaliacao.avaliador.nome}
+                <small class="text-muted">({avaliacao.avaliador.tipoUsuario == 'FORNECEDOR' ? 'Fornecedor' : 'Comprador'})</small>
+              </h5>
+              <small>
+                {avaliacao.dataCriacao.format('dd/MM/yyyy HH:mm')}
+              </small>
+            </div>
+            
+            <div class="mb-2">
+              <strong>Leilão:</strong> <a href="/leiloes/{avaliacao.leilao.id}">{avaliacao.leilao.titulo}</a>
+            </div>
+            
+            <div class="mb-2">
+              <strong>Nota:</strong>
+              <span class="ms-2">
+                {#for i in 1..5}
+                  {#if i <= avaliacao.nota}
+                    <i class="bi bi-star-fill text-warning"></i>
+                  {#else}
+                    <i class="bi bi-star text-muted"></i>
+                  {/if}
+                {/for}
+              </span>
+            </div>
+            
+            <div class="mb-2">
+              <strong>Comentário:</strong>
+              <p class="mb-1">{avaliacao.comentario}</p>
+            </div>
+            
+            {#if avaliacao.replica == null}
+              <div class="mt-3">
+                <form action="/avaliacoes/replica/{avaliacao.id}" method="post">
+                  <div class="mb-3">
+                    <label for="replica" class="form-label">Responder a esta avaliação:</label>
+                    <textarea class="form-control" id="replica" name="replica" rows="3" required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-sm">Enviar Resposta</button>
+                </form>
+              </div>
+            {#else}
+              <div class="mb-0 mt-3">
+                <div class="alert alert-light">
+                  <strong>Sua réplica:</strong>
+                  <p class="mb-0">{avaliacao.replica}</p>
+                </div>
+              </div>
+            {/if}
+          </div>
+        {/for}
+      </div>
+    {/if}
+    
+    <div class="mt-4">
+      <a href="/" class="btn btn-primary">Voltar ao Início</a>
+    </div>
+  </div>
+  {/content}
+{/include}

@@ -1,0 +1,6 @@
+{#if flash['mensagem']}
+<div class="alert alert-{flash['tipo'] ?: 'info'} alert-dismissible fade show mt-3" role="alert">
+    {flash['mensagem']}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+</div>
+{/if}

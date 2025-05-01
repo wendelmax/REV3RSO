@@ -1,0 +1,186 @@
+{#include main}
+  {#title}Editar Usuário{/title}
+
+  {#head}
+  <link rel="stylesheet" href="/css/admin.css">
+  {/head}
+
+  {#content}
+  <div class="container-fluid py-4">
+    <div class="row mb-4">
+      <div class="col-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{uri:Admin.dashboard}">Painel Admin</a></li>
+            <li class="breadcrumb-item"><a href="{uri:Admin.usuarios}">Usuários</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Editar Usuário</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8 mx-auto">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Editar Usuário</h3>
+          </div>
+          <div class="card-body">
+            <form action="{uri:Admin.atualizarUsuario(usuario.id)}" method="post">
+              <div class="row mb-3">
+                <div class="col">
+                  <label for="nome" class="form-label">Nome</label>
+                  <input type="text" class="form-control" id="nome" name="nome" value="{usuario.nome}" required>
+                </div>
+                <div class="col">
+                  <label for="email" class="form-label">E-mail</label>
+                  <input type="email" class="form-control" id="email" name="email" value="{usuario.email}" required>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col">
+                  <label for="tipoUsuario" class="form-label">Tipo de Usuário</label>
+                  <select class="form-select" id="tipoUsuario" name="tipoUsuario" required>
+                    {#for tipo in Usuario.TipoUsuario.values()}
+                      <option value="{tipo}" {#if usuario.tipoUsuario == tipo}selected{/if}>{tipo}</option>
+                    {/for}
+                  </select>
+                </div>
+                <div class="col">
+                  <label for="status" class="form-label">Status</label>
+                  <select class="form-select" id="status" name="status" required>
+                    {#for status in Usuario.Status.values()}
+                      <option value="{status}" {#if usuario.status == status}selected{/if}>{status}</option>
+                    {/for}
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3 supplier-fields" id="supplierFields">
+                <div class="col">
+                  <label for="razaoSocial" class="form-label">Razão Social</label>
+                  <input type="text" class="form-control" id="razaoSocial" name="razaoSocial" value="{usuario.razaoSocial}">
+                </div>
+                <div class="col">
+                  <label for="cnpj" class="form-label">CNPJ</label>
+                  <input type="text" class="form-control" id="cnpj" name="cnpj" value="{usuario.cnpj}">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="areasAtuacao" class="form-label">Áreas de Atuação</label>
+                <div class="d-flex flex-wrap filter-gap">
+                  {#for area in areasAtuacao}
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="areasAtuacao" id="area{area.id}" value="{area.id}" 
+                        {#if usuario.areasAtuacao != null && usuario.areasAtuacao.contains(area)}checked{/if}>
+                      <label class="form-check-label" for="area{area.id}">
+                        {area.nome}
+                      </label>
+                    </div>
+                  {/for}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="telefone" class="form-label">Telefone</label>
+                <input type="text" class="form-control" id="telefone" name="telefone" value="{usuario.telefone}">
+              </div>
+
+              <div class="mb-3">
+                <label for="endereco" class="form-label">Endereço</label>
+                <textarea class="form-control" id="endereco" name="endereco" rows="3">{usuario.endereco}</textarea>
+              </div>
+
+              <hr>
+
+              <div class="mb-3">
+                <h5>Alterar Senha</h5>
+                <p class="text-muted small">Deixe em branco para manter a senha atual.</p>
+                <div class="row">
+                  <div class="col">
+                    <label for="novaSenha" class="form-label">Nova Senha</label>
+                    <input type="password" class="form-control" id="novaSenha" name="novaSenha">
+                  </div>
+                  <div class="col">
+                    <label for="confirmacaoSenha" class="form-label">Confirmar Senha</label>
+                    <input type="password" class="form-control" id="confirmacaoSenha" name="confirmacaoSenha">
+                  </div>
+                </div>
+              </div>
+
+              {#if usuario.dataSuspensao != null}
+              <div class="mb-4">
+                <div class="alert alert-warning">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                      <h5 class="alert-heading">Usuário Suspenso</h5>
+                      <p class="mb-1">Suspenso em: {usuario.dataSuspensao.format('dd/MM/yyyy HH:mm')}</p>
+                      {#if usuario.motivoSuspensao != null}
+                        <p class="mb-1">Motivo: {usuario.motivoSuspensao}</p>
+                      {/if}
+                      {#if usuario.dataReativacao != null}
+                        <p>Reativado em: {usuario.dataReativacao.format('dd/MM/yyyy HH:mm')}</p>
+                      {/if}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/if}
+
+              <div class="d-flex justify-content-between">
+                <a href="{uri:Admin.usuarios}" class="btn btn-outline-secondary">
+                  <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-save"></i> Salvar Alterações
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {#insert moreScripts}
+  <script>
+    // Controle de exibição dos campos específicos de fornecedor
+    document.getElementById('tipoUsuario').addEventListener('change', function() {
+      const supplierFields = document.getElementById('supplierFields');
+      
+      if (this.value === 'FORNECEDOR') {
+        supplierFields.style.display = 'flex';
+      } else {
+        supplierFields.style.display = 'none';
+      }
+    });
+    
+    // Executa no carregamento da página
+    document.addEventListener('DOMContentLoaded', function() {
+      const tipoUsuario = document.getElementById('tipoUsuario').value;
+      const supplierFields = document.getElementById('supplierFields');
+      
+      if (tipoUsuario === 'FORNECEDOR') {
+        supplierFields.style.display = 'flex';
+      } else {
+        supplierFields.style.display = 'none';
+      }
+      
+      // Validação de senha
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const novaSenha = document.getElementById('novaSenha').value;
+        const confirmacaoSenha = document.getElementById('confirmacaoSenha').value;
+        
+        if (novaSenha !== '' && novaSenha !== confirmacaoSenha) {
+          e.preventDefault();
+          alert('As senhas não coincidem!');
+        }
+      });
+    });
+  </script>
+  {/insert}
+  {/content}
+{/include}

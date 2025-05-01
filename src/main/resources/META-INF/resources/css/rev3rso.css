@@ -1,0 +1,93 @@
+/* Estilos personalizados para o sistema REV3RSO */
+
+/* Estilos gerais */
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.section-title {
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/* Estilos para tabelas */
+.th-checkbox {
+  width: 50px;
+}
+
+.table-actions {
+  width: 120px;
+}
+
+/* Estilos para cartões */
+.card-leilao {
+  transition: all 0.3s ease;
+}
+
+.card-leilao:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header-leilao {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Estilos para status de leilão */
+.status-aberto {
+  background-color: #28a745;
+  color: white;
+}
+
+.status-encerrado {
+  background-color: #dc3545;
+  color: white;
+}
+
+.status-agendado {
+  background-color: #ffc107;
+  color: black;
+}
+
+.status-concluido {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.status-cancelado {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Estilos para avaliações */
+.rating-stars {
+  color: #ffc107;
+  font-size: 1.2rem;
+}
+
+/* Estilos para formulários */
+.form-group-required label::after {
+  content: " *";
+  color: #dc3545;
+}
+
+/* Estilos para notificações */
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 0.7em;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.9rem;
+  }
+  
+  .card-leilao {
+    margin-bottom: 1rem;
+  }
+}

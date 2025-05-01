@@ -1,0 +1,92 @@
+1.1.1.        Interfaces
+1.1.2.        Módulo do Comprador
+        Loga no sistema
+        Menu
+        Criar leilão
+                Convidar Fornecedor
+        Gerencia leilões
+                Visualizar
+                        Andamento
+                                Quantidade de fornecedores
+                                Tempo restante
+                        Finalizados
+                                Lance vencedor
+                Cancelar
+                Atualizar
+                Convidar Fornecedor
+        Finalizar leilão com avaliação de fornecedor
+        Solicita segundo e terceiro melhor lance caso houver problemas com fornecedor negativando o mesmo
+        Visualiza informações de fornecedores cadastrados no sistema
+1.1.3.        Módulo do Fornecedor
+        Loga no sistema
+        Visualiza convites recebibos
+                Aceita
+                        Confirma atendimento dos requisitos obrigatórios
+                Recusa
+        Visualiza Leilões
+                Andamento
+                        Visualiza tempo restante
+                        Dar lance
+                        Editar lance
+                        Cancela lance
+                        Visualiza status do lance com relação aos demais
+                                Verde = Seu lance é o melhor
+                                Amarelo = Seu Lance está dentro da média
+                                Vermelho = Está entre os piores
+                        Visualiza histórico de lances
+                Finalizados
+        Visualiza informações de compradores cadastrados no sistema
+1.1.4.        Módulo do Administrador
+        Controla cadastro
+                cancelar contas
+                Alterar cadastros
+        Envia email (informa por exemplo indisponibilidade no sitema no dia x)
+                a todos fornecedor
+                a todos compradores
+                específico
+        Coloca sistema em manutenção (indisponível)
+        Agenda manutenção no sistema (impede qua leilões sejam criados dentro dessa data)
+1.1.5.        Módulo de Avaliação
+        Comprador Avalia Fornecedor
+        Fornecedor Avalia Comprador
+1.1.6.        Módulo de Leilão
+        Gerencia leilões em andamento
+                Controla tempo
+                Informa fornecedor 1 dia antes do leilão terminar
+        Escolhe menor lance do leilão
+        Envia email com informações do vencedor do leilão ao comprador
+        Caso acontecer algum problema no leilão envia informações de fornecedores do 2ª e 3ª melhor lance
+1.1.7.        Módulo de Sistema
+        Controla login
+        Gerencia senha temporária para fornecedore convidados que não tenham cadastro
+        Solicita cadastro
+        Envia senha quando Fornecedor ou Comprador solicitar mudança de senha
+1.1.8.        Módulo de Relatórios
+
+
+
+
+
+
+Formulário de criação de leilão
+Nome:
+Data inicio:
+Data Fim:
+Preencher edital:
+Formas de pagamento:
+        Boleto
+        Dinheiro
+        Tranferência
+        Cartão de crédito
+Tipo de requisição
+        Produto
+        Serviço
+Informações do produto/serviço:
+Requisitos obrigatorios:
+        vários campos onde comprador preenche que vai virar um flag obrigatório na aba fornecedor para o mesmo selecionar para confirma sua participação no leilão
+Seleciona Fornecedores cadastrados no sitema:
+        Visualiza avaliações de Fornecedores
+Convida fornecedores (esses receberão uma senha de acesso para o leilão por email)
+        Nome 
+        Email
+        Informações do leilão

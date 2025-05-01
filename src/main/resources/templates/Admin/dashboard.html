@@ -1,0 +1,197 @@
+{#include main}
+  {#title}Painel Administrativo{/title}
+
+  {#content}
+  <div class="container-fluid py-4">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Painel Administrativo</h3>
+          </div>
+          <div class="card-body">
+            <p class="lead">Seja bem-vindo ao painel administrativo do REV3RSO. Aqui você pode gerenciar usuários, leilões, áreas de atuação e visualizar estatísticas do sistema.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card h-100 border-primary">
+          <div class="card-body text-center">
+            <h5 class="card-title"><i class="bi bi-person-circle fs-1"></i></h5>
+            <h2 class="display-6">{Usuario.count()}</h2>
+            <p class="card-text">Usuários Cadastrados</p>
+            <a href="{uri:Admin.usuarios}" class="btn btn-sm btn-primary">Gerenciar Usuários</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="card h-100 border-success">
+          <div class="card-body text-center">
+            <h5 class="card-title"><i class="bi bi-receipt fs-1"></i></h5>
+            <h2 class="display-6">{Leilao.count()}</h2>
+            <p class="card-text">Leilões Registrados</p>
+            <a href="{uri:Admin.leiloes}" class="btn btn-sm btn-success">Gerenciar Leilões</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="card h-100 border-info">
+          <div class="card-body text-center">
+            <h5 class="card-title"><i class="bi bi-bookmark-star fs-1"></i></h5>
+            <h2 class="display-6">{AreaAtuacao.count()}</h2>
+            <p class="card-text">Áreas de Atuação</p>
+            <a href="{uri:Admin.areas}" class="btn btn-sm btn-info text-white">Gerenciar Áreas</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="card h-100 border-warning">
+          <div class="card-body text-center">
+            <h5 class="card-title"><i class="bi bi-cash-coin fs-1"></i></h5>
+            <h2 class="display-6">{FormaPagamento.count()}</h2>
+            <p class="card-text">Formas de Pagamento</p>
+            <a href="{uri:Admin.formasPagamento}" class="btn btn-sm btn-warning">Gerenciar Formas</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Usuários por Tipo</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="chartUsuarios" width="400" height="250"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card h-100">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Leilões por Status</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="chartLeiloes" width="400" height="250"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Atividade Recente</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Data/Hora</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Detalhes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Aqui seria necessário implementar um sistema de log de atividades -->
+                  <tr>
+                    <td>{java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern('dd/MM/yyyy HH:mm'))}</td>
+                    <td>Sistema</td>
+                    <td>Inicialização</td>
+                    <td>Painel administrativo inicializado</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-between">
+          <a href="{uri:Admin.estatisticas}" class="btn btn-primary">
+            <i class="bi bi-bar-chart"></i> Ver Estatísticas Detalhadas
+          </a>
+          
+          <div>
+            <a href="/" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left"></i> Voltar ao Site
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {#insert moreScripts}
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+  <script>
+    // Gráfico de usuários por tipo
+    const ctxUsuarios = document.getElementById('chartUsuarios').getContext('2d');
+    const chartUsuarios = new Chart(ctxUsuarios, {
+        type: 'pie',
+        data: {
+            labels: ['Compradores', 'Fornecedores', 'Administradores'],
+            datasets: [{
+                data: [
+                  {Usuario.count("tipoUsuario", Usuario.TipoUsuario.COMPRADOR)},
+                  {Usuario.count("tipoUsuario", Usuario.TipoUsuario.FORNECEDOR)},
+                  {Usuario.count("tipoUsuario", Usuario.TipoUsuario.ADMINISTRADOR)}
+                ],
+                backgroundColor: [
+                    '#36a2eb',
+                    '#ff6384',
+                    '#4bc0c0'
+                ]
+            }]
+        }
+    });
+    
+    // Gráfico de leilões por status
+    const ctxLeiloes = document.getElementById('chartLeiloes').getContext('2d');
+    const chartLeiloes = new Chart(ctxLeiloes, {
+        type: 'bar',
+        data: {
+            labels: ['Abertos', 'Encerrados', 'Concluídos', 'Cancelados'],
+            datasets: [{
+                label: 'Quantidade',
+                data: [
+                  {Leilao.count("status", Leilao.Status.ABERTO)},
+                  {Leilao.count("status", Leilao.Status.ENCERRADO)},
+                  {Leilao.count("status", Leilao.Status.CONCLUIDO)},
+                  {Leilao.count("status", Leilao.Status.CANCELADO)}
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#ffc107',
+                    '#17a2b8',
+                    '#dc3545'
+                ]
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+  </script>
+  {/insert}
+  {/content}
+{/include}

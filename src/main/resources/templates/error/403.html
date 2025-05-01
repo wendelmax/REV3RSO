@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Acesso Negado</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .error-container {
+            text-align: center;
+            padding: 100px 0;
+        }
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-container">
+            <div class="error-code">403</div>
+            <div class="error-message">Acesso Negado</div>
+            <p class="lead">Você não tem permissão para acessar este recurso.</p>
+            <div class="mt-4">
+                <a href="/" class="btn btn-primary">Voltar para a Página Inicial</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/webjars/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

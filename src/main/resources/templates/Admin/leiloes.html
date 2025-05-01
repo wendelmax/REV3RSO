@@ -1,0 +1,272 @@
+{#include main}
+  {#title}Gerenciamento de Leilões{/title}
+
+  {#head}
+  <link rel="stylesheet" href="/css/admin.css">
+  {/head}
+
+  {#content}
+  <div class="container-fluid py-4">
+    <div class="row mb-4">
+      <div class="col-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{uri:Admin.dashboard}">Painel Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Leilões</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Gerenciamento de Leilões</h3>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <!-- Filtros -->
+              <div class="d-flex filter-gap">
+                <select class="form-select form-select-sm" id="filtroStatus" title="Filtrar por status">
+                  <option value="">Todos os status</option>
+                  {#for status in Leilao.Status.values()}
+                    <option value="{status}">{status}</option>
+                  {/for}
+                </select>
+                
+                <select class="form-select form-select-sm" id="filtroMes" title="Filtrar por mês">
+                  <option value="">Todos os meses</option>
+                  <option value="1">Janeiro</option>
+                  <option value="2">Fevereiro</option>
+                  <option value="3">Março</option>
+                  <option value="4">Abril</option>
+                  <option value="5">Maio</option>
+                  <option value="6">Junho</option>
+                  <option value="7">Julho</option>
+                  <option value="8">Agosto</option>
+                  <option value="9">Setembro</option>
+                  <option value="10">Outubro</option>
+                  <option value="11">Novembro</option>
+                  <option value="12">Dezembro</option>
+                </select>
+              </div>
+              
+              <!-- Pesquisa -->
+              <div class="d-flex filter-gap">
+                <input type="text" id="leiloesSearch" class="form-control form-control-sm" placeholder="Pesquisar leilões...">
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-striped table-hover" id="tabelaLeiloes">
+                <thead class="table-dark">
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Comprador</th>
+                    <th>Valor Estimado</th>
+                    <th>Data Criação</th>
+                    <th>Data Final</th>
+                    <th>Status</th>
+                    <th>Fornecedor Vencedor</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#for leilao in leiloes}
+                  <tr>
+                    <td>{leilao.id}</td>
+                    <td>
+                      <a href="{uri:Admin.detalharLeilao(leilao.id)}" class="text-decoration-none">
+                        {leilao.titulo}
+                      </a>
+                    </td>
+                    <td>
+                      <a href="{uri:Admin.editarUsuario(leilao.comprador.id)}" class="text-decoration-none">
+                        {leilao.comprador.nome}
+                      </a>
+                    </td>
+                    <td>R$ {String.format("%.2f", leilao.valorEstimado)}</td>
+                    <td>
+                      {#if leilao.dataCriacao != null}
+                        {leilao.dataCriacao.format('dd/MM/yyyy')}
+                      {#else}
+                        -
+                      {/if}
+                    </td>
+                    <td>
+                      {#if leilao.dataFinal != null}
+                        {leilao.dataFinal.format('dd/MM/yyyy')}
+                      {#else}
+                        -
+                      {/if}
+                    </td>
+                    <td>
+                      <span class="badge bg-{#switch leilao.status}{#case ABERTO}success{#case ENCERRADO}secondary{#case CONCLUIDO}primary{#case CANCELADO}danger{/switch}">
+                        {leilao.status}
+                      </span>
+                    </td>
+                    <td>
+                      {#if leilao.fornecedorVencedor != null}
+                        <a href="{uri:Admin.editarUsuario(leilao.fornecedorVencedor.id)}" class="text-decoration-none">
+                          {leilao.fornecedorVencedor.nome}
+                        </a>
+                      {#else}
+                        -
+                      {/if}
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <a href="{uri:Admin.detalharLeilao(leilao.id)}" class="btn btn-sm btn-outline-primary" title="Ver detalhes">
+                          <i class="bi bi-search"></i>
+                        </a>
+                        <a href="{uri:Admin.editarLeilao(leilao.id)}" class="btn btn-sm btn-outline-secondary" title="Editar">
+                          <i class="bi bi-pencil-square"></i>
+                        </a>
+                        {#if leilao.status == Leilao.Status.ABERTO || leilao.status == Leilao.Status.ENCERRADO}
+                          <button type="button" class="btn btn-sm btn-outline-danger" title="Cancelar leilão" data-bs-toggle="modal" data-bs-target="#modalCancelarLeilao" data-leilao-id="{leilao.id}" data-leilao-titulo="{leilao.titulo}">
+                            <i class="bi bi-x-circle"></i>
+                          </button>
+                        {/if}
+                      </div>
+                    </td>
+                  </tr>
+                  {/for}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex justify-content-between">
+              <div>
+                Total: <strong>{leiloes.size()}</strong> leilões
+              </div>
+              <div>
+                Abertos: <span class="badge bg-success">{leiloes.stream().filter(l -> l.status == Leilao.Status.ABERTO).count()}</span>
+                Encerrados: <span class="badge bg-secondary">{leiloes.stream().filter(l -> l.status == Leilao.Status.ENCERRADO).count()}</span>
+                Concluídos: <span class="badge bg-primary">{leiloes.stream().filter(l -> l.status == Leilao.Status.CONCLUIDO).count()}</span>
+                Cancelados: <span class="badge bg-danger">{leiloes.stream().filter(l -> l.status == Leilao.Status.CANCELADO).count()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de Cancelamento de Leilão -->
+  <div class="modal fade" id="modalCancelarLeilao" tabindex="-1" aria-labelledby="modalCancelarLeilaoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="modalCancelarLeilaoLabel">Cancelar Leilão</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form action="#" id="formCancelarLeilao" method="post">
+          <div class="modal-body">
+            <p>Você está prestes a cancelar o leilão: <strong id="tituloLeilaoCancelar"></strong>.</p>
+            <div class="mb-3">
+              <label for="motivoCancelamento" class="form-label">Motivo do cancelamento:</label>
+              <textarea class="form-control" id="motivoCancelamento" name="motivoCancelamento" rows="3" required></textarea>
+            </div>
+            <div class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Essa ação é irreversível e enviará notificações a todos os fornecedores envolvidos.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  {#insert moreScripts}
+  <script>
+    // Script para pesquisa de leilões na tabela
+    document.getElementById('leiloesSearch').addEventListener('keyup', function() {
+      filtrarTabela();
+    });
+    
+    // Filtro por status
+    document.getElementById('filtroStatus').addEventListener('change', function() {
+      filtrarTabela();
+    });
+    
+    // Filtro por mês
+    document.getElementById('filtroMes').addEventListener('change', function() {
+      filtrarTabela();
+    });
+    
+    // Função centralizada para filtrar a tabela
+    function filtrarTabela() {
+      const searchQuery = document.getElementById('leiloesSearch').value.toLowerCase();
+      const statusFiltro = document.getElementById('filtroStatus').value;
+      const mesFiltro = document.getElementById('filtroMes').value;
+      
+      const table = document.getElementById('tabelaLeiloes');
+      const rows = table.getElementsByTagName('tr');
+      
+      for (let i = 1; i < rows.length; i++) { // Começando de 1 para pular o cabeçalho
+        const row = rows[i];
+        const cells = row.getElementsByTagName('td');
+        let mostrarPorTexto = false;
+        let mostrarPorStatus = true;
+        let mostrarPorMes = true;
+        
+        // Filtro de texto
+        if (searchQuery) {
+          mostrarPorTexto = false;
+          for (let j = 0; j < cells.length; j++) {
+            const cell = cells[j];
+            if (cell.textContent.toLowerCase().includes(searchQuery)) {
+              mostrarPorTexto = true;
+              break;
+            }
+          }
+        } else {
+          mostrarPorTexto = true;
+        }
+        
+        // Filtro de status
+        if (statusFiltro) {
+          const statusCell = cells[6]; // Coluna de status é a sétima (índice 6)
+          mostrarPorStatus = statusCell.textContent.trim().includes(statusFiltro);
+        }
+        
+        // Filtro de mês
+        if (mesFiltro) {
+          const dataCell = cells[4]; // Coluna de data de criação é a quinta (índice 4)
+          if (dataCell.textContent.trim() !== '-') {
+            const dataParts = dataCell.textContent.trim().split('/');
+            const mes = parseInt(dataParts[1]);
+            mostrarPorMes = (mes === parseInt(mesFiltro));
+          } else {
+            mostrarPorMes = false;
+          }
+        }
+        
+        if (mostrarPorTexto && mostrarPorStatus && mostrarPorMes) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    }
+    
+    // Configuração do modal de cancelamento
+    document.getElementById('modalCancelarLeilao').addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const leilaoId = button.getAttribute('data-leilao-id');
+      const leilaoTitulo = button.getAttribute('data-leilao-titulo');
+      
+      document.getElementById('tituloLeilaoCancelar').textContent = leilaoTitulo;
+      document.getElementById('formCancelarLeilao').action = '{uri:Admin.cancelarLeilao("' + leilaoId + '")}';
+    });
+  </script>
+  {/insert}
+  {/content}
+{/include}

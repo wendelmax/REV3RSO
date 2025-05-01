@@ -1,0 +1,20 @@
+Em relação aos casos de uso e o diagrama de classes
+
+*1) No UC01 as Áreas de atuação poderiam estar armazenadas em uma tabela e não ser uma lista fechada de valores.
+
+-foi discultido pelo grupo uma vez que haveria mais trabalho a questão de armazenar em uma tabela ao invés de fechar uma lista*
+
+2) No UC02 o Administrador deve ser considerado também como ator principal.
+
+-não há administrador atualmente no sistema-
+
+3) No UC04 outra pré-condição seria o comprador não estar suspenso.
+
+
+4) No UC05 outra pré-condição seria o fornecedor não estar suspenso.
+
+5) No UC07 diz que o comprador é negativado ao cancelar um leilão. Qual a regra de negócio associada a isso? Existe um limite máximo de negativações? O que acontece ao comprador exceder esse limite?
+
+6) Nos UC09 e UC10 qual a regra de negócio que define o fornecedor vencedor do leilão? É o que apresenta o menor valor? Se sim, isso deve estar expresso no UC.
+
+7)  No UC12 não seria também uma pré-condição o fornecedor ter sido convidado para o leilão? Se sim, isso deve estar expresso. Outra pré-condição seria ele não estar suspenso.

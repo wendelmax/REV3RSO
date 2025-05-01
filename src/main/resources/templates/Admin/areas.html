@@ -1,0 +1,204 @@
+{#include main}
+  {#title}Gerenciamento de Áreas de Atuação{/title}
+
+  {#content}
+  <div class="container-fluid py-4">
+    <div class="row mb-4">
+      <div class="col-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{uri:Admin.dashboard}">Painel Admin</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Áreas de Atuação</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card mb-4">
+          <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Áreas de Atuação</h3>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead class="table-dark">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Fornecedores</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#for area in areas}
+                  <tr>
+                    <td>{area.id}</td>
+                    <td>{area.nome}</td>
+                    <td>{area.descricao}</td>
+                    <td>
+                      <span class="badge bg-primary">{area.usuarios != null ? area.usuarios.size() : 0}</span>
+                    </td>
+                    <td>
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditarArea" 
+                            data-area-id="{area.id}" 
+                            data-area-nome="{area.nome}" 
+                            data-area-descricao="{area.descricao}"
+                            title="Editar área {area.nome}">
+                          <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalExcluirArea"
+                            data-area-id="{area.id}"
+                            data-area-nome="{area.nome}"
+                            data-area-count="{area.usuarios != null ? area.usuarios.size() : 0}"
+                            title="Excluir área {area.nome}">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {/for}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex justify-content-between">
+              <div>
+                Total: <strong>{areas.size()}</strong> áreas de atuação
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Adicionar Área</h4>
+          </div>
+          <div class="card-body">
+            <form action="{uri:Admin.adicionarArea}" method="post">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome da Área <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="descricao" class="form-label">Descrição</label>
+                <textarea class="form-control" id="descricao" name="descricao" rows="3"></textarea>
+              </div>
+              
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                  <i class="bi bi-plus-circle"></i> Adicionar Área
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Editar Área -->
+  <div class="modal fade" id="modalEditarArea" tabindex="-1" aria-labelledby="modalEditarAreaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="modalEditarAreaLabel">Editar Área de Atuação</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="formEditarArea" action="#" method="post">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="editNome" class="form-label">Nome da Área <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="editNome" name="nome" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="editDescricao" class="form-label">Descrição</label>
+              <textarea class="form-control" id="editDescricao" name="descricao" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Excluir Área -->
+  <div class="modal fade" id="modalExcluirArea" tabindex="-1" aria-labelledby="modalExcluirAreaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="modalExcluirAreaLabel">Excluir Área de Atuação</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="formExcluirArea" action="#" method="post">
+          <div class="modal-body">
+            <p>Você está prestes a excluir a área: <strong id="nomeAreaExcluir"></strong>.</p>
+            
+            <div id="areaComUsuarios" class="alert alert-warning d-none">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Esta área está associada a <strong id="countUsuariosArea">0</strong> fornecedor(es). 
+              Se você excluí-la, esses fornecedores não terão mais esta área associada.
+            </div>
+            
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Esta ação não pode ser desfeita.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  {#insert moreScripts}
+  <script>
+    // Configuração do modal de editar área
+    document.getElementById('modalEditarArea').addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const areaId = button.getAttribute('data-area-id');
+      const areaNome = button.getAttribute('data-area-nome');
+      const areaDescricao = button.getAttribute('data-area-descricao');
+      
+      document.getElementById('editNome').value = areaNome;
+      document.getElementById('editDescricao').value = areaDescricao;
+      document.getElementById('formEditarArea').action = '{uri:Admin.atualizarArea("' + areaId + '")}';
+    });
+    
+    // Configuração do modal de excluir área
+    document.getElementById('modalExcluirArea').addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const areaId = button.getAttribute('data-area-id');
+      const areaNome = button.getAttribute('data-area-nome');
+      const usuariosCount = parseInt(button.getAttribute('data-area-count'));
+      
+      document.getElementById('nomeAreaExcluir').textContent = areaNome;
+      document.getElementById('formExcluirArea').action = '{uri:Admin.removerArea("' + areaId + '")}';
+      
+      // Mostrar aviso se a área tiver usuários associados
+      const areaComUsuarios = document.getElementById('areaComUsuarios');
+      if (usuariosCount > 0) {
+        document.getElementById('countUsuariosArea').textContent = usuariosCount;
+        areaComUsuarios.classList.remove('d-none');
+      } else {
+        areaComUsuarios.classList.add('d-none');
+      }
+    });
+  </script>
+  {/insert}
+  {/content}
+{/include}

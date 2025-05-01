@@ -1,0 +1,101 @@
+{#include main}
+  {#title}Selecionar Fornecedores para Convite - {leilao.titulo}{/title}
+
+  {#content}
+  <div class="container mt-4">
+    <h1>Selecionar Fornecedores para Convite</h1>
+    <h2 class="mb-3">{leilao.titulo}</h2>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Informações do Leilão</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Início:</strong> {leilao.dataInicio.format('dd/MM/yyyy HH:mm')}</p>
+            <p><strong>Término:</strong> {leilao.dataFim.format('dd/MM/yyyy HH:mm')}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Tipo:</strong> {leilao.tipoLeilao}</p>
+            <p><strong>Quantidade:</strong> {leilao.quantidade} {leilao.unidadeMedida}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Fornecedores Disponíveis</h3>
+      </div>
+      <div class="card-body">
+        {#if fornecedores.isEmpty()}
+          <div class="alert alert-warning">
+            Não há fornecedores disponíveis para convite.
+          </div>
+        {#else}
+          <form action="/convites/enviar" method="post">
+            <input type="hidden" name="leilaoId" value="{leilao.id}">
+            
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th class="th-checkbox">Selecionar</th>
+                    <th>Nome</th>
+                    <th>Empresa</th>
+                    <th>Pontuação</th>
+                    <th>Avaliações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {#for fornecedor in fornecedores}
+                    <tr>
+                      <td class="text-center">
+                        <input class="form-check-input" type="checkbox" name="fornecedorIds" value="{fornecedor.id}" id="fornecedor{fornecedor.id}" aria-label="Selecionar fornecedor {fornecedor.nome}" title="Selecionar {fornecedor.nome}">
+                      </td>
+                      <td>{fornecedor.nome}</td>
+                      <td>{fornecedor.razaoSocial}</td>
+                      <td>
+                        {#if fornecedor.pontuacao >= 4.0}
+                          <span class="text-success">{fornecedor.pontuacao}</span>
+                        {#elseif fornecedor.pontuacao >= 3.0}
+                          <span class="text-warning">{fornecedor.pontuacao}</span>
+                        {#else}
+                          <span class="text-danger">{fornecedor.pontuacao}</span>
+                        {/if}
+                      </td>
+                      <td>
+                        {#if fornecedor.avaliacoesRecebidas > 0}
+                          {fornecedor.avaliacoesRecebidas} avaliações
+                        {#else}
+                          Sem avaliações
+                        {/if}
+                      </td>
+                    </tr>
+                  {/for}
+                </tbody>
+              </table>
+            </div>
+            
+            {#if validationFailed.containsKey('fornecedorIds')}
+              <div class="alert alert-danger">
+                {validationFailed.get('fornecedorIds').message}
+              </div>
+            {/if}
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+              <a href="/convites/listar/{leilao.id}" class="btn btn-secondary me-md-2">Cancelar</a>
+              <button type="submit" class="btn btn-primary">Enviar Convites</button>
+            </div>
+          </form>
+        {/if}
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <a href="/leiloes/{leilao.id}" class="btn btn-secondary">Voltar ao Leilão</a>
+    </div>
+  </div>
+  {/content}
+{/include}

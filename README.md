@@ -1,6 +1,9 @@
 # REV3RSO: Sistema de Leilão Reverso de Origem
 ## Origin Reverse Auction System - Redefining Procurement
 
+[![Quarkus](https://design.jboss.org/quarkus/logo/final/PNG/quarkus_logo_horizontal_rgb_1280px_default.png#gh-light-mode-only)](https://quarkus.io/#gh-light-mode-only)
+[![Quarkus](https://design.jboss.org/quarkus/logo/final/PNG/quarkus_logo_horizontal_rgb_1280px_reverse.png#gh-dark-mode-only)](https://quarkus.io/#gh-dark-mode-only)
+
 [![Java EE](https://img.shields.io/badge/Java_EE-11%2B-brightgreen.svg?style=for-the-badge&logo=openjdk)](https://jakarta.ee/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-12%2B-blue.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge&logo=apache&color=brightgreen)](LICENSE)

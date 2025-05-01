@@ -1,21 +1,56 @@
-# REV3RSO
+# REV3RSO: Sistema de Leilão Reverso de Origem
+## Origin Reverse Auction System - Redefining Procurement
+
+[![Java EE](https://img.shields.io/badge/Java_EE-11%2B-brightgreen.svg?style=for-the-badge&logo=openjdk)](https://jakarta.ee/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-12%2B-blue.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge&logo=apache&color=brightgreen)](LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg?style=for-the-badge&logo=github-actions)]()
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge&logo=semver)]()
+[![Project Status](https://img.shields.io/badge/status-active-success.svg?style=for-the-badge)]()
+
+**REV3RSO** is an enterprise-grade, cloud-ready e-procurement platform focused on reverse auctions and supplier management.
 
 ## Overview
 REV3RSO is an online reverse auction system designed to optimize the procurement process between buyers and suppliers. The system enables buyer companies to specify products or services they wish to purchase, invite suppliers, and establish a competitive environment where suppliers compete by offering increasingly lower bids.
+
+## REV3RSO Highlights
+
+* **Cost Optimization**:
+  Reduce procurement costs through competitive bidding and automated negotiation processes.
+* **Supplier Management**:
+  Comprehensive tools for evaluating, comparing, and managing supplier relationships.
+* **Transparent Procurement**:
+  End-to-end visibility into the purchasing process for all stakeholders.
+* **Enterprise Ready**:
+  Built for scalability and performance with Java EE standards.
+* **Compliance Focused**:
+  Ensures adherence to organizational purchasing policies and regulatory requirements.
+* **Analytics Driven**:
+  Data-driven insights to improve procurement decisions and supplier performance.
+
+_All under ONE integrated platform._
 
 ## Purpose
 The main purpose of REV3RSO is to help organizations reduce costs during the purchase of goods or services by automating operational purchasing activities and creating a competitive environment that drives prices down. The system provides a transparent, secure, and reliable purchasing methodology.
 
 ## Key Features
 
-- **User Management**: Registration and authentication for buyers and suppliers
-- **Auction Creation**: Buyers can create open or private (invitation-only) auctions
-- **Supplier Invitation**: Ability to invite specific suppliers to participate in auctions
-- **Real-time Bidding**: Suppliers compete by placing increasingly lower bids
-- **Auction Visualization**: Different interfaces for buyers and suppliers
-- **Rating System**: Feedback between buyers and suppliers
-- **Messaging System**: Communication during the auction
-- **User Control**: Suspend/reactivate user accounts (admin module)
+* **User Management**:
+  Comprehensive registration and authentication for buyers and suppliers.
+* **Auction Creation**:
+  Buyers can create open or private (invitation-only) auctions with detailed specifications.
+* **Supplier Invitation**:
+  Intelligent supplier selection and invitation system based on categories and performance.
+* **Real-time Bidding**:
+  Suppliers compete by placing increasingly lower bids with immediate updates.
+* **Auction Visualization**:
+  Specialized interfaces for buyers and suppliers with real-time analytics.
+* **Rating System**:
+  Detailed feedback between buyers and suppliers to build trust and accountability.
+* **Messaging System**:
+  Secure communication during the auction for clarifications and negotiations.
+* **User Control**:
+  Administrative tools to manage user accounts with audit trails.
 
 ## Technology Stack
 
@@ -133,6 +168,19 @@ The database design follows a normalized structure with the following core table
 - **Transparency**: More transparent purchasing methodology
 - **Process Automation**: Automate operational purchasing activities
 - **Supplier Relationship**: Foster healthy competition among suppliers
+
+## Getting Started
+
+* [Documentation](docs/)
+* [Installation Guide](docs/installation.md)
+* [User Guide](docs/user-guide.md)
+* [API Documentation](docs/api-docs.md)
+
+## Development Resources
+
+* [Contributing Guidelines](CONTRIBUTING.md)
+* [Issue Tracker](issues/)
+* [Development Roadmap](docs/roadmap.md)
 
 ## License
 

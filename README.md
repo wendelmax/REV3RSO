@@ -19,13 +19,13 @@ The main purpose of REV3RSO is to help organizations reduce costs during the pur
 
 ## Technology Stack
 
-REV3RSO is built on modern Quarkus technologies with a clean architecture approach:
+REV3RSO is built with a modern Java-based approach:
 
-- **Backend**: Quarkus with MVC pattern
+- **Backend**: Java with MVC pattern
 - **Database**: PostgreSQL with Hibernate ORM
-- **Web Interface**: Qute templating engine
+- **Web Interface**: HTML/CSS/JavaScript
 - **API**: RESTful services with JAX-RS
-- **Reactive Components**: Mutiny for reactive programming
+- **Framework**: Java EE/Jakarta EE
 - **Reporting**: Custom reporting system
 
 ## Project Evolution
@@ -34,40 +34,33 @@ The REV3RSO project has an interesting technological journey:
 
 - **Original Concept (2013)**: Initially developed as an academic project at IBTA college using PHP with MySQL database, following a traditional layered architecture (Business, DALC, Entities, WebSite)
 - **First Evolution**: Later restructured with .NET technologies
-- **Current Version**: Completely modernized using Quarkus, a Kubernetes-native Java framework optimized for containers, microservices, and cloud deployments
+- **Current Version**: Completely modernized using Java with a focus on maintainability, security, and performance
 
 ## Architecture
 
-The application follows the Quarkus Renarde MVC architecture, which is a modern, efficient approach for web applications:
+The application follows a clean architecture approach with a layered design:
 
 ### Domain Layer
 - **`model` package**: Contains all domain entities with Hibernate ORM annotations
   - Core business entities (Usuario, Leilao, Lance, Avaliacao, etc.)
-  - Uses Panache for simplified data access patterns
+  - Uses JPA for data persistence
   - Implements business logic that belongs directly to the entity
 
 ### Controllers
-- **`controller` package**: Contains all Renarde controllers (formerly in the `rest` package)
+- **`controller` package**: Contains all controllers for handling HTTP requests
   - Each controller handles a specific domain area (e.g., UsuarioController, LeilaoController)
   - Follows a RESTful approach with standard CRUD operations and domain-specific actions
-  - Uses Renarde annotations to simplify routing, validation, and form handling
-  - Returns appropriate template instances based on the action performed
+  - Returns appropriate responses based on the action performed
 
-### Views
-- **`resources/templates` directory**: Contains Qute templates for the UI
-  - Organized in subdirectories matching controller names
-  - Uses template inheritance (extending main.html)
-  - Implements responsive layouts suitable for both desktop and mobile
+### Data Transfer Objects
+- **`dto` package**: Objects for transferring data between layers
+  - Simplifies API interactions
+  - Allows for data validation and transformation
 
 ### Services
 - **`service` package**: Contains business logic spanning multiple entities
   - Implements transaction management and complex operations
-  - Contains service interfaces and their implementations
-
-### Security
-- **`security` package**: Manages authentication, authorization, and audit
-  - Defines user roles and permissions
-  - Handles session management
+  - Contains service implementations for core system functionality
 
 ### Utilities
 - **`util` package**: Cross-cutting concerns and helper classes
@@ -75,41 +68,51 @@ The application follows the Quarkus Renarde MVC architecture, which is a modern,
   - Date/time utilities
   - Formatting helpers
 
+### Additional Components
+- **`annotation` package**: Custom annotations for the system
+- **`config` package**: Configuration classes for the application
+- **`exception` package**: Custom exception handling
+- **`interceptor` package**: Interceptors for cross-cutting concerns
+
 ### Project Structure
 ```
 src/
 └── main/
     ├── java/
-    │   ├── model/             # Domain entities with Panache
-    │   │   ├── Usuario.java
-    │   │   ├── Leilao.java
-    │   │   ├── Lance.java
-    │   │   └── Avaliacao.java
-    │   ├── controller/        # Renarde MVC controllers
+    │   ├── annotation/        # Custom annotations
+    │   ├── config/            # Application configuration
+    │   ├── controller/        # MVC controllers
     │   │   ├── UsuarioController.java
     │   │   ├── LeilaoController.java
     │   │   ├── LanceController.java
     │   │   └── AvaliacaoController.java
+    │   ├── dto/               # Data transfer objects
+    │   ├── exception/         # Custom exceptions
+    │   ├── interceptor/       # Custom interceptors
+    │   ├── model/             # Domain entities with JPA
+    │   │   ├── Usuario.java
+    │   │   ├── Leilao.java
+    │   │   ├── Lance.java
+    │   │   └── Avaliacao.java
     │   ├── service/           # Business services
+    │   │   ├── UsuarioService.java
     │   │   ├── LeilaoService.java
-    │   │   ├── NotificacaoService.java
-    │   │   └── ReportService.java
-    │   ├── security/          # Security configurations
-    │   │   └── SecurityConfig.java
+    │   │   └── NotificacaoService.java
     │   └── util/              # Utility classes
-    │       ├── EmailSender.java
-    │       └── DateUtils.java
+    │       ├── EmailUtil.java
+    │       └── DateUtil.java
     ├── resources/
-    │   ├── templates/         # Qute templates
-    │   │   ├── Usuario/       # Templates for user management
-    │   │   ├── Leilao/        # Templates for auction views
-    │   │   ├── Lance/         # Templates for bidding 
-    │   │   └── main.html      # Base template
     │   ├── static/            # Static resources (CSS/JS)
     │   │   ├── css/
     │   │   └── js/
+    │   ├── templates/         # HTML templates
+    │   │   ├── usuario/
+    │   │   ├── leilao/
+    │   │   └── dashboard.html
     │   └── application.properties
-    └── docker/                # Docker configurations
+    └── webapp/                # Web application files
+        ├── WEB-INF/
+        └── index.html
 ```
 
 ### Database Schema
@@ -137,64 +140,44 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Development Guide
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This project uses standard Java EE/Jakarta EE technologies with Maven for build management.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+### Prerequisites
+
+- JDK 11 or later
+- Maven 3.8 or later
+- PostgreSQL 12 or later
 
 ### Running the application in dev mode
 
-You can run your application in dev mode that enables live coding using:
+You can run your application in dev mode using:
 
 ```shell script
-./mvnw quarkus:dev
+mvn clean install
+mvn tomcat7:run
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+Alternatively, you can deploy the WAR file to a compatible application server.
 
-### Packaging and running the application
+### Packaging the application
 
 The application can be packaged using:
 
 ```shell script
-./mvnw package
+mvn clean package
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it's not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+It produces a WAR file in the `target/` directory that can be deployed to any Java EE compatible application server.
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+### Database Setup
 
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-### Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/rev3rso-1.0.0-SNAPSHOT-runner`
-
-### Extensions Used
-
-- **Renarde**: A server-side Web Framework based on Quarkus, Qute, Hibernate and RESTEasy Reactive.
-- **Web Bundler**: Creating full-stack Web Apps with zero config bundling for web-app scripts (js, jsx, ts, tsx), dependencies and styles (css, scss, sass).
+The application requires a PostgreSQL database. You can configure the database connection in `src/main/resources/application.properties`.
 
 ### Accessing the Application
 
-- Main application: http://localhost:8080/
-- Renarde UI: http://localhost:8080/renarde
-- Dev UI: http://localhost:8080/q/dev/
+- Main application: http://localhost:8080/REV3RSO/
+- Admin panel: http://localhost:8080/REV3RSO/admin/
+
+### API Documentation
+
+RESTful API endpoints are available at: http://localhost:8080/REV3RSO/api/

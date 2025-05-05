@@ -5,7 +5,7 @@ import java.util.Date;
 
 import io.smallrye.mutiny.Uni;
 
-import io.quarkiverse.renarde.Controller;
+
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import util.RedirectUtil;
@@ -13,7 +13,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -25,7 +24,7 @@ import model.Lance;
 import service.NotificacaoService;
 
 @Path("/lances")
-public class LanceController extends Controller {
+public class LanceController extends BaseController {
     
     @Inject
     NotificacaoService notificacaoService;
@@ -155,14 +154,5 @@ public class LanceController extends Controller {
         return Uni.createFrom().item(Templates.historico(leilao));
     }
     
-    // Método auxiliar para obter o usuário logado
-    protected Usuario usuarioLogado() {
-        // Usando a API correta para obter valores da sessão no Renarde
-        Long usuarioId = request().session().getAttribute("usuarioId") != null ? 
-                      Long.valueOf(request().session().getAttribute("usuarioId").toString()) : null;
-        if (usuarioId == null) {
-            return null;
-        }
-        return Usuario.findById(usuarioId);
-    }
+    // Usando o método usuarioLogado() herdado de BaseController
 }

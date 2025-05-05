@@ -2,12 +2,9 @@ package controller;
 
 import java.util.Date;
 import java.util.List;
-
 import io.smallrye.mutiny.Uni;
 
-import io.quarkiverse.renarde.Controller;
-import io.quarkiverse.renarde.router.Router;
-import io.quarkiverse.renarde.util.FileUtils;
+
 import util.RedirectUtil;
 
 import io.quarkus.qute.CheckedTemplate;
@@ -19,16 +16,19 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import model.Usuario;
+import model.AreaAtuacao;
 import model.Avaliacao;
 import service.NotificacaoService;
-
-import static io.quarkiverse.renarde.util.Globals.request;
+import service.UsuarioService;
 
 @Path("/usuarios")
-public class UsuarioController extends Controller {
+public class UsuarioController extends BaseController {
     
     @Inject
     NotificacaoService notificacaoService;
+    
+    @Inject
+    UsuarioService usuarioService;
     
     @CheckedTemplate
     public static class Templates {
@@ -60,26 +60,26 @@ public class UsuarioController extends Controller {
             @FormParam("telefone") @NotBlank String telefone,
             @FormParam("email") @NotBlank String email,
             @FormParam("senha") @NotBlank String senha,
-            @FormParam("areaAtuacao") @NotBlank String areaAtuacao,
+            @FormParam("areasAtuacao") @NotBlank List<AreaAtuacao> areasAtuacao,
             @FormParam("tipoUsuario") @NotBlank String tipoUsuario) {
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, corrija os erros no formulário");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/cadastro");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
         }
         
         // Verificar se já existe usuário com o mesmo CNPJ ou email
         if (Usuario.encontrarPorCnpj(cnpj) != null) {
             flash("mensagem", "Já existe um usuário cadastrado com este CNPJ");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/cadastro");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
         }
         
         if (Usuario.encontrarPorEmail(email) != null) {
             flash("mensagem", "Já existe um usuário cadastrado com este email");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/cadastro");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
         }
         
         // Criar novo usuário
@@ -94,18 +94,18 @@ public class UsuarioController extends Controller {
         usuario.telefone = telefone;
         usuario.email = email;
         usuario.senha = senha; // Aqui deveria ter uma criptografia
-        usuario.areaAtuacao = areaAtuacao;
+        usuario.areasAtuacao = areasAtuacao;
         usuario.tipoUsuario = Usuario.TipoUsuario.valueOf(tipoUsuario);
         usuario.dataCadastro = new Date();
         
         usuario.persist();
         
         // Enviar email de boas vindas
-        notificacaoService.enviarEmailBoasVindas(usuario);
+        usuarioService.enviarEmailBoasVindas(usuario);
         
         flash("mensagem", "Cadastro realizado com sucesso! Por favor, faça login.");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/usuarios/login");
+        return RedirectUtil.redirectToPathAsObject("/usuarios/login");
     }
     
     // Página de login
@@ -124,28 +124,31 @@ public class UsuarioController extends Controller {
         if (validationFailed()) {
             flash("mensagem", "Email e senha são obrigatórios");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         Usuario usuario = Usuario.encontrarPorEmail(email);
         
-        // Verificar se o usuário existe e a senha está correta
-        if (usuario == null || !usuario.senha.equals(senha)) {
+        // Tenta realizar login via AutenticacaoService
+        Usuario usuarioAutenticado = autenticacaoService.login(email, senha);
+        
+        if (usuarioAutenticado == null) {
             flash("mensagem", "Email ou senha incorretos");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         // Verificar se o usuário está ativo
-        if (usuario.status != Usuario.Status.ATIVO) {
+        if (usuarioAutenticado.status != Usuario.Status.ATIVO) {
+            // Forçar logout caso o usuário tenha sido autenticado mas esteja inativo
+            autenticacaoService.logout();
+            
             flash("mensagem", "Sua conta está suspensa ou inativa");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
-        // Salvando o ID do usuário na sessão usando a API correta
-        request().session().setAttribute("usuarioId", usuario.id);
-        request().session().setAttribute("tipoUsuario", usuario.tipoUsuario.toString());
+        // O serviço de autenticação já salvou o ID do usuário e o tipo de usuário na sessão
         
         flash("mensagem", "Login realizado com sucesso!");
         flash("tipo", "success");
@@ -156,18 +159,19 @@ public class UsuarioController extends Controller {
         } else if (usuario.tipoUsuario == Usuario.TipoUsuario.COMPRADOR) {
             return RedirectUtil.redirect(LeilaoController.class);
         } else {
-            return RedirectUtil.redirectToPath("/leiloes/disponiveis");
+            return RedirectUtil.redirectToPathAsObject("/leiloes/disponiveis");
         }
     }
     
     // Logout
     @Path("/logout")
     public Uni<Object> logout() {
-        request().session().removeAttribute("usuarioId");
-        request().session().removeAttribute("tipoUsuario");
+        // Usando o serviço de autenticação para fazer logout
+        autenticacaoService.logout();
+        
         flash("mensagem", "Logout realizado com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/");
+        return RedirectUtil.redirectToPathAsObject("/");
     }
     
     // Visualizar perfil do usuário
@@ -223,19 +227,19 @@ public class UsuarioController extends Controller {
             @FormParam("uf") @NotBlank String uf,
             @FormParam("cep") @NotBlank String cep,
             @FormParam("telefone") @NotBlank String telefone,
-            @FormParam("areaAtuacao") @NotBlank String areaAtuacao) {
+            @FormParam("areaAtuacao") @NotBlank List<AreaAtuacao> areaAtuacao) {
         
         Usuario usuario = usuarioLogado();
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, corrija os erros no formulário");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/editar");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/editar");
         }
         
         // Atualizar dados do usuário
@@ -246,26 +250,17 @@ public class UsuarioController extends Controller {
         usuario.uf = uf;
         usuario.cep = cep;
         usuario.telefone = telefone;
-        usuario.areaAtuacao = areaAtuacao;
+        usuario.areasAtuacao = areaAtuacao;
         usuario.ultimaAtualizacao = new Date();
         
         usuario.persist();
         
         flash("mensagem", "Perfil atualizado com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/usuarios/perfil");
+        return RedirectUtil.redirectToPathAsObject("/usuarios/perfil");
     }
     
-    // Método auxiliar para obter o usuário logado
-    protected Usuario usuarioLogado() {
-        // Usando a API correta para obter valores da sessão no Renarde
-        Long usuarioId = request().session().getAttribute("usuarioId") != null ? 
-                      Long.valueOf(request().session().getAttribute("usuarioId").toString()) : null;
-        if (usuarioId == null) {
-            return null;
-        }
-        return Usuario.findById(usuarioId);
-    }
+    // Usando o método usuarioLogado() herdado de BaseController
     
     // Listar fornecedores (para compradores convidarem para leilões)
     @Path("/fornecedores")

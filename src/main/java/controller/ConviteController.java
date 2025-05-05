@@ -3,17 +3,15 @@ package controller;
 import java.util.Date;
 import java.util.List;
 
-import io.quarkiverse.renarde.Controller;
+
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -25,10 +23,11 @@ import service.NotificacaoService;
 import util.RedirectUtil;
 
 @Path("/convites")
-public class ConviteController extends Controller {
+public class ConviteController extends BaseController {
     
     @Inject
     NotificacaoService notificacaoService;
+    
     
     @CheckedTemplate
     public static class Templates {
@@ -39,33 +38,33 @@ public class ConviteController extends Controller {
     
     // Exibir formulário para selecionar fornecedores a serem convidados
     @Path("/selecionar/{leilaoId}")
-    public Uni<Object> selecionar(@PathParam("leilaoId") Long leilaoId) {
+    public Uni<TemplateInstance> selecionar(@PathParam("leilaoId") Long leilaoId) {
         Usuario usuario = usuarioLogado();
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToTemplate("/usuarios/login");
         }
         
         Leilao leilao = Leilao.findById(leilaoId);
         if (leilao == null) {
             flash("mensagem", "Leilão não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes");
+            return RedirectUtil.redirectToTemplate("/leiloes");
         }
         
         // Apenas o criador do leilão pode convidar fornecedores
         if (!usuario.equals(leilao.criador)) {
             flash("mensagem", "Você não tem permissão para convidar fornecedores");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToTemplate("/leiloes/" + leilaoId);
         }
         
         // Apenas leilões fechados podem receber convites
         if (leilao.tipoLeilao != Leilao.TipoLeilao.FECHADO) {
             flash("mensagem", "Apenas leilões fechados podem receber convites");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToTemplate("/leiloes/" + leilaoId);
         }
         
         // Obter lista de fornecedores ativos para convite
@@ -85,34 +84,34 @@ public class ConviteController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para realizar esta ação");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         Leilao leilao = Leilao.findById(leilaoId);
         if (leilao == null) {
             flash("mensagem", "Leilão não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes");
+            return RedirectUtil.redirectToPathAsObject("/leiloes");
         }
         
         // Apenas o criador do leilão pode convidar fornecedores
         if (!usuario.equals(leilao.criador)) {
             flash("mensagem", "Você não tem permissão para convidar fornecedores");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/leiloes/" + leilaoId);
         }
         
         // Apenas leilões fechados podem receber convites
         if (leilao.tipoLeilao != Leilao.TipoLeilao.FECHADO) {
             flash("mensagem", "Apenas leilões fechados podem receber convites");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/leiloes/" + leilaoId);
         }
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, selecione pelo menos um fornecedor");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/convites/selecionar/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/convites/selecionar/" + leilaoId);
         }
         
         int convitesEnviados = 0;
@@ -142,7 +141,7 @@ public class ConviteController extends Controller {
         
         flash("mensagem", convitesEnviados + " convites enviados com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/convites/listar/" + leilaoId);
+        return RedirectUtil.redirectToPathAsObject("/convites/listar/" + leilaoId);
     }
     
     // Listar todos os convites de um leilão
@@ -152,21 +151,21 @@ public class ConviteController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         Leilao leilao = Leilao.findById(leilaoId);
         if (leilao == null) {
             flash("mensagem", "Leilão não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes");
+            return RedirectUtil.redirectToPathAsObject("/leiloes");
         }
         
         // Apenas o criador do leilão pode ver a lista de convites
         if (!usuario.equals(leilao.criador)) {
             flash("mensagem", "Você não tem permissão para acessar esta página");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/leiloes/" + leilaoId);
         }
         
         List<Convite> convites = Convite.listarPorLeilao(leilao);
@@ -180,13 +179,13 @@ public class ConviteController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         if (usuario.tipoUsuario != Usuario.TipoUsuario.FORNECEDOR) {
             flash("mensagem", "Apenas fornecedores podem receber convites");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/");
+            return RedirectUtil.redirectToPathAsObject("/");
         }
         
         List<Convite> convites = Convite.listarPorFornecedor(usuario);
@@ -201,21 +200,21 @@ public class ConviteController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para realizar esta ação");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         Convite convite = Convite.findById(conviteId);
         if (convite == null) {
             flash("mensagem", "Convite não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/convites/recebidos");
+            return RedirectUtil.redirectToPathAsObject("/convites/recebidos");
         }
         
         // Verificar se o convite pertence ao usuário logado
         if (!usuario.equals(convite.fornecedor)) {
             flash("mensagem", "Este convite não pertence a você");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/convites/recebidos");
+            return RedirectUtil.redirectToPathAsObject("/convites/recebidos");
         }
         
         // Verificar se o convite está pendente
@@ -223,7 +222,7 @@ public class ConviteController extends Controller {
             flash("mensagem", "Este convite já foi " + 
                  (convite.status == Convite.Status.ACEITO ? "aceito" : "recusado"));
             flash("tipo", "warning");
-            return RedirectUtil.redirectToPath("/convites/recebidos");
+            return RedirectUtil.redirectToPathAsObject("/convites/recebidos");
         }
         
         // Atualizar status do convite
@@ -236,7 +235,7 @@ public class ConviteController extends Controller {
         
         flash("mensagem", "Convite aceito com sucesso! Você pode participar do leilão agora.");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/leiloes/" + convite.leilao.id);
+        return RedirectUtil.redirectToPathAsObject("/leiloes/" + convite.leilao.id);
     }
     
     // Recusar um convite
@@ -247,21 +246,21 @@ public class ConviteController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para realizar esta ação");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         Convite convite = Convite.findById(conviteId);
         if (convite == null) {
             flash("mensagem", "Convite não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/convites/recebidos");
+            return RedirectUtil.redirectToPathAsObject("/convites/recebidos");
         }
         
         // Verificar se o convite pertence ao usuário logado
         if (!usuario.equals(convite.fornecedor)) {
             flash("mensagem", "Este convite não pertence a você");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/convites/recebidos");
+            return RedirectUtil.redirectToPathAsObject("/convites/recebidos");
         }
         
         // Verificar se o convite está pendente
@@ -269,7 +268,7 @@ public class ConviteController extends Controller {
             flash("mensagem", "Este convite já foi " + 
                  (convite.status == Convite.Status.ACEITO ? "aceito" : "recusado"));
             flash("tipo", "warning");
-            return RedirectUtil.redirectToPath("/convites/recebidos");
+            return RedirectUtil.redirectToPathAsObject("/convites/recebidos");
         }
         
         // Atualizar status do convite
@@ -282,17 +281,8 @@ public class ConviteController extends Controller {
         
         flash("mensagem", "Convite recusado com sucesso.");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/convites/recebidos");
+        return RedirectUtil.redirectToPathAsObject("/convites/recebidos");
     }
     
-    // Método auxiliar para obter o usuário logado
-    protected Usuario usuarioLogado() {
-        // Usando a API correta para obter valores da sessão no Renarde
-        Long usuarioId = request().session().getAttribute("usuarioId") != null ? 
-                      Long.valueOf(request().session().getAttribute("usuarioId").toString()) : null;
-        if (usuarioId == null) {
-            return null;
-        }
-        return Usuario.findById(usuarioId);
-    }
+    // Usando o método usuarioLogado() herdado de BaseController
 }

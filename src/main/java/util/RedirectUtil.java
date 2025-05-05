@@ -70,6 +70,17 @@ public class RedirectUtil {
         return Uni.createFrom().item((Object) ("redirect:" + path));
     }
     
+    /**
+     * Retorna um Uni<TemplateInstance> para redirecionamento.
+     * Use este método em controllers que precisam retornar Uni<TemplateInstance>.
+     * 
+     * @param path Caminho para redirecionamento
+     * @return Uni<TemplateInstance> para redirecionamento
+     */
+    public static Uni<TemplateInstance> redirectToTemplate(String path) {
+        return Uni.createFrom().item(redirectTemplate(path));
+    }
+    
     // Removi o redirectToController pois o Controller.redirect não é acessível
     
     /**

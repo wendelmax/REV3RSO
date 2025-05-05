@@ -281,7 +281,7 @@ public class UsuarioService {
      * 
      * @param usuario Usuário recém-cadastrado
      */
-    private void enviarEmailBoasVindas(Usuario usuario) {
+    public void enviarEmailBoasVindas(Usuario usuario) {
         try {
             String assunto = "Bem-vindo ao Sistema de Leilões";
             
@@ -306,13 +306,13 @@ public class UsuarioService {
         } catch (Exception e) {
             LOGGER.severe("Erro ao enviar email de boas-vindas: " + e.getMessage());
         }
-    }    
+    }
     /**
      * Envia email de confirmação de alteração de senha.
      * 
      * @param usuario Usuário que alterou a senha
      */
-    private void enviarEmailAlteracaoSenha(Usuario usuario) {
+    public void enviarEmailAlteracaoSenha(Usuario usuario) {
         try {
             String assunto = "Alteração de senha realizada";
             
@@ -405,7 +405,7 @@ public class UsuarioService {
      * @param usuario Usuário desativado
      * @param motivo Motivo da desativação
      */
-    private void enviarEmailDesativacao(Usuario usuario, String motivo) {
+    public void enviarEmailDesativacao(Usuario usuario, String motivo) {
         try {
             String assunto = "Sua conta foi desativada";
             
@@ -437,7 +437,7 @@ public class UsuarioService {
      * 
      * @param usuario Usuário reativado
      */
-    private void enviarEmailReativacao(Usuario usuario) {
+    public void enviarEmailReativacao(Usuario usuario) {
         try {
             String assunto = "Sua conta foi reativada";
             

@@ -1,22 +1,17 @@
 package controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.quarkiverse.renarde.Controller;
-import io.quarkiverse.renarde.router.Router;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import util.RedirectUtil;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -30,7 +25,7 @@ import model.Usuario;
 
 @Path("/admin")
 @RolesAllowed("ADMINISTRADOR")
-public class AdminController extends Controller {
+public class AdminController extends BaseController {
     
     @CheckedTemplate
     public static class Templates {
@@ -72,7 +67,7 @@ public class AdminController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
             flash("tipo", "danger");
-            return redirect("/admin/usuarios");
+            return RedirectUtil.redirectTemplate("/admin/usuarios");
         }
         
         List<AreaAtuacao> areasDisponiveis = AreaAtuacao.listAll();
@@ -229,8 +224,8 @@ public class AdminController extends Controller {
     @Transactional
     public Uni<Object> salvarArea(
             @FormParam("id") Long id,
-            @FormParam("nome") @NotBlank String nome,
-            @FormParam("descricao") String descricao) {
+            @FormParam("descricao") @NotBlank String descricao,
+            @FormParam("detalhes") String detalhes) {
         
         verificarAdministrador();
         
@@ -252,8 +247,8 @@ public class AdminController extends Controller {
             area = new AreaAtuacao();
         }
         
-        area.nome = nome;
         area.descricao = descricao;
+        area.detalhes = detalhes;
         area.persist();
         
         flash("mensagem", "Área salva com sucesso!");
@@ -275,7 +270,7 @@ public class AdminController extends Controller {
         }
         
         // Verificar se a área está em uso
-        if (area.usuarios != null && !area.usuarios.isEmpty()) {
+        if (area.fornecedores != null && !area.fornecedores.isEmpty()) {
             flash("mensagem", "Essa área está sendo utilizada por usuários e não pode ser excluída");
             flash("tipo", "danger");
             return RedirectUtil.redirectToPathAsObject("/admin/areas");
@@ -324,7 +319,6 @@ public class AdminController extends Controller {
             forma = new FormaPagamento();
         }
         
-        forma.nome = nome;
         forma.descricao = descricao;
         forma.persist();
         
@@ -370,14 +364,4 @@ public class AdminController extends Controller {
         }
     }
     
-    // Mu00e9todo auxiliar para obter o usuu00e1rio logado
-    protected Usuario usuarioLogado() {
-        // Usando a API correta para obter valores da sessu00e3o no Renarde
-        Long usuarioId = request().session().getAttribute("usuarioId") != null ? 
-                      Long.valueOf(request().session().getAttribute("usuarioId").toString()) : null;
-        if (usuarioId == null) {
-            return null;
-        }
-        return Usuario.findById(usuarioId);
-    }
 }

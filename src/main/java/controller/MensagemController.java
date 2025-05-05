@@ -77,7 +77,7 @@ public class MensagemController extends BaseController {
     @Path("/perguntar")
     @Transactional
     @RequiresAuth
-    public Uni<String> enviarPergunta(
+    public Uni<Object> enviarPergunta(
             @FormParam("leilaoId") @NotNull Long leilaoId,
             @FormParam("conteudo") @NotBlank String conteudo) {
         
@@ -86,18 +86,18 @@ public class MensagemController extends BaseController {
         Leilao leilao = Leilao.findById(leilaoId);
         if (leilao == null) {
             flashErro("Leilão não encontrado");
-            return RedirectUtil.redirectToPath("/leiloes");
+            return RedirectUtil.redirectToPathAsObject("/leiloes");
         }
         
         if (validationFailed()) {
             flashErro("Por favor, preencha o conteúdo da pergunta");
-            return RedirectUtil.redirectToPath("/mensagens/leilao/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/mensagens/leilao/" + leilaoId);
         }
         
         // Verifica permissões usando o serviço
         if (!mensagemService.podePergunta(usuario, leilao)) {
             flashErro("Você não tem permissão para enviar perguntas neste Leilão");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/leiloes/" + leilaoId);
         }
         
         // Delega a criação da mensagem para o serviço
@@ -108,7 +108,7 @@ public class MensagemController extends BaseController {
             flashErro("Erro ao enviar pergunta: " + e.getMessage());
         }
         
-        return RedirectUtil.redirectToPath("/mensagens/leilao/" + leilaoId);
+        return RedirectUtil.redirectToPathAsObject("/mensagens/leilao/" + leilaoId);
     }
     
     /**
@@ -132,7 +132,7 @@ public class MensagemController extends BaseController {
         // Verifica permissões usando o serviço
         if (!mensagemService.podeResponder(usuario, mensagem)) {
             flashErro("Você não tem permissão para responder esta mensagem");
-            return RedirectUtil.redirectToPath("/mensagens/leilao/" + mensagem.leilao.id);
+            return RedirectUtil.redirectToPathAsObject("/mensagens/leilao/" + mensagem.leilao.id);
         }
         
         return Uni.createFrom().item(Templates.responder(mensagem));
@@ -149,7 +149,7 @@ public class MensagemController extends BaseController {
     @Path("/responder")
     @Transactional
     @RequiresAuth
-    public Uni<String> enviarResposta(
+    public Uni<Object> enviarResposta(
             @FormParam("mensagemId") @NotNull Long mensagemId,
             @FormParam("conteudo") @NotBlank String conteudo) {
         
@@ -158,18 +158,18 @@ public class MensagemController extends BaseController {
         Mensagem pergunta = mensagemService.buscarPorId(mensagemId);
         if (pergunta == null) {
             flashErro("Mensagem não encontrada");
-            return RedirectUtil.redirectToPath("/leiloes");
+            return RedirectUtil.redirectToPathAsObject("/leiloes");
         }
         
         if (validationFailed()) {
             flashErro("Por favor, preencha o conteúdo da resposta");
-            return RedirectUtil.redirectToPath("/mensagens/responder/" + mensagemId);
+            return RedirectUtil.redirectToPathAsObject("/mensagens/responder/" + mensagemId);
         }
         
         // Verifica permissões usando o serviço
         if (!mensagemService.podeResponder(usuario, pergunta)) {
             flashErro("Você não tem permissão para responder esta mensagem");
-            return RedirectUtil.redirectToPath("/mensagens/leilao/" + pergunta.leilao.id);
+            return RedirectUtil.redirectToPathAsObject("/mensagens/leilao/" + pergunta.leilao.id);
         }
         
         // Delega a criação da resposta para o serviço
@@ -180,6 +180,6 @@ public class MensagemController extends BaseController {
             flashErro("Erro ao enviar resposta: " + e.getMessage());
         }
         
-        return RedirectUtil.redirectToPath("/mensagens/leilao/" + pergunta.leilao.id);
+        return RedirectUtil.redirectToPathAsObject("/mensagens/leilao/" + pergunta.leilao.id);
     }
 }

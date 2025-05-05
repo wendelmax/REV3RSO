@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
-import io.quarkiverse.renarde.Controller;
+
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import util.RedirectUtil;
@@ -26,11 +26,10 @@ import model.Usuario;
 import model.Lance;
 import model.FormaPagamento;
 import model.Convite;
-import model.Mensagem;
 import service.NotificacaoService;
 
 @Path("/leiloes")
-public class LeilaoController extends Controller {
+public class LeilaoController extends BaseController {
     
     @Inject
     NotificacaoService notificacaoService;
@@ -256,7 +255,7 @@ public class LeilaoController extends Controller {
                         convite.persist();
                         
                         // Enviar email de convite
-                        notificacaoService.enviarConviteLeilao(convite);
+                        notificacaoService.notificarConvite(convite);
                     }
                 }
             }
@@ -283,7 +282,7 @@ public class LeilaoController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectTemplate("/usuarios/login");
         }
         
         List<Leilao> leiloes = new ArrayList<>();
@@ -302,7 +301,7 @@ public class LeilaoController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectTemplate("/usuarios/login");
         }
         
         List<Leilao> leiloes = new ArrayList<>();
@@ -366,12 +365,5 @@ public class LeilaoController extends Controller {
         meusLeiloes();
     }
     
-    // Método auxiliar para obter o usuário logado
-    protected Usuario usuarioLogado() {
-        Long usuarioId = session().get("usuarioId", Long.class);
-        if (usuarioId == null) {
-            return null;
-        }
-        return Usuario.findById(usuarioId);
-    }
+    // Usando o método usuarioLogado() herdado de BaseController
 }

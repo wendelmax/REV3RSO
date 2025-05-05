@@ -1,8 +1,6 @@
 package controller;
 
-import java.util.Date;
 import java.util.List;
-
 import annotation.Pageable;
 import model.Avaliacao;
 import model.Leilao;
@@ -11,7 +9,6 @@ import model.Lance;
 import util.PaginationUtil;
 import util.RedirectUtil;
 
-import io.quarkiverse.renarde.Controller;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.mutiny.Uni;
@@ -228,15 +225,15 @@ public class AvaliacaoController extends BaseController {
      * @param lista Lista completa de avaliações
      * @return Resultado paginado
      */
-    private <T> PaginationUtil.PagedResult<T> applyPagination(List<T> lista) {
+    protected <T> PaginationUtil.PagedResult<T> applyPagination(List<T> lista) {
         // Valores padrão para paginação
         int page = 0;
         int size = 10;
         
         // Em uma implementação real, obteríamos os parâmetros da requisição
         // No Renarde, o método getRequest() está disponível na classe Controller
-        String pageParam = request().getParameter("page");
-        String sizeParam = request().getParameter("size");
+        String pageParam = getRequestParameter("page");
+        String sizeParam = getRequestParameter("size");
         
         if (pageParam != null && !pageParam.isEmpty()) {
             try {
@@ -258,16 +255,7 @@ public class AvaliacaoController extends BaseController {
         return PaginationUtil.PagedResult.of(lista, page, size, 5);  // 5 é o número máximo de links de página
     }
     
-    /**
-     * Obtém um parâmetro da requisição atual
-     * 
-     * @param name Nome do parâmetro
-     * @return Valor do parâmetro ou null se não existir
-     */
-    private String getRequestParameter(String name) {
-        return request().getParameter(name);
-    }
-    
+
     // Visualizar avaliações recebidas pelo usuário logado
     @Path("/recebidas")
     @Pageable
@@ -284,17 +272,5 @@ public class AvaliacaoController extends BaseController {
         
         // Quarkus Qute espera apenas um argumento se o template for definido assim
         return Templates.recebidas(avaliacoes.getContent());
-    }
-    
-    // Implementação do método usuarioLogado já está no BaseController, não precisamos reimplementar
-    // O método a seguir foi mantido apenas como documentação do comportamento
-    /* 
-    @Override
-    protected Usuario usuarioLogado() {
-        Long usuarioId = session().get("usuarioId", Long.class);
-        if (usuarioId == null) {
-            return null;
-        }
-        return Usuario.findById(usuarioId);
     }
 }

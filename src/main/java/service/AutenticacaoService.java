@@ -37,8 +37,9 @@ public class AutenticacaoService {
                 // Registra o login
                 LOGGER.info("Usuário logado com sucesso: " + email);
                 
-                // Armazena o ID do usuário na sessão
+                // Armazena o ID do usuário e o tipo na sessão
                 request.getSession().setAttribute("usuarioId", usuario.id);
+                request.getSession().setAttribute("tipoUsuario", usuario.tipoUsuario.toString());
                 
                 return usuario;
             }

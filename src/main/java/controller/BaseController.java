@@ -44,7 +44,18 @@ public abstract class BaseController extends Controller {
      * @return true se houver um usuário logado, false caso contrário
      */
     protected boolean isUsuarioLogado() {
-        return session().get("usuarioId", Long.class) != null;
+        return autenticacaoService.getUsuarioLogado() != null;
+    }
+    
+    /**
+     * Obtém um parâmetro da requisição atual
+     * 
+     * @param name Nome do parâmetro
+     * @return Valor do parâmetro ou null se não existir
+     */
+    protected String getRequestParameter(String name) {
+        io.vertx.ext.web.RoutingContext ctx = io.quarkus.arc.Arc.container().instance(io.vertx.ext.web.RoutingContext.class).get();
+        return ctx.request().getParam(name);
     }
     
     /**

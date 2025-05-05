@@ -179,4 +179,113 @@ public class NotificacaoService {
             return 0;
         }
     }
+    
+    /**
+     * Notifica o fornecedor sobre um convite para participar de um leilão.
+     * 
+     * @param convite Convite enviado ao fornecedor
+     */
+    @Transactional
+    public void notificarConvite(model.Convite convite) {
+        try {
+            // O destinatário da notificação é o fornecedor convidado
+            Usuario destinatario = convite.fornecedor;
+            
+            String titulo = "Convite para participar do leilão: " + convite.leilao.titulo;
+            
+            criarNotificacao(
+                destinatario,
+                titulo,
+                "Você foi convidado por " + convite.leilao.criador.nomeFantasia + 
+                " para participar do leilão: " + convite.leilao.titulo,
+                "/convites/recebidos"
+            );
+            
+            LOGGER.info("Notificação de convite enviada para " + destinatario.nomeFantasia);
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao enviar notificação de convite: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Notifica o criador do leilão que um fornecedor aceitou o convite para participar.
+     * 
+     * @param convite Convite aceito pelo fornecedor
+     */
+    @Transactional
+    public void notificarConviteAceito(model.Convite convite) {
+        try {
+            // O destinatário da notificação é o criador do leilão
+            Usuario destinatario = convite.leilao.criador;
+            
+            String titulo = "Convite aceito para o leilão: " + convite.leilao.titulo;
+            
+            criarNotificacao(
+                destinatario,
+                titulo,
+                "O fornecedor " + convite.fornecedor.nomeFantasia + 
+                " aceitou seu convite para participar do leilão: " + convite.leilao.titulo,
+                "/leiloes/" + convite.leilao.id
+            );
+            
+            LOGGER.info("Notificação de convite aceito enviada para " + destinatario.nomeFantasia);
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao enviar notificação de convite aceito: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Notifica o criador do leilão que um fornecedor recusou o convite para participar.
+     * 
+     * @param convite Convite recusado pelo fornecedor
+     */
+    @Transactional
+    public void notificarConviteRecusado(model.Convite convite) {
+        try {
+            // O destinatário da notificação é o criador do leilão
+            Usuario destinatario = convite.leilao.criador;
+            
+            String titulo = "Convite recusado para o leilão: " + convite.leilao.titulo;
+            
+            criarNotificacao(
+                destinatario,
+                titulo,
+                "O fornecedor " + convite.fornecedor.nomeFantasia + 
+                " recusou seu convite para participar do leilão: " + convite.leilao.titulo,
+                "/leiloes/" + convite.leilao.id
+            );
+            
+            LOGGER.info("Notificação de convite recusado enviada para " + destinatario.nomeFantasia);
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao enviar notificação de convite recusado: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Notifica o criador do leilão sobre um novo lance.
+     * 
+     * @param lance Lance dado por um fornecedor
+     */
+    @Transactional
+    public void notificarNovoLance(model.Lance lance) {
+        try {
+            // O destinatário da notificação é o criador do leilão
+            Usuario destinatario = lance.leilao.criador;
+            
+            String titulo = "Novo lance no leilão: " + lance.leilao.titulo;
+            
+            criarNotificacao(
+                destinatario,
+                titulo,
+                "O fornecedor " + lance.fornecedor.nomeFantasia + 
+                " deu um novo lance no valor de " + lance.valor + 
+                " no seu leilão: " + lance.leilao.titulo,
+                "/leiloes/" + lance.leilao.id
+            );
+            
+            LOGGER.info("Notificação de novo lance enviada para " + destinatario.nomeFantasia);
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao enviar notificação de novo lance: " + e.getMessage());
+        }
+    }
 }

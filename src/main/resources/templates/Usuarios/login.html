@@ -1,0 +1,32 @@
+{#include main}
+{#title}Login{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Login</h2>
+                    <form action="/usuarios/autenticar" method="post">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="senha" name="senha" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Entrar</button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="/usuarios/cadastro">Criar uma nova conta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{/include}

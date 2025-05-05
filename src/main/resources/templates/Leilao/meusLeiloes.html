@@ -1,0 +1,144 @@
+{#include main}
+{#title}Meus Leilu00f5es{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Meus Leilu00f5es</h1>
+            
+            <div class="mb-4">
+                <a href="/leiloes/criar" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i> Novo Leilu00e3o
+                </a>
+            </div>
+            
+            {#if leiloes.isEmpty()}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Vocu00ea ainda nu00e3o criou nenhum leilu00e3o.
+                </div>
+            {#else}
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs">
+                            <li class="nav-item">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#leiloes-ativos">Ativos</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#leiloes-concluidos">Concluu00eddos</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#leiloes-cancelados">Cancelados</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="leiloes-ativos">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Tu00edtulo</th>
+                                                <th>Categoria</th>
+                                                <th>Valor Ref.</th>
+                                                <th>Data Fechamento</th>
+                                                <th>Lances</th>
+                                                <th>Au00e7u00f5es</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {#for leilao in leiloes}
+                                                {#if leilao.status == 'ABERTO'}
+                                                <tr>
+                                                    <td>{leilao.titulo}</td>
+                                                    <td>{leilao.categoria}</td>
+                                                    <td>R$ {leilao.valorReferencia}</td>
+                                                    <td>{#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</td>
+                                                    <td>{leilao.lances.size()}</td>
+                                                    <td>
+                                                        <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver</a>
+                                                        <a href="/leiloes/editar/{leilao.id}" class="btn btn-sm btn-secondary">Editar</a>
+                                                    </td>
+                                                </tr>
+                                                {/if}
+                                            {/for}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="leiloes-concluidos">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Tu00edtulo</th>
+                                                <th>Categoria</th>
+                                                <th>Valor Ref.</th>
+                                                <th>Melhor Lance</th>
+                                                <th>Fornecedor</th>
+                                                <th>Data Conclusu00e3o</th>
+                                                <th>Au00e7u00f5es</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {#for leilao in leiloes}
+                                                {#if leilao.status == 'CONCLUIDO'}
+                                                <tr>
+                                                    <td>{leilao.titulo}</td>
+                                                    <td>{leilao.categoria}</td>
+                                                    <td>R$ {leilao.valorReferencia}</td>
+                                                    <td>R$ {leilao.melhorLance.valor}</td>
+                                                    <td>{leilao.melhorLance.fornecedor.nomeFantasia}</td>
+                                                    <td>{#format leilao.dataConclusao pattern="dd/MM/yyyy HH:mm" /}</td>
+                                                    <td>
+                                                        <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver</a>
+                                                    </td>
+                                                </tr>
+                                                {/if}
+                                            {/for}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="leiloes-cancelados">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Tu00edtulo</th>
+                                                <th>Categoria</th>
+                                                <th>Valor Ref.</th>
+                                                <th>Data Cancelamento</th>
+                                                <th>Motivo</th>
+                                                <th>Au00e7u00f5es</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {#for leilao in leiloes}
+                                                {#if leilao.status == 'CANCELADO'}
+                                                <tr>
+                                                    <td>{leilao.titulo}</td>
+                                                    <td>{leilao.categoria}</td>
+                                                    <td>R$ {leilao.valorReferencia}</td>
+                                                    <td>{#format leilao.dataCancelamento pattern="dd/MM/yyyy HH:mm" /}</td>
+                                                    <td>{leilao.motivoCancelamento}</td>
+                                                    <td>
+                                                        <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver</a>
+                                                    </td>
+                                                </tr>
+                                                {/if}
+                                            {/for}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{/include}

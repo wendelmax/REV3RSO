@@ -1,0 +1,53 @@
+{#include main}
+{#title}Perfil{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Perfil do Usuário</h3>
+                </div>
+                <div class="card-body">
+                    <h4>{usuario.nomeFantasia}</h4>
+                    <p><strong>E-mail:</strong> {usuario.email}</p>
+                    <p><strong>Tipo:</strong> {usuario.tipoUsuario}</p>
+                    <!-- Mais informações do perfil aqui -->
+                    
+                    <div class="mt-3">
+                        <a href="/usuarios/editar" class="btn btn-primary">Editar Perfil</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Avaliações -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Avaliações</h3>
+                </div>
+                <div class="card-body">
+                    {#if avaliacoes.isEmpty()}
+                        <p class="text-muted">Nenhuma avaliação recebida ainda.</p>
+                    {#else}
+                        <div class="list-group">
+                            {#for avaliacao in avaliacoes}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <h5>{avaliacao.avaliador.nomeFantasia}</h5>
+                                    <div>
+                                        <!-- Exibir estrelas conforme nota -->
+                                        {avaliacao.nota} / 5
+                                    </div>
+                                </div>
+                                <p>{avaliacao.comentario}</p>
+                            </div>
+                            {/for}
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{/include}

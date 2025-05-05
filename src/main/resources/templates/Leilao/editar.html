@@ -1,0 +1,76 @@
+{#include main}
+{#title}Editar Leilu00e3o{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h1 class="mb-4">Editar Leilu00e3o</h1>
+            
+            <form action="/leiloes/atualizar/{leilao.id}" method="post">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Informau00e7u00f5es Gerais</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Tu00edtulo do Leilu00e3o</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" value="{leilao.titulo}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descriu00e7u00e3o Detalhada</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" required>{leilao.descricao}</textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="categoria" class="form-label">Categoria</label>
+                                <select class="form-select" id="categoria" name="categoria" required>
+                                    <option value="PRODUTOS" {#if leilao.categoria == 'PRODUTOS'}selected{/if}>Produtos</option>
+                                    <option value="SERVICOS" {#if leilao.categoria == 'SERVICOS'}selected{/if}>Serviu00e7os</option>
+                                    <option value="OBRAS" {#if leilao.categoria == 'OBRAS'}selected{/if}>Obras</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dataFechamento" class="form-label">Data de Fechamento</label>
+                                <input type="datetime-local" class="form-control" id="dataFechamento" name="dataFechamento" value="{#format leilao.dataFechamento pattern='yyyy-MM-dd\'T\'HH:mm' /}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Valores e Requisitos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="valorReferencia" class="form-label">Valor de Referu00eancia (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="valorReferencia" name="valorReferencia" value="{leilao.valorReferencia}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formaPagamento" class="form-label">Forma de Pagamento</label>
+                                <select class="form-select" id="formaPagamento" name="formaPagamentoId" required>
+                                    <!-- Opu00e7u00f5es de pagamento aqui -->
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="requisitos" class="form-label">Requisitos e Condiu00e7u00f5es</label>
+                            <textarea class="form-control" id="requisitos" name="requisitos" rows="3">{leilao.requisitos}</textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-5">
+                    <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-secondary me-md-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Salvar Alterau00e7u00f5es</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{/include}

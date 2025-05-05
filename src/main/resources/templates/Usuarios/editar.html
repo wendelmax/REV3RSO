@@ -1,0 +1,27 @@
+{#include main}
+{#title}Editar Perfil{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1>Editar Perfil</h1>
+            <form action="/usuarios/atualizar" method="post">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome</label>
+                    <input type="text" class="form-control" id="nome" name="nome" value="{usuario.nomeFantasia}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{usuario.email}" required>
+                </div>
+                <!-- Outros campos do formulário -->
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    <a href="/usuarios/perfil" class="btn btn-secondary ms-2">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{/include}

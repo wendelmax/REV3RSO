@@ -1,0 +1,49 @@
+{#include main}
+{#title}Leilões{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Leilões</h1>
+            
+            <div class="mb-4">
+                <a href="/leiloes/criar" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i> Novo Leilão
+                </a>
+            </div>
+            
+            {#if leiloes.isEmpty()}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Não há leilões disponíveis no momento.
+                </div>
+            {#else}
+                <div class="row">
+                    {#for leilao in leiloes}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="card-title">{leilao.titulo}</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">{leilao.descricao}</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-primary">{leilao.status}</span>
+                                    <span class="badge bg-secondary">{leilao.categoria}</span>
+                                </div>
+                                <p><strong>Valor de referência:</strong> R$ {leilao.valorReferencia}</p>
+                                <p><strong>Data de fechamento:</strong> {#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-primary">Ver detalhes</a>
+                            </div>
+                        </div>
+                    </div>
+                    {/for}
+                </div>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{/include}

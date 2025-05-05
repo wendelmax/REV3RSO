@@ -27,7 +27,7 @@ import model.Usuario;
 @RolesAllowed("ADMINISTRADOR")
 public class AdminController extends BaseController {
     
-    @CheckedTemplate
+    @CheckedTemplate(basePath = "Admin")
     public static class Templates {
         public static native TemplateInstance dashboard(Map<String, Object> stats);
         public static native TemplateInstance usuarios(List<Usuario> usuarios);

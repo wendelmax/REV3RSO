@@ -32,7 +32,7 @@ public class MensagemController extends BaseController {
     @Inject
     MensagemService mensagemService;
     
-    @CheckedTemplate
+    @CheckedTemplate(basePath = "Mensagem")
     public static class Templates {
         public static native TemplateInstance listar(Leilao leilao, List<Mensagem> mensagens);
         public static native TemplateInstance responder(Mensagem mensagem);

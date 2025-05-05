@@ -1,0 +1,80 @@
+{#include main}
+{#title}Criar Leilão{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h1 class="mb-4">Criar Novo Leilão</h1>
+            
+            <form action="/leiloes/salvar" method="post">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Informações Gerais</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label">Título do Leilão</label>
+                            <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição Detalhada</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="categoria" class="form-label">Categoria</label>
+                                <select class="form-select" id="categoria" name="categoria" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="PRODUTOS">Produtos</option>
+                                    <option value="SERVICOS">Serviços</option>
+                                    <option value="OBRAS">Obras</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dataFechamento" class="form-label">Data de Fechamento</label>
+                                <input type="datetime-local" class="form-control" id="dataFechamento" name="dataFechamento" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Valores e Requisitos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="valorReferencia" class="form-label">Valor de Referência (R$)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="valorReferencia" name="valorReferencia" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="formaPagamento" class="form-label">Forma de Pagamento</label>
+                                <select class="form-select" id="formaPagamento" name="formaPagamentoId" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="1">À vista</option>
+                                    <option value="2">30 dias</option>
+                                    <option value="3">60 dias</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="requisitos" class="form-label">Requisitos e Condições</label>
+                            <textarea class="form-control" id="requisitos" name="requisitos" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-5">
+                    <a href="/leiloes" class="btn btn-secondary me-md-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Criar Leilão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{/include}

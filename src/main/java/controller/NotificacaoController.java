@@ -29,7 +29,7 @@ public class NotificacaoController extends BaseController {
     @Inject
     NotificacaoService notificacaoService;
     
-    @CheckedTemplate
+    @CheckedTemplate(basePath = "Notificacao")
     public static class Templates {
         public static native TemplateInstance listar(List<Notificacao> notificacoes, long naoLidas);
     }

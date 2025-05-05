@@ -25,7 +25,7 @@ import jakarta.ws.rs.PathParam;
 @Path("/avaliacoes")
 public class AvaliacaoController extends BaseController {
     
-    @CheckedTemplate
+    @CheckedTemplate(basePath = "Avaliacao")
     public static class Templates {
         public static native TemplateInstance avaliar(Leilao leilao, Usuario avaliado);
         public static native TemplateInstance minhas(List<Avaliacao> avaliacoes);

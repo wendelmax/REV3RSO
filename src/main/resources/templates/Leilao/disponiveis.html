@@ -1,0 +1,52 @@
+{#include main}
+{#title}Leilu00f5es Disponu00edveis{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Leilu00f5es Disponu00edveis</h1>
+            
+            {#if leiloes.isEmpty()}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Nu00e3o hu00e1 leilu00f5es disponu00edveis no momento.
+                </div>
+            {#else}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Tu00edtulo</th>
+                                        <th>Comprador</th>
+                                        <th>Categoria</th>
+                                        <th>Valor Ref.</th>
+                                        <th>Data Fechamento</th>
+                                        <th>Au00e7u00f5es</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {#for leilao in leiloes}
+                                    <tr>
+                                        <td>{leilao.titulo}</td>
+                                        <td>{leilao.comprador.nomeFantasia}</td>
+                                        <td>{leilao.categoria}</td>
+                                        <td>R$ {leilao.valorReferencia}</td>
+                                        <td>{#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</td>
+                                        <td>
+                                            <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver Detalhes</a>
+                                        </td>
+                                    </tr>
+                                    {/for}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{/include}

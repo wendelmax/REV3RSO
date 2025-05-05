@@ -1,0 +1,178 @@
+{#include main}
+{#title}{leilao.titulo}{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{leilao.titulo}</h1>
+            <div class="d-flex align-items-center mb-3">
+                <span class="badge bg-primary me-2">{leilao.status}</span>
+                <span class="badge bg-secondary me-2">{leilao.categoria}</span>
+                <span class="text-muted">Criado em: {#format leilao.dataCriacao pattern="dd/MM/yyyy HH:mm" /}</span>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Descrição</h4>
+                </div>
+                <div class="card-body">
+                    <p>{leilao.descricao}</p>
+                    
+                    <hr>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Valor de Referência</h5>
+                            <p class="lead">R$ {leilao.valorReferencia}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Data de Fechamento</h5>
+                            <p class="lead">{#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</p>
+                        </div>
+                    </div>
+                    
+                    <h5>Requisitos e Condições</h5>
+                    <p>{leilao.requisitos}</p>
+                </div>
+            </div>
+            
+            <!-- Lances -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Lances</h4>
+                    {#if podeParticiplar}
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDarLance">
+                        Dar Lance
+                    </button>
+                    {/if}
+                </div>
+                <div class="card-body">
+                    {#if lances.isEmpty()}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Nenhum lance foi dado ainda.
+                    </div>
+                    {#else}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Fornecedor</th>
+                                    <th>Valor</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {#for lance in lances}
+                                <tr>
+                                    <td>{lance.fornecedor.nomeFantasia}</td>
+                                    <td>R$ {lance.valor}</td>
+                                    <td>{#format lance.dataLance pattern="dd/MM/yyyy HH:mm" /}</td>
+                                </tr>
+                                {/for}
+                            </tbody>
+                        </table>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Informações do Comprador -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Comprador</h4>
+                </div>
+                <div class="card-body">
+                    <h5>{leilao.comprador.nomeFantasia}</h5>
+                    <p><strong>Email:</strong> {leilao.comprador.email}</p>
+                    <!-- Outras informações do comprador -->
+                </div>
+            </div>
+            
+            <!-- Ações para o Comprador -->
+            {#if leilao.comprador.id == usuarioLogado.id}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Ações</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="/leiloes/editar/{leilao.id}" class="btn btn-primary">
+                            <i class="bi bi-pencil-square me-2"></i> Editar Leilão
+                        </a>
+                        
+                        {#if podeConvidar}
+                        <a href="/leiloes/convidar/{leilao.id}" class="btn btn-success">
+                            <i class="bi bi-envelope me-2"></i> Convidar Fornecedores
+                        </a>
+                        {/if}
+                        
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarLeilao">
+                            <i class="bi bi-x-circle me-2"></i> Cancelar Leilão
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {/if}
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Dar Lance -->
+<div class="modal fade" id="modalDarLance" tabindex="-1" aria-labelledby="modalDarLanceLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/lances/dar" method="post">
+                <input type="hidden" name="leilaoId" value="{leilao.id}">
+                
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDarLanceLabel">Dar Lance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="valorLance" class="form-label">Valor do Lance (R$)</label>
+                        <input type="number" step="0.01" min="0" class="form-control" id="valorLance" name="valor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observacoes" class="form-label">Observações (opcional)</label>
+                        <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar Lance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Cancelar Leilão -->
+<div class="modal fade" id="modalCancelarLeilao" tabindex="-1" aria-labelledby="modalCancelarLeilaoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/leiloes/cancelar/{leilao.id}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCancelarLeilaoLabel">Confirmar Cancelamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja cancelar este leilão? Esta ação não poderá ser desfeita.</p>
+                    <div class="mb-3">
+                        <label for="motivoCancelamento" class="form-label">Motivo do Cancelamento</label>
+                        <textarea class="form-control" id="motivoCancelamento" name="motivoCancelamento" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{/include}

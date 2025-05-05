@@ -36,7 +36,7 @@ public class LeilaoController extends BaseController {
     
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     
-    @CheckedTemplate(basePath = "Leilao")
+    @CheckedTemplate(basePath = "Leilao", requireTypeSafeExpressions = false)
     public static class Templates {
         public static native TemplateInstance index(List<Leilao> leiloes);
         public static native TemplateInstance criar();

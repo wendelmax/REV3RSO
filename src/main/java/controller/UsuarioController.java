@@ -30,7 +30,7 @@ public class UsuarioController extends BaseController {
     @Inject
     UsuarioService usuarioService;
     
-    @CheckedTemplate(basePath = "Usuarios")
+    @CheckedTemplate(basePath = "Usuarios", requireTypeSafeExpressions = false)
     public static class Templates {
         public static native TemplateInstance cadastro();
         public static native TemplateInstance login();

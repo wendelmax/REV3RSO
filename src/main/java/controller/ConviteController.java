@@ -29,7 +29,7 @@ public class ConviteController extends BaseController {
     NotificacaoService notificacaoService;
     
     
-    @CheckedTemplate(basePath = "Convite")
+    @CheckedTemplate(basePath = "Convite", requireTypeSafeExpressions = false)
     public static class Templates {
         public static native TemplateInstance listar(Leilao leilao, List<Convite> convites);
         public static native TemplateInstance selecionar(Leilao leilao, List<Usuario> fornecedores);

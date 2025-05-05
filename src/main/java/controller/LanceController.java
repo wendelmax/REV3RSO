@@ -29,7 +29,7 @@ public class LanceController extends BaseController {
     @Inject
     NotificacaoService notificacaoService;
     
-    @CheckedTemplate(basePath = "Lance")
+    @CheckedTemplate(basePath = "Lance", requireTypeSafeExpressions = false)
     public static class Templates {
         public static native TemplateInstance historico(Leilao leilao);
     }

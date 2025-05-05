@@ -36,7 +36,8 @@
                                         <tr>
                                             <td>
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="fornecedorIds" value="{fornecedor.id}" id="fornecedor-{fornecedor.id}">
+                                                    <input class="form-check-input" type="checkbox" name="fornecedorIds" value="{fornecedor.id}" id="fornecedor-{fornecedor.id}" title="Selecionar {fornecedor.nomeFantasia}">
+                                                    <label class="form-check-label visually-hidden" for="fornecedor-{fornecedor.id}">Selecionar {fornecedor.nomeFantasia}</label>
                                                 </div>
                                             </td>
                                             <td>{fornecedor.nomeFantasia}</td>

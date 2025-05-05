@@ -59,16 +59,16 @@
                       <td>
                         {#if fornecedor.pontuacao >= 4.0}
                           <span class="text-success">{fornecedor.pontuacao}</span>
-                        {#elseif fornecedor.pontuacao >= 3.0}
+                        {elseif fornecedor.pontuacao >= 3.0}
                           <span class="text-warning">{fornecedor.pontuacao}</span>
-                        {#else}
+                        {else}
                           <span class="text-danger">{fornecedor.pontuacao}</span>
                         {/if}
                       </td>
                       <td>
                         {#if fornecedor.avaliacoesRecebidas > 0}
                           {fornecedor.avaliacoesRecebidas} avaliações
-                        {#else}
+                        {else}
                           Sem avaliações
                         {/if}
                       </td>

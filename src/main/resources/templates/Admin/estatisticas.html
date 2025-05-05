@@ -116,7 +116,7 @@
                           </tr>
                           <tr>
                             <th>Média por Leilão</th>
-                            <td>{leiloesTotal > 0 ? String.format("%.1f", (float)lancesTotal / leiloesTotal) : "0"}</td>
+                            <td>{leiloesTotal > 0 ? String.format("%.1f", lancesTotal * 1.0 / leiloesTotal) : "0"}</td>
                           </tr>
                           <tr>
                             <th>Lance Médio</th>
@@ -218,7 +218,7 @@
                           <div class="card-body">
                             <h5 class="card-title">Média de Leilões por Comprador</h5>
                             <h2 class="display-6">
-                              {compradores > 0 ? String.format("%.1f", (float)leiloesTotal / compradores) : "0"}
+                              {compradores > 0 ? String.format("%.1f", leiloesTotal * 1.0 / compradores) : "0"}
                             </h2>
                           </div>
                         </div>
@@ -228,7 +228,7 @@
                           <div class="card-body">
                             <h5 class="card-title">Média de Lances por Fornecedor</h5>
                             <h2 class="display-6">
-                              {fornecedores > 0 ? String.format("%.1f", (float)lancesTotal / fornecedores) : "0"}
+                              {fornecedores > 0 ? String.format("%.1f", lancesTotal * 1.0 / fornecedores) : "0"}
                             </h2>
                           </div>
                         </div>

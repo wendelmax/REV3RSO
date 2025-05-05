@@ -88,7 +88,7 @@
                           <button type="button" class="btn btn-sm btn-outline-warning" title="Suspender" data-bs-toggle="modal" data-bs-target="#modalSuspender" data-usuario-id="{usuario.id}" data-usuario-nome="{usuario.nome}">
                             <i class="bi bi-slash-circle"></i>
                           </button>
-                        {#elseif usuario.status == 'SUSPENSO'}
+                        {elseif usuario.status == 'SUSPENSO'}
                           <a href="{uri:Admin.reativarUsuario(usuario.id)}" class="btn btn-sm btn-outline-success" title="Reativar" onclick="return confirm('Reativar usuário {usuario.nome}?')">
                             <i class="bi bi-check-circle"></i>
                           </a>

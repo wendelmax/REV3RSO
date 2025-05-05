@@ -8,7 +8,7 @@
             <div class="d-flex align-items-center mb-3">
                 <span class="badge bg-primary me-2">{leilao.status}</span>
                 <span class="badge bg-secondary me-2">{leilao.categoria}</span>
-                <span class="text-muted">Criado em: {#format leilao.dataCriacao pattern="dd/MM/yyyy HH:mm" /}</span>
+                <span class="text-muted">Criado em: {leilao.dataCriacao.format('dd/MM/yyyy HH:mm')}</span>
             </div>
             
             <div class="card mb-4">
@@ -27,7 +27,7 @@
                         </div>
                         <div class="col-md-6">
                             <h5>Data de Fechamento</h5>
-                            <p class="lead">{#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</p>
+                            <p class="lead">{leilao.dataFechamento.format('dd/MM/yyyy HH:mm')}</p>
                         </div>
                     </div>
                     
@@ -67,7 +67,7 @@
                                 <tr>
                                     <td>{lance.fornecedor.nomeFantasia}</td>
                                     <td>R$ {lance.valor}</td>
-                                    <td>{#format lance.dataLance pattern="dd/MM/yyyy HH:mm" /}</td>
+                                    <td>{lance.dataLance.format('dd/MM/yyyy HH:mm')}</td>
                                 </tr>
                                 {/for}
                             </tbody>

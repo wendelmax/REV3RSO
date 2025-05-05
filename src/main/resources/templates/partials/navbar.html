@@ -5,57 +5,34 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarMain">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+            <!-- Menu principal com opções padrão -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0"><li class="nav-item">
                     <a class="nav-link" href="/">Início</a>
-                </li>
-                <li class="nav-item">
+                </li><li class="nav-item">
                     <a class="nav-link" href="/leiloes">Leilões</a>
-                </li>
-                <!-- Menu de Comprador -->
-                {#if usuarioLogado != null && usuarioLogado.tipoUsuario == 'COMPRADOR'}
-                <li class="nav-item">
+                </li><!-- Menu de Comprador -->
+                {#if usuarioLogado != null && usuarioLogado.tipoUsuario == 'COMPRADOR'}<li class="nav-item">
                     <a class="nav-link" href="/leiloes/meus">Meus Leilões</a>
-                </li>
-                <li class="nav-item">
+                </li><li class="nav-item">
                     <a class="nav-link" href="/leiloes/criar">Criar Leilão</a>
-                </li>
-                {/if}
-                
-                <!-- Menu de Fornecedor -->
-                {#if usuarioLogado != null && usuarioLogado.tipoUsuario == 'FORNECEDOR'}
-                <li class="nav-item">
+                </li>{/if}<!-- Menu de Fornecedor -->
+                {#if usuarioLogado != null && usuarioLogado.tipoUsuario == 'FORNECEDOR'}<li class="nav-item">
                     <a class="nav-link" href="/leiloes/participando">Participando</a>
-                </li>
-                <li class="nav-item">
+                </li><li class="nav-item">
                     <a class="nav-link" href="/propostas/minhas">Minhas Propostas</a>
-                </li>
-                {/if}
-                
-                <!-- Menu de Administrador -->
-                {#if usuarioLogado != null && usuarioLogado.tipoUsuario == 'ADMINISTRADOR'}
-                <li class="nav-item dropdown">
+                </li>{/if}<!-- Menu de Administrador -->
+                {#if usuarioLogado != null && usuarioLogado.tipoUsuario == 'ADMINISTRADOR'}<li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarAdminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Administração
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarAdminDropdown">
-                        <li><a class="dropdown-item" href="/admin/usuarios">Usuários</a></li>
-                        <li><a class="dropdown-item" href="/admin/leiloes">Leilões</a></li>
-                        <li><a class="dropdown-item" href="/admin/categorias">Categorias</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/admin/relatorios">Relatórios</a></li>
-                    </ul>
-                </li>
-                {/if}
-                
-                <li class="nav-item">
+                    <ul class="dropdown-menu" aria-labelledby="navbarAdminDropdown"><li><a class="dropdown-item" href="/admin/usuarios">Usuários</a></li><li><a class="dropdown-item" href="/admin/leiloes">Leilões</a></li><li><a class="dropdown-item" href="/admin/categorias">Categorias</a></li><li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="/admin/relatorios">Relatórios</a></li></ul>
+                </li>{/if}<li class="nav-item">
                     <a class="nav-link" href="/sobre">Sobre</a>
-                </li>
-                <li class="nav-item">
+                </li><li class="nav-item">
                     <a class="nav-link" href="/contato">Contato</a>
-                </li>
-            </ul>
+                </li></ul>
             
+            <!-- Menu de usuário logado/não logado -->
             <div class="d-flex">
                 {#if usuarioLogado != null}
                 <div class="dropdown">

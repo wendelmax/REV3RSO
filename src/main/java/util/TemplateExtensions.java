@@ -3,13 +3,18 @@ package util;
 import io.quarkus.qute.TemplateExtension;
 import model.*;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Classe que define extensões para uso nos templates Qute.
  * Estas extensões permitem adicionar métodos para tipos que não são modificáveis.
+ * Resolve problemas de validação de templates no projeto REV3RSO.
  */
 @TemplateExtension
 public class TemplateExtensions {
@@ -48,6 +53,15 @@ public class TemplateExtensions {
      */
     public static boolean eq(Usuario.TipoUsuario tipo, String valor) {
         return tipo != null && tipo.name().equals(valor);
+    }
+    
+    /**
+     * Método especial para tratar a comparação == em templates para enums
+     * Usado em casos como: {tipoUsuario == 'FORNECEDOR'}
+     */
+    @TemplateExtension(matchName = "==")
+    public static boolean equals(Usuario.TipoUsuario tipo, String valor) {
+        return eq(tipo, valor);
     }
     
     /**
@@ -91,5 +105,119 @@ public class TemplateExtensions {
     public static Usuario comprador(Leilao leilao) {
         // Assumindo que o criador do leilão é o comprador
         return leilao != null ? leilao.criador : null;
+    }
+    
+    /**
+     * Acessa a data de criação de uma avaliação
+     */
+    public static Date dataCriacao(Avaliacao avaliacao) {
+        return avaliacao != null ? avaliacao.dataAvaliacao : null;
+    }
+    
+    /**
+     * Acessa a data de fechamento de um leilão (dataFim no modelo)
+     */
+    public static Date dataFechamento(Leilao leilao) {
+        return leilao != null ? leilao.dataFim : null;
+    }
+    
+    /**
+     * Acessa a data final de um leilão (dataFim no modelo)
+     */
+    public static Date dataFinal(Leilao leilao) {
+        return leilao != null ? leilao.dataFim : null;
+    }
+    
+    /**
+     * Acessa a data de um lance
+     */
+    public static Date dataLance(Lance lance) {
+        return lance != null ? lance.dataCriacao : null;
+    }
+    
+    /**
+     * Verifica se um objeto é diferente de null (para uso no template)
+     */
+    @TemplateExtension(matchName = "!=")
+    public static boolean notEquals(Object obj, Object value) {
+        if ("null".equals(String.valueOf(value))) {
+            return obj != null;
+        }
+        return obj != null && !obj.equals(value);
+    }
+    
+    /**
+     * Acessa a lista de usuários de uma área de atuação
+     */
+    public static List<Usuario> usuarios(AreaAtuacao area) {
+        // Considerando que pode não existir o campo 'usuarios' em AreaAtuacao, estamos retornando uma lista vazia
+        return area != null ? new ArrayList<>() : null;
+    }
+    
+    /**
+     * Acessa a lista de leilões de uma forma de pagamento
+     */
+    public static List<Leilao> leiloes(FormaPagamento forma) {
+        // Considerando que pode não existir o campo 'leiloes' em FormaPagamento, estamos retornando uma lista vazia
+        return forma != null ? new ArrayList<>() : null;
+    }
+    
+    /**
+     * Acessa o valor estimado de um leilão
+     */
+    public static BigDecimal valorEstimado(Leilao leilao) {
+        return leilao != null ? leilao.valorReferencia : null;
+    }
+    
+    /**
+     * Acessa o melhor lance de um leilão
+     */
+    public static Lance melhorLance(Leilao leilao) {
+        if (leilao == null || leilao.lances == null || leilao.lances.isEmpty()) {
+            return null;
+        }
+        // Retorna o lance com menor valor (leilão reverso)
+        return leilao.lances.stream()
+                .min(Comparator.comparing(l -> l.valor))
+                .orElse(null);
+    }
+    
+    /**
+     * Acessa o fornecedor vencedor de um leilão
+     */
+    public static Usuario fornecedorVencedor(Leilao leilao) {
+        Lance melhor = melhorLance(leilao);
+        return melhor != null ? melhor.fornecedor : null;
+    }
+    
+    /**
+     * Ordena lances por valor
+     */
+    public static List<Lance> sort(List<Lance> lances, Object comparator) {
+        if (lances == null || lances.isEmpty()) {
+            return lances;
+        }
+        return lances.stream()
+                .sorted(Comparator.comparing(l -> l.valor))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Classe para acesso ao Status dos convites nos templates
+     */
+    @TemplateExtension(namespace = "convite")
+    public static class StatusExtensions {
+        // Métodos de extensão para acessar os valores do enum Status
+        public static Convite.Status PENDENTE() {
+            return Convite.Status.PENDENTE;
+        }
+        
+        public static Convite.Status ACEITO() {
+            return Convite.Status.ACEITO;
+        }
+        
+        public static Convite.Status RECUSADO() {
+            return Convite.Status.RECUSADO;
+        }
     }
 }

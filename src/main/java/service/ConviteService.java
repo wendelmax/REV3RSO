@@ -15,8 +15,8 @@ import exception.BusinessException;
 import util.ExceptionUtil;
 
 /**
- * Serviço responsável por gerenciar as operações relacionadas aos convites para leilões fechados.
- * Centraliza a lógica de negócio e regras para criar e gerenciar convites.
+ * Serviu00e7o responsu00e1vel por gerenciar as operau00e7u00f5es relacionadas aos convites para leilu00f5es fechados.
+ * Centraliza a lu00f3gica de negu00f3cio e regras para criar e gerenciar convites.
  */
 @ApplicationScoped
 public class ConviteService {
@@ -36,23 +36,23 @@ public class ConviteService {
      * Busca um convite pelo ID.
      * 
      * @param id ID do convite
-     * @return Convite encontrado ou null se não existir
+     * @return Convite encontrado ou null se nu00e3o existir
      */
     public Convite buscarPorId(Long id) {
         return Convite.findById(id);
     }
     
     /**
-     * Lista todos os convites de um leilão.
+     * Lista todos os convites de um leilu00e3o.
      * 
-     * @param leilao Leilão
+     * @param leilao Leilu00e3o
      * @return Lista de convites
      */
     public List<Convite> listarConvitesPorLeilao(Leilao leilao) {
         try {
             return Convite.find("leilao = ?1 ORDER BY dataCriacao DESC", leilao).list();
         } catch (Exception e) {
-            ExceptionUtil.handleException(e, "Erro ao listar convites do leilão " + leilao.id);
+            ExceptionUtil.handleException(e, "Erro ao listar convites do leilu00e3o " + leilao.id);
             return List.of();
         }
     }
@@ -60,7 +60,7 @@ public class ConviteService {
     /**
      * Lista todos os convites enviados a um fornecedor.
      * 
-     * @param fornecedor Usuário fornecedor
+     * @param fornecedor Usuu00e1rio fornecedor
      * @return Lista de convites
      */
     public List<Convite> listarConvitesPorFornecedor(Usuario fornecedor) {
@@ -73,9 +73,9 @@ public class ConviteService {
     }
     
     /**
-     * Lista todos os convites aceitos de um leilão.
+     * Lista todos os convites aceitos de um leilu00e3o.
      * 
-     * @param leilao Leilão
+     * @param leilao Leilu00e3o
      * @return Lista de convites aceitos
      */
     public List<Convite> listarConvitesAceitos(Leilao leilao) {
@@ -83,15 +83,15 @@ public class ConviteService {
             return Convite.find("leilao = ?1 AND status = ?2 ORDER BY dataResposta DESC", 
                 leilao, Convite.Status.ACEITO).list();
         } catch (Exception e) {
-            ExceptionUtil.handleException(e, "Erro ao listar convites aceitos do leilão " + leilao.id);
+            ExceptionUtil.handleException(e, "Erro ao listar convites aceitos do leilu00e3o " + leilao.id);
             return List.of();
         }
     }
     
     /**
-     * Lista todos os convites pendentes de um leilão.
+     * Lista todos os convites pendentes de um leilu00e3o.
      * 
-     * @param leilao Leilão
+     * @param leilao Leilu00e3o
      * @return Lista de convites pendentes
      */
     public List<Convite> listarConvitesPendentes(Leilao leilao) {
@@ -99,175 +99,160 @@ public class ConviteService {
             return Convite.find("leilao = ?1 AND status = ?2 ORDER BY dataCriacao DESC", 
                 leilao, Convite.Status.PENDENTE).list();
         } catch (Exception e) {
-            ExceptionUtil.handleException(e, "Erro ao listar convites pendentes do leilão " + leilao.id);
+            ExceptionUtil.handleException(e, "Erro ao listar convites pendentes do leilu00e3o " + leilao.id);
             return List.of();
         }
     }
     
     /**
-     * Verifica se um fornecedor já foi convidado para um leilão.
+     * Verifica se um fornecedor ju00e1 foi convidado para um leilu00e3o.
      * 
-     * @param fornecedor Usuário fornecedor
-     * @param leilao Leilão
-     * @return true se já foi convidado, false caso contrário
+     * @param fornecedor Usuu00e1rio fornecedor
+     * @param leilao Leilu00e3o
+     * @return true se ju00e1 foi convidado, false caso contru00e1rio
      */
     public boolean jaConvidado(Usuario fornecedor, Leilao leilao) {
         try {
-            return Convite.count("leilao = ?1 AND fornecedor = ?2", leilao, fornecedor) > 0;
+            return Convite.count("fornecedor = ?1 AND leilao = ?2", fornecedor, leilao) > 0;
         } catch (Exception e) {
-            ExceptionUtil.handleException(e, "Erro ao verificar se fornecedor já foi convidado");
+            ExceptionUtil.handleException(e, "Erro ao verificar se o fornecedor ju00e1 foi convidado");
             return false;
         }
     }
     
     /**
-     * Cria um novo convite para um fornecedor participar de um leilão.
+     * Cria um novo convite para um fornecedor participar de um leilu00e3o.
      * 
-     * @param leilao Leilão
-     * @param fornecedor Usuário fornecedor
-     * @param comprador Usuário comprador que está enviando o convite
-     * @param mensagem Mensagem opcional do convite
-     * @return Convite criado
+     * @param leilao Leilu00e3o
+     * @param fornecedor Usuu00e1rio fornecedor
+     * @param comprador Usuu00e1rio comprador (criador do leilu00e3o)
+     * @param mensagem Mensagem opcional do comprador
+     * @return Novo convite criado
      */
     @Transactional
     public Convite criarConvite(Leilao leilao, Usuario fornecedor, Usuario comprador, String mensagem) {
         try {
-            // Validações
-            if (fornecedor.tipoUsuario != Usuario.TipoUsuario.FORNECEDOR) {
-                throw new BusinessException("Apenas fornecedores podem ser convidados para leilões");
+            // Verificar se o leilu00e3o existe e estu00e1 vu00e1lido para convites
+            if (leilao == null) {
+                throw new BusinessException("Leilu00e3o nu00e3o encontrado");
             }
             
-            if (!leilaoService.podeConvidar(comprador, leilao)) {
-                throw new BusinessException("Você não tem permissão para convidar fornecedores para este leilão");
+            // Verificar se o fornecedor existe
+            if (fornecedor == null) {
+                throw new BusinessException("Fornecedor nu00e3o encontrado");
             }
             
-            if (leilao.tipoLeilao != Leilao.TipoLeilao.FECHADO) {
-                throw new BusinessException("Apenas leilões fechados podem ter convites");
-            }
-            
+            // Verificar se o fornecedor ju00e1 foi convidado
             if (jaConvidado(fornecedor, leilao)) {
-                throw new BusinessException("Este fornecedor já foi convidado para o leilão");
+                throw new BusinessException("Este fornecedor ju00e1 foi convidado para este leilu00e3o");
             }
             
-            // Criar convite
-            Convite convite = new Convite();
-            convite.leilao = leilao;
-            convite.fornecedor = fornecedor;
+            // Criar o convite
+            Convite convite = new Convite(leilao, fornecedor);
             convite.mensagem = mensagem;
-            convite.status = Convite.Status.PENDENTE;
             convite.dataCriacao = new Date();
-            
             convite.persist();
             
-            // Notificar fornecedor
+            // Notificar o fornecedor
             notificarNovoConvite(convite);
             
-            // Enviar email (assíncrono)
+            // Enviar email
             enviarEmailConvite(convite);
             
-            LOGGER.info("Convite criado com sucesso. ID: " + convite.id + ", Leilão: " + leilao.id + ", Fornecedor: " + fornecedor.id);
             return convite;
         } catch (BusinessException be) {
             throw be;
         } catch (Exception e) {
-            String mensagemErro = ExceptionUtil.handleException(e, "Erro ao criar convite");
-            throw new BusinessException(mensagemErro, e);
+            throw new BusinessException("Erro ao criar convite: " + e.getMessage(), e);
         }
     }
     
     /**
-     * Aceita um convite para participar de um leilão.
+     * Aceita um convite para participar de um leilu00e3o.
      * 
      * @param conviteId ID do convite
-     * @param fornecedor Usuário fornecedor que está aceitando o convite
+     * @param fornecedor Usuu00e1rio fornecedor que estu00e1 aceitando
      * @return Convite atualizado
      */
     @Transactional
     public Convite aceitarConvite(Long conviteId, Usuario fornecedor) {
         try {
+            // Buscar o convite
             Convite convite = buscarPorId(conviteId);
-            
             if (convite == null) {
-                throw new BusinessException("Convite não encontrado");
+                throw new BusinessException("Convite nu00e3o encontrado");
             }
             
-            // Verificar permissão
-            if (!fornecedor.equals(convite.fornecedor)) {
-                throw new BusinessException("Você não tem permissão para responder este convite");
+            // Verificar se o fornecedor u00e9 o mesmo do convite
+            if (!convite.fornecedor.id.equals(fornecedor.id)) {
+                throw new BusinessException("Vocu00ea nu00e3o tem permissu00e3o para aceitar este convite");
             }
             
-            // Verificar status atual
+            // Verificar se o convite estu00e1 pendente
             if (convite.status != Convite.Status.PENDENTE) {
-                throw new BusinessException("Este convite já foi respondido");
+                throw new BusinessException("Este convite nu00e3o estu00e1 pendente de resposta");
             }
             
-            // Verificar se o leilão está válido
-            if (convite.leilao.status == Leilao.Status.CANCELADO || 
-                convite.leilao.status == Leilao.Status.CONCLUIDO) {
-                throw new BusinessException("O leilão relacionado a este convite não está mais disponível");
+            // Verificar se o leilu00e3o ainda estu00e1 aberto
+            if (convite.leilao.status != Leilao.Status.AGENDADO && 
+                convite.leilao.status != Leilao.Status.ABERTO) {
+                throw new BusinessException("Este leilu00e3o nu00e3o estu00e1 mais aberto para convites");
             }
             
-            // Atualizar convite
-            convite.status = Convite.Status.ACEITO;
-            convite.dataResposta = new Date();
-            convite.persist();
+            // Aceitar o convite
+            convite.aceitar();
             
-            // Notificar comprador
+            // Notificar o comprador
             notificarRespostaConvite(convite);
             
-            LOGGER.info("Convite aceito com sucesso. ID: " + convite.id);
             return convite;
         } catch (BusinessException be) {
             throw be;
         } catch (Exception e) {
-            String mensagemErro = ExceptionUtil.handleException(e, "Erro ao aceitar convite");
-            throw new BusinessException(mensagemErro, e);
+            throw new BusinessException("Erro ao aceitar convite: " + e.getMessage(), e);
         }
     }
     
     /**
-     * Recusa um convite para participar de um leilão.
+     * Recusa um convite para participar de um leilu00e3o.
      * 
      * @param conviteId ID do convite
-     * @param motivo Motivo da recusa
-     * @param fornecedor Usuário fornecedor que está recusando o convite
+     * @param motivo Motivo da recusa (opcional)
+     * @param fornecedor Usuu00e1rio fornecedor que estu00e1 recusando
      * @return Convite atualizado
      */
     @Transactional
     public Convite recusarConvite(Long conviteId, String motivo, Usuario fornecedor) {
         try {
+            // Buscar o convite
             Convite convite = buscarPorId(conviteId);
-            
             if (convite == null) {
-                throw new BusinessException("Convite não encontrado");
+                throw new BusinessException("Convite nu00e3o encontrado");
             }
             
-            // Verificar permissão
-            if (!fornecedor.equals(convite.fornecedor)) {
-                throw new BusinessException("Você não tem permissão para responder este convite");
+            // Verificar se o fornecedor u00e9 o mesmo do convite
+            if (!convite.fornecedor.id.equals(fornecedor.id)) {
+                throw new BusinessException("Vocu00ea nu00e3o tem permissu00e3o para recusar este convite");
             }
             
-            // Verificar status atual
+            // Verificar se o convite estu00e1 pendente
             if (convite.status != Convite.Status.PENDENTE) {
-                throw new BusinessException("Este convite já foi respondido");
+                throw new BusinessException("Este convite nu00e3o estu00e1 pendente de resposta");
             }
             
-            // Atualizar convite
-            convite.status = Convite.Status.RECUSADO;
+            // Recusar o convite
+            convite.recusar();
             convite.motivoRecusa = motivo;
-            convite.dataResposta = new Date();
             convite.persist();
             
-            // Notificar comprador
+            // Notificar o comprador
             notificarRespostaConvite(convite);
             
-            LOGGER.info("Convite recusado com sucesso. ID: " + convite.id);
             return convite;
         } catch (BusinessException be) {
             throw be;
         } catch (Exception e) {
-            String mensagemErro = ExceptionUtil.handleException(e, "Erro ao recusar convite");
-            throw new BusinessException(mensagemErro, e);
+            throw new BusinessException("Erro ao recusar convite: " + e.getMessage(), e);
         }
     }
     
@@ -275,45 +260,43 @@ public class ConviteService {
      * Cancela um convite.
      * 
      * @param conviteId ID do convite
-     * @param motivo Motivo do cancelamento
-     * @param comprador Usuário comprador que está cancelando o convite
-     * @return Convite cancelado
+     * @param motivo Motivo do cancelamento (opcional)
+     * @param comprador Usuu00e1rio comprador que estu00e1 cancelando
+     * @return Convite atualizado
      */
     @Transactional
     public Convite cancelarConvite(Long conviteId, String motivo, Usuario comprador) {
         try {
+            // Buscar o convite
             Convite convite = buscarPorId(conviteId);
-            
             if (convite == null) {
-                throw new BusinessException("Convite não encontrado");
+                throw new BusinessException("Convite nu00e3o encontrado");
             }
             
-            // Verificar permissão (apenas o criador do leilão pode cancelar)
-            if (!comprador.equals(convite.leilao.criador)) {
-                throw new BusinessException("Você não tem permissão para cancelar este convite");
+            // Verificar se o comprador u00e9 o criador do leilu00e3o
+            if (!convite.leilao.criador.id.equals(comprador.id)) {
+                throw new BusinessException("Vocu00ea nu00e3o tem permissu00e3o para cancelar este convite");
             }
             
-            // Verificar status atual
+            // Verificar se o convite estu00e1 pendente
             if (convite.status != Convite.Status.PENDENTE) {
                 throw new BusinessException("Apenas convites pendentes podem ser cancelados");
             }
             
-            // Atualizar convite
-            convite.status = Convite.Status.CANCELADO;
-            convite.motivoRecusa = motivo; // Reutilizamos o campo de motivo
+            // Cancelar o convite
+            convite.status = Convite.Status.RECUSADO;
+            convite.motivoRecusa = motivo;
             convite.dataResposta = new Date();
             convite.persist();
             
-            // Notificar fornecedor
+            // Notificar o fornecedor
             notificarCancelamentoConvite(convite);
             
-            LOGGER.info("Convite cancelado com sucesso. ID: " + convite.id);
             return convite;
         } catch (BusinessException be) {
             throw be;
         } catch (Exception e) {
-            String mensagemErro = ExceptionUtil.handleException(e, "Erro ao cancelar convite");
-            throw new BusinessException(mensagemErro, e);
+            throw new BusinessException("Erro ao cancelar convite: " + e.getMessage(), e);
         }
     }
     
@@ -325,10 +308,10 @@ public class ConviteService {
     private void notificarNovoConvite(Convite convite) {
         try {
             notificacaoService.criarNotificacao(
-                convite.fornecedor,
-                "Novo convite para leilão",
-                "Você foi convidado para participar do leilão: " + convite.leilao.titulo,
-                "/convites/" + convite.id
+                convite.fornecedor, 
+                "Novo convite para leilu00e3o", 
+                "Vocu00ea foi convidado para participar do leilu00e3o '" + convite.leilao.titulo + "'", 
+                "/convites"
             );
         } catch (Exception e) {
             LOGGER.severe("Erro ao notificar sobre novo convite: " + e.getMessage());
@@ -343,18 +326,18 @@ public class ConviteService {
     private void notificarRespostaConvite(Convite convite) {
         try {
             String statusTexto = convite.status == Convite.Status.ACEITO ? "aceitou" : "recusou";
-            String mensagem = "O fornecedor " + convite.fornecedor.nome + " " + statusTexto + 
-                            " seu convite para o leilão " + convite.leilao.titulo;
+            String mensagem = "O fornecedor " + convite.fornecedor.nomeFantasia + " " + statusTexto + 
+                             " seu convite para o leilu00e3o " + convite.leilao.titulo;
             
             if (convite.status == Convite.Status.RECUSADO && convite.motivoRecusa != null) {
                 mensagem += ". Motivo: " + convite.motivoRecusa;
             }
             
             notificacaoService.criarNotificacao(
-                convite.leilao.criador,
-                "Resposta de convite",
-                mensagem,
-                "/leiloes/" + convite.leilao.id + "/convites"
+                convite.leilao.criador, 
+                "Resposta ao convite", 
+                mensagem, 
+                "/leiloes/" + convite.leilao.id
             );
         } catch (Exception e) {
             LOGGER.severe("Erro ao notificar sobre resposta de convite: " + e.getMessage());
@@ -368,16 +351,16 @@ public class ConviteService {
      */
     private void notificarCancelamentoConvite(Convite convite) {
         try {
-            String mensagem = "Seu convite para o leilão " + convite.leilao.titulo + " foi cancelado";
+            String mensagem = "Seu convite para o leilu00e3o '" + convite.leilao.titulo + "' foi cancelado";
             
             if (convite.motivoRecusa != null) {
                 mensagem += ". Motivo: " + convite.motivoRecusa;
             }
             
             notificacaoService.criarNotificacao(
-                convite.fornecedor,
-                "Convite cancelado",
-                mensagem,
+                convite.fornecedor, 
+                "Convite cancelado", 
+                mensagem, 
                 "/convites"
             );
         } catch (Exception e) {
@@ -392,27 +375,27 @@ public class ConviteService {
      */
     private void enviarEmailConvite(Convite convite) {
         try {
-            String assunto = "Novo convite para leilão: " + convite.leilao.titulo;
+            String assunto = "Novo convite para leilu00e3o: " + convite.leilao.titulo;
             
             StringBuilder corpo = new StringBuilder();
-            corpo.append("Olá, ").append(convite.fornecedor.nome).append("!\n\n");
-            corpo.append("Você foi convidado para participar do leilão \"").append(convite.leilao.titulo).append("\".\n\n");
+            corpo.append("Olu00e1, ").append(convite.fornecedor.nomeFantasia).append("!\n\n");
+            corpo.append("Vocu00ea foi convidado para participar do leilu00e3o \"").append(convite.leilao.titulo).append("\".\n\n");
             
             if (convite.mensagem != null && !convite.mensagem.isEmpty()) {
                 corpo.append("Mensagem do comprador: ").append(convite.mensagem).append("\n\n");
             }
             
-            corpo.append("Detalhes do leilão:\n");
-            corpo.append("- Título: ").append(convite.leilao.titulo).append("\n");
-            corpo.append("- Descrição: ").append(convite.leilao.descricao).append("\n");
-            corpo.append("- Data de início: ").append(convite.leilao.dataInicio).append("\n");
-            corpo.append("- Data de término: ").append(convite.leilao.dataFim).append("\n\n");
+            corpo.append("Detalhes do leilu00e3o:\n");
+            corpo.append("- Tu00edtulo: ").append(convite.leilao.titulo).append("\n");
+            corpo.append("- Descriu00e7u00e3o: ").append(convite.leilao.descricao).append("\n");
+            corpo.append("- Data de inu00edcio: ").append(convite.leilao.dataInicio).append("\n");
+            corpo.append("- Data de tu00e9rmino: ").append(convite.leilao.dataFim).append("\n\n");
             
-            corpo.append("Para responder ao convite, acesse o sistema através do link: \n");
+            corpo.append("Para responder ao convite, acesse o sistema atravu00e9s do link: \n");
             corpo.append("http://sistema.exemplo.com/convites/").append(convite.id).append("\n\n");
             
             corpo.append("Atenciosamente,\n");
-            corpo.append("Equipe de Leilões");
+            corpo.append("Equipe de Leilu00f5es");
             
             emailService.enviarEmail(
                 convite.fornecedor.email,

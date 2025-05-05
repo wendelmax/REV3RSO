@@ -27,6 +27,9 @@ public class AreaAtuacao extends PanacheEntity {
     @Column(nullable = false, unique = true)
     public String descricao;
     
+    @Column(columnDefinition = "TEXT")
+    public String detalhes;
+    
     // Relacionamento com usuários
     @ManyToMany(mappedBy = "areasAtuacao")
     public List<Usuario> fornecedores = new ArrayList<>();
@@ -70,26 +73,5 @@ public class AreaAtuacao extends PanacheEntity {
             return area.fornecedores.size();
         }
         return 0;
-    }
-    
-    // Sobrescrita de métodos
-    
-    @Override
-    public String toString() {
-        return descricao;
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof AreaAtuacao)) {
-            return false;
-        }
-        AreaAtuacao other = (AreaAtuacao) obj;
-        return this.id != null && this.id.equals(other.id);
-    }
-    
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 }

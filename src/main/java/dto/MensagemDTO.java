@@ -3,7 +3,6 @@ package dto;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import model.Mensagem;
 
 /**
@@ -35,7 +34,7 @@ public record MensagemDTO(
             mensagem.conteudo,
             mensagem.tipo != null ? mensagem.tipo.name() : null,
             mensagem.autor != null ? mensagem.autor.id : null,
-            mensagem.autor != null ? mensagem.autor.nome : null,
+            mensagem.autor != null ? mensagem.autor.nomeFantasia : null,
             mensagem.dataCriacao,
             mensagem.respondida,
             mensagem.mensagemPai != null ? mensagem.mensagemPai.id : null

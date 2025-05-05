@@ -40,7 +40,7 @@ public record AvaliacaoDTO(
             avaliacao.avaliador != null ? avaliacao.avaliador.nomeFantasia : null,
             avaliacao.nota,
             avaliacao.comentario,
-            avaliacao.dataCriacao
+            avaliacao.dataAvaliacao
         );
     }
     
@@ -55,7 +55,6 @@ public record AvaliacaoDTO(
         Avaliacao avaliacao = new Avaliacao();
         avaliacao.nota = this.nota;
         avaliacao.comentario = this.comentario;
-        avaliacao.dataCriacao = new Date();
         
         // Outros campos como leilão, avaliador, avaliado, devem ser preenchidos pelo serviço
         return avaliacao;

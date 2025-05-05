@@ -3,7 +3,6 @@ package exception.handler;
 import exception.BusinessException;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
-import io.quarkus.qute.api.ResourcePath;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -22,15 +21,12 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
     private static final Logger LOGGER = Logger.getLogger(GlobalExceptionHandler.class.getName());
     
     @Inject
-    @ResourcePath("error/error.html")
     Template errorTemplate;
     
     @Inject
-    @ResourcePath("error/404.html")
     Template notFoundTemplate;
     
     @Inject
-    @ResourcePath("error/403.html")
     Template forbiddenTemplate;
     
     /**

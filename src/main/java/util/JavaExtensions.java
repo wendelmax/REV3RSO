@@ -31,7 +31,12 @@ public class JavaExtensions {
             return string;
         }
         
-        return WordUtils.capitalizeFully(string);
+        // Split the string by spaces, capitalize each word, and join them back together
+        String[] words = string.split("\\s+");
+        for (int i = 0; i < words.length; i++) {
+            words[i] = StringUtils.capitalize(words[i]);
+        }
+        return String.join(" ", words);
     }
     
     /**

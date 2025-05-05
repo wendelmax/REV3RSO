@@ -9,20 +9,14 @@ ECHO_PREFIX="\033[1;36m[REV3RSO]\033[0m"
 
 echo -e "$ECHO_PREFIX Starting REV3RSO deployment process..."
 
-# Build the application WAR file
-echo -e "$ECHO_PREFIX Building application..."
+# Build the Quarkus application
+echo -e "$ECHO_PREFIX Building Quarkus application..."
 mvn clean package -DskipTests
 
-# Check if WAR file was created
-if [ ! -f "./target/REV3RSO.war" ] && [ ! -f "./target/REV3RSO-*.war" ]; then
-    echo -e "$ECHO_PREFIX \033[1;31mERROR: WAR file not created. Build failed.\033[0m"
+# Check if Quarkus application files were created
+if [ ! -d "./target/quarkus-app" ]; then
+    echo -e "$ECHO_PREFIX \033[1;31mERROR: Quarkus application files not created. Build failed.\033[0m"
     exit 1
-fi
-
-# If the file has a version in its name, rename it to REV3RSO.war
-if [ ! -f "./target/REV3RSO.war" ] && [ -f "./target/REV3RSO-"*".war" ]; then
-    mv ./target/REV3RSO-*.war ./target/REV3RSO.war
-    echo -e "$ECHO_PREFIX Renamed WAR file to REV3RSO.war"
 fi
 
 # Start Docker Compose services

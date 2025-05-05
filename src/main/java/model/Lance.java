@@ -35,6 +35,18 @@ public class Lance extends PanacheEntity {
     @Column(name = "data_criacao", nullable = false)
     public Date dataCriacao;
     
+    @Column(name = "data_atualizacao")
+    public Date dataAtualizacao;
+    
+    @Column(name = "data_cancelamento")
+    public Date dataCancelamento;
+    
+    @Column(name = "cancelado")
+    public boolean cancelado = false;
+    
+    @Column(name = "motivo_cancelamento")
+    public String motivoCancelamento;
+    
     @Column(name = "condicoes_entrega")
     public String condicoesEntrega;
     
@@ -43,6 +55,9 @@ public class Lance extends PanacheEntity {
     
     @Column(name = "prazo_pagamento")
     public Integer prazoPagamento;
+    
+    @Column(name = "vencedor")
+    public boolean vencedor = false;
     
     public Lance() {
         this.dataCriacao = new Date();
@@ -99,5 +114,23 @@ public class Lance extends PanacheEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+    
+    /**
+     * Verifica se este lance é o vencedor do leilão.
+     * 
+     * @return true se este lance for o vencedor, false caso contrário
+     */
+    public boolean isVencedor() {
+        return this.vencedor;
+    }
+    
+    /**
+     * Define este lance como vencedor do leilão.
+     * Isso deve ser chamado apenas ao encerrar um leilão.
+     */
+    public void definirComoVencedor() {
+        this.vencedor = true;
+        this.persist();
     }
 }

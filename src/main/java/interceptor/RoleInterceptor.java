@@ -1,6 +1,5 @@
 package interceptor;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 
 import annotation.RequiresRole;
@@ -116,7 +115,7 @@ public class RoleInterceptor {
             case "FORNECEDOR":
                 return usuario.tipoUsuario == Usuario.TipoUsuario.FORNECEDOR;
             case "ADMINISTRADOR":
-                return usuario.administrador;
+                return usuario.tipoUsuario == Usuario.TipoUsuario.ADMINISTRADOR;
             default:
                 return false;
         }

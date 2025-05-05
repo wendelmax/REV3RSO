@@ -54,7 +54,7 @@ public class LeilaoService {
                 return List.of();
             }
             
-            return Leilao.listarDisponiveisPara(fornecedor);
+            return Leilao.listarLeiloesPorFornecedor(fornecedor);
         } catch (Exception e) {
             ExceptionUtil.handleException(e, "Erro ao listar leilões disponíveis");
             return List.of();
@@ -335,7 +335,7 @@ public class LeilaoService {
             if (!lances.isEmpty()) {
                 // Ordenar por valor crescente (menor valor primeiro)
                 Lance menorLance = lances.stream()
-                    .min((l1, l2) -> Double.compare(l1.valor, l2.valor))
+                    .min((l1, l2) -> l1.valor.compareTo(l2.valor))
                     .orElse(null);
                 
                 if (menorLance != null) {
@@ -345,7 +345,7 @@ public class LeilaoService {
             
             // Atualizar status
             leilao.status = Leilao.Status.CONCLUIDO;
-            leilao.dataConclusao = new Date();
+            leilao.dataAtualizacao = new Date();
             leilao.persist();
             
             // Notificar participantes
@@ -555,7 +555,7 @@ public class LeilaoService {
                 mensagem = "O leilão \"" + leilao.titulo + "\" foi concluído";
                 
                 if (leilao.lanceVencedor != null) {
-                    mensagem += ". Vencedor: " + leilao.lanceVencedor.fornecedor.nome;
+                    mensagem += ". Vencedor: " + leilao.lanceVencedor.fornecedor.nomeFantasia;
                 } else {
                     mensagem += " sem lances";
                 }

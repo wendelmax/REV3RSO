@@ -18,7 +18,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -30,7 +29,6 @@ import lombok.ToString;
 @Table(name = "usuarios")
 @Getter
 @Setter
-@NoArgsConstructor
 @ToString(exclude = {"leiloesCriados", "lances", "avaliacoesRecebidas", "avaliacoesRealizadas"})
 public class Usuario extends PanacheEntity {
     
@@ -113,6 +111,9 @@ public class Usuario extends PanacheEntity {
     
     public double pontuacao;
     
+    @Column(name = "total_avaliacoes")
+    public long totalAvaliacoes;
+    
     @Column(name = "data_cadastro")
     public Date dataCadastro;
     
@@ -141,6 +142,7 @@ public class Usuario extends PanacheEntity {
         this.dataCadastro = new Date();
         this.status = Status.ATIVO;
         this.pontuacao = 0;
+        this.totalAvaliacoes = 0;
     }
     
     // Métodos estáticos para consultas frequentes

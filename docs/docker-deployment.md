@@ -34,10 +34,10 @@ The `docker-compose.yml` file configures the following services:
   - Email: admin@rev3rso.com
   - Password: pgadmin_password
 
-### Application Server (Tomcat)
-- **Image**: tomcat:9-jdk11
+### Application Server (Quarkus)
+- **Image**: quay.io/quarkus/quarkus-micro-image:2.0
 - **Port**: 8080:8080
-- **Deployment**: Mounts the REV3RSO.war file into the webapps directory
+- **Deployment**: Mounts the Quarkus app directory to /deployments
 
 ### MailHog (Email Testing)
 - **Image**: mailhog/mailhog:latest

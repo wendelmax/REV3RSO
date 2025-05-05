@@ -4,14 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-package util;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Range;
 
 /**
  * Classe utilitária para validação de dados.
@@ -177,7 +170,7 @@ public class ValidationUtil {
      * @return true se o valor estiver dentro do intervalo, false caso contrário
      */
     public static boolean isInRange(int value, int min, int max) {
-        return Range.between(min, max).contains(value);
+        return value >= min && value <= max;
     }
     
     /**

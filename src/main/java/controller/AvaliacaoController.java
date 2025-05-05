@@ -3,6 +3,14 @@ package controller;
 import java.util.Date;
 import java.util.List;
 
+import annotation.Pageable;
+import model.Avaliacao;
+import model.Leilao;
+import model.Usuario;
+import model.Lance;
+import util.PaginationUtil;
+import util.RedirectUtil;
+
 import io.quarkiverse.renarde.Controller;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
@@ -17,14 +25,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
-import model.Usuario;
-import model.Leilao;
-import model.Lance;
-import model.Avaliacao;
-import util.RedirectUtil;
-
 @Path("/avaliacoes")
-public class AvaliacaoController extends Controller {
+public class AvaliacaoController extends BaseController {
     
     @CheckedTemplate
     public static class Templates {
@@ -40,28 +42,28 @@ public class AvaliacaoController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return redirect("/usuarios/login").getInstance();
+            return RedirectUtil.redirectTemplate("/usuarios/login");
         }
         
         Leilao leilao = Leilao.findById(leilaoId);
         if (leilao == null) {
             flash("mensagem", "Leilão não encontrado");
             flash("tipo", "danger");
-            return redirect("/leiloes").getInstance();
+            return RedirectUtil.redirectTemplate("/leiloes");
         }
         
         Usuario avaliado = Usuario.findById(avaliadoId);
         if (avaliado == null) {
             flash("mensagem", "Usuário não encontrado");
             flash("tipo", "danger");
-            return redirect("/leiloes/" + leilaoId).getInstance();
+            return RedirectUtil.redirectTemplate("/leiloes/" + leilaoId);
         }
         
         // Verificar se o leilão está concluído
         if (leilao.status != Leilao.Status.CONCLUIDO) {
             flash("mensagem", "Só é possível avaliar após a conclusão do leilão");
             flash("tipo", "danger");
-            return redirect("/leiloes/" + leilaoId).getInstance();
+            return RedirectUtil.redirectTemplate("/leiloes/" + leilaoId);
         }
         
         // Verificar se o usuário tem relação com o leilão
@@ -85,14 +87,14 @@ public class AvaliacaoController extends Controller {
         if (!relacionado) {
             flash("mensagem", "Você não tem permissão para avaliar este usuário");
             flash("tipo", "danger");
-            return redirect("/leiloes/" + leilaoId).getInstance();
+            return RedirectUtil.redirectTemplate("/leiloes/" + leilaoId);
         }
         
         // Verificar se já avaliou este usuário neste leilão
         if (Avaliacao.jaAvaliou(leilao, usuario, avaliado)) {
             flash("mensagem", "Você já avaliou este usuário neste leilão");
             flash("tipo", "danger");
-            return redirect("/leiloes/" + leilaoId).getInstance();
+            return RedirectUtil.redirectTemplate("/leiloes/" + leilaoId);
         }
         
         return Templates.avaliar(leilao, avaliado);
@@ -112,34 +114,34 @@ public class AvaliacaoController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para realizar esta ação");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/usuarios/login");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
         
         Leilao leilao = Leilao.findById(leilaoId);
         if (leilao == null) {
             flash("mensagem", "Leilão não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes");
+            return RedirectUtil.redirectToPathAsObject("/leiloes");
         }
         
         Usuario avaliado = Usuario.findById(avaliadoId);
         if (avaliado == null) {
             flash("mensagem", "Usuário não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/leiloes/" + leilaoId);
         }
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, corrija os erros no formulário");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/avaliacoes/avaliar/" + leilaoId + "/" + avaliadoId);
+            return RedirectUtil.redirectToPathAsObject("/avaliacoes/avaliar/" + leilaoId + "/" + avaliadoId);
         }
         
         // Verificar se já avaliou este usuário neste leilão
         if (Avaliacao.jaAvaliou(leilao, usuario, avaliado)) {
             flash("mensagem", "Você já avaliou este usuário neste leilão");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+            return RedirectUtil.redirectToPathAsObject("/leiloes/" + leilaoId);
         }
         
         // Criar nova avaliação
@@ -163,7 +165,7 @@ public class AvaliacaoController extends Controller {
         
         flash("mensagem", "Avaliação enviada com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/leiloes/" + leilaoId);
+        return RedirectUtil.redirectToPathAsObject("/leiloes/" + leilaoId);
     }
     
     // Adicionar réplica a uma avaliação recebida
@@ -178,20 +180,20 @@ public class AvaliacaoController extends Controller {
         if (avaliacao == null) {
             flash("mensagem", "Avaliação não encontrada");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/avaliacoes/recebidas");
+            return RedirectUtil.redirectToPathAsObject("/avaliacoes/recebidas");
         }
         
         Usuario usuario = usuarioLogado();
         if (usuario == null || !usuario.equals(avaliacao.avaliado)) {
             flash("mensagem", "Você não tem permissão para responder a esta avaliação");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/avaliacoes/recebidas");
+            return RedirectUtil.redirectToPathAsObject("/avaliacoes/recebidas");
         }
         
         if (validationFailed()) {
             flash("mensagem", "A réplica não pode estar em branco");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/avaliacoes/recebidas");
+            return RedirectUtil.redirectToPathAsObject("/avaliacoes/recebidas");
         }
         
         // Adicionar réplica
@@ -199,7 +201,7 @@ public class AvaliacaoController extends Controller {
         
         flash("mensagem", "Réplica adicionada com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/avaliacoes/recebidas");
+        return RedirectUtil.redirectToPathAsObject("/avaliacoes/recebidas");
     }
     
     // Visualizar avaliações feitas pelo usuário logado
@@ -210,13 +212,60 @@ public class AvaliacaoController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return redirect("/usuarios/login").getInstance();
+            return RedirectUtil.redirectTemplate("/usuarios/login");
         }
         
         List<Avaliacao> todasAvaliacoes = Avaliacao.listarPorAvaliador(usuario);
         PaginationUtil.PagedResult<Avaliacao> avaliacoes = applyPagination(todasAvaliacoes);
         
-        return Templates.minhas(avaliacoes.getContent(), avaliacoes);
+        // Quarkus Qute espera apenas um argumento se o template for definido assim
+        return Templates.minhas(avaliacoes.getContent());
+    }
+    
+    /**
+     * Aplica a paginação em uma lista de avaliações
+     * 
+     * @param lista Lista completa de avaliações
+     * @return Resultado paginado
+     */
+    private <T> PaginationUtil.PagedResult<T> applyPagination(List<T> lista) {
+        // Valores padrão para paginação
+        int page = 0;
+        int size = 10;
+        
+        // Em uma implementação real, obteríamos os parâmetros da requisição
+        // No Renarde, o método getRequest() está disponível na classe Controller
+        String pageParam = request().getParameter("page");
+        String sizeParam = request().getParameter("size");
+        
+        if (pageParam != null && !pageParam.isEmpty()) {
+            try {
+                page = Integer.parseInt(pageParam);
+            } catch (NumberFormatException e) {
+                // Ignora e usa o valor padrão
+            }
+        }
+        
+        if (sizeParam != null && !sizeParam.isEmpty()) {
+            try {
+                size = Integer.parseInt(sizeParam);
+            } catch (NumberFormatException e) {
+                // Ignora e usa o valor padrão
+            }
+        }
+        
+        // Aplica a paginação usando o método correto
+        return PaginationUtil.PagedResult.of(lista, page, size, 5);  // 5 é o número máximo de links de página
+    }
+    
+    /**
+     * Obtém um parâmetro da requisição atual
+     * 
+     * @param name Nome do parâmetro
+     * @return Valor do parâmetro ou null se não existir
+     */
+    private String getRequestParameter(String name) {
+        return request().getParameter(name);
     }
     
     // Visualizar avaliações recebidas pelo usuário logado
@@ -227,16 +276,20 @@ public class AvaliacaoController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");
-            return redirect("/usuarios/login").getInstance();
+            return RedirectUtil.redirectTemplate("/usuarios/login");
         }
         
         List<Avaliacao> todasAvaliacoes = Avaliacao.listarPorAvaliado(usuario);
         PaginationUtil.PagedResult<Avaliacao> avaliacoes = applyPagination(todasAvaliacoes);
         
-        return Templates.recebidas(avaliacoes.getContent(), avaliacoes);
+        // Quarkus Qute espera apenas um argumento se o template for definido assim
+        return Templates.recebidas(avaliacoes.getContent());
     }
     
-    // Método auxiliar para obter o usuário logado
+    // Implementação do método usuarioLogado já está no BaseController, não precisamos reimplementar
+    // O método a seguir foi mantido apenas como documentação do comportamento
+    /* 
+    @Override
     protected Usuario usuarioLogado() {
         Long usuarioId = session().get("usuarioId", Long.class);
         if (usuarioId == null) {

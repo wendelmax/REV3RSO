@@ -54,6 +54,12 @@ public class Leilao extends PanacheEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     public String descricao;
     
+    @Column(columnDefinition = "TEXT")
+    public String especificacoesTecnicas;
+    
+    @Column(name = "valor_inicial")
+    public BigDecimal valorInicial;
+    
     @Column(name = "data_inicio", nullable = false)
     @NotNull(message = "A data de início é obrigatória")
     public Date dataInicio;
@@ -67,6 +73,9 @@ public class Leilao extends PanacheEntity {
     
     @Column(name = "valor_vencedor")
     public BigDecimal valorVencedor;
+    
+    @Column(name = "melhor_oferta")
+    public BigDecimal melhorOferta;
     
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -92,7 +101,11 @@ public class Leilao extends PanacheEntity {
     public FormaPagamento formaPagamento;
     
     public Integer quantidade;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
+    public Categoria categoria;
+
     @Column(name = "unidade_medida")
     public String unidadeMedida;
     
@@ -114,6 +127,9 @@ public class Leilao extends PanacheEntity {
     @OneToMany(mappedBy = "leilao")
     public List<Mensagem> mensagens;
     
+    @OneToMany(mappedBy = "leilao")
+    public List<Anexo> anexos;
+    
     // Construtor
     public Leilao() {
         this.dataCriacao = new Date();
@@ -121,6 +137,7 @@ public class Leilao extends PanacheEntity {
         this.lances = new ArrayList<>();
         this.convites = new ArrayList<>();
         this.mensagens = new ArrayList<>();
+        this.anexos = new ArrayList<>();
     }
     
     // Métodos estáticos para consultas frequentes
@@ -159,6 +176,14 @@ public class Leilao extends PanacheEntity {
     
     public void concluir() {
         if (this.status == Status.ENCERRADO) {
+            // Definir o lance vencedor
+            Lance menorLance = getMenorLance();
+            if (menorLance != null) {
+                menorLance.definirComoVencedor();
+                this.lanceVencedor = menorLance;
+                this.valorVencedor = menorLance.valor;
+            }
+            
             this.status = Status.CONCLUIDO;
             this.dataAtualizacao = new Date();
             this.persist();
@@ -341,5 +366,67 @@ public class Leilao extends PanacheEntity {
         Collections.reverse(resultado);
         
         return resultado;
+    }
+    
+    /**
+     * Retorna a lista de todos os participantes do leilão,
+     * incluindo o criador e todos os fornecedores que deram lances ou foram convidados.
+     * 
+     * @return Lista de usuários participantes
+     */
+    public List<Usuario> getParticipantes() {
+        // Usar um Map para evitar duplicatas de usuários
+        Map<Long, Usuario> participantesMap = new HashMap<>();
+        
+        // Adiciona o criador
+        participantesMap.put(criador.id, criador);
+        
+        // Adiciona fornecedores que deram lances
+        if (lances != null) {
+            for (Lance lance : lances) {
+                if (lance.fornecedor != null) {
+                    participantesMap.put(lance.fornecedor.id, lance.fornecedor);
+                }
+            }
+        }
+        
+        // Adiciona fornecedores convidados
+        if (convites != null) {
+            for (Convite convite : convites) {
+                if (convite.fornecedor != null) {
+                    participantesMap.put(convite.fornecedor.id, convite.fornecedor);
+                }
+            }
+        }
+        
+        // Converte para lista
+        return new ArrayList<>(participantesMap.values());
+    }
+    
+    /**
+     * Verifica se um usuário participou do leilão, seja como fornecedor que deu lance
+     * ou como fornecedor convidado em leilões fechados.
+     * 
+     * @param usuario Usuário a verificar
+     * @return true se o usuário participou, false caso contrário
+     */
+    public boolean temParticipacao(Usuario usuario) {
+        // Verifica se o usuário deu algum lance
+        if (lances != null) {
+            for (Lance lance : lances) {
+                if (lance.fornecedor != null && lance.fornecedor.equals(usuario)) {
+                    return true;
+                }
+            }
+        }
+        
+        // Em leilões fechados, verifica se foi convidado
+        if (tipoLeilao == TipoLeilao.FECHADO) {
+            return isConvidado(usuario);
+        }
+        
+        // Em leilões abertos, qualquer fornecedor pode participar
+        return tipoLeilao == TipoLeilao.ABERTO && 
+               usuario.tipoUsuario == Usuario.TipoUsuario.FORNECEDOR;
     }
 }

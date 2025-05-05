@@ -13,23 +13,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- package model;
- 
- import java.util.ArrayList;
- import java.util.List;
- 
- import io.quarkus.hibernate.orm.panache.PanacheEntity;
- import jakarta.persistence.Column;
- import jakarta.persistence.Entity;
- import jakarta.persistence.OneToMany;
- import jakarta.persistence.Table;
- import lombok.AllArgsConstructor;
- import lombok.Getter;
- import lombok.NoArgsConstructor;
- import lombok.Setter;
- import lombok.ToString;
- 
- /**
  * Representa uma forma de pagamento que pode ser utilizada nos leilões.
  * Baseado no modelo de dados original do REV3RSO.
  */
@@ -75,26 +58,5 @@ public class FormaPagamento extends PanacheEntity {
      */
     public static List<FormaPagamento> listarOrdenado() {
         return list("order by descricao");
-    }
-    
-    // Sobrescrita de métodos
-    
-    @Override
-    public String toString() {
-        return descricao;
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof FormaPagamento)) {
-            return false;
-        }
-        FormaPagamento other = (FormaPagamento) obj;
-        return this.id != null && this.id.equals(other.id);
-    }
-    
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 }

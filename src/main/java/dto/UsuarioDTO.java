@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import model.Usuario;
-import model.AreaAtuacao;
 import model.Leilao;
+import model.AreaAtuacao;
 
 /**
  * DTO (Data Transfer Object) para a entidade Usuario.
@@ -28,10 +28,29 @@ public record UsuarioDTO(
     String status,
     double pontuacao,
     Date dataCadastro,
-    List<String> areasAtuacao,
+    List<AreaAtuacaoResumo> areasAtuacao,
     int leiloesAtivos,
     int propostas
 ) {
+    
+    /**
+     * Classe interna para resumo de área com estatísticas
+     */
+    public record AreaAtuacaoResumo(
+        Long id,
+        String descricao,
+        int totalFornecedores,
+        boolean popular  // indicador se é uma área popular
+    ) {
+        public static AreaAtuacaoResumo fromEntity(AreaAtuacao area) {
+            return new AreaAtuacaoResumo(
+                area.id,
+                area.descricao,
+                area.fornecedores.size(),
+                area.fornecedores.size() > 5  // exemplo de regra de negócio: popular se tiver mais de 5 fornecedores
+            );
+        }
+    }
     
     /**
      * Construtor que converte uma entidade Usuario em DTO.
@@ -39,11 +58,11 @@ public record UsuarioDTO(
      * @param usuario A entidade a ser convertida.
      */
     public static UsuarioDTO fromEntity(Usuario usuario) {
-        // Mapear áreas de atuação
-        List<String> areasAtuacao = null;
+        // Mapear áreas de atuação com estatísticas
+        List<AreaAtuacaoResumo> areasAtuacao = null;
         if (usuario.areasAtuacao != null) {
             areasAtuacao = usuario.areasAtuacao.stream()
-                .map(area -> area.nome)
+                .map(AreaAtuacaoResumo::fromEntity)
                 .collect(Collectors.toList());
         }
         

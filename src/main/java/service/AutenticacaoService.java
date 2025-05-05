@@ -1,7 +1,5 @@
 package service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -117,7 +115,7 @@ public class AutenticacaoService {
         }
         
         // Administradores têm permissão total
-        if (usuario.administrador) {
+        if (usuario.tipoUsuario == model.Usuario.TipoUsuario.ADMINISTRADOR) {
             return true;
         }
         

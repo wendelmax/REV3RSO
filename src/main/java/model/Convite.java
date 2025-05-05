@@ -44,6 +44,15 @@ public class Convite extends PanacheEntity {
     @Column(nullable = false)
     public Status status;
     
+    @Column(name = "data_criacao", nullable = false)
+    public Date dataCriacao;
+    
+    @Column(name = "motivo_recusa")
+    public String motivoRecusa;
+    
+    @Column(columnDefinition = "TEXT")
+    public String mensagem;
+    
     public Convite() {
         this.dataEnvio = new Date();
         this.status = Status.PENDENTE;

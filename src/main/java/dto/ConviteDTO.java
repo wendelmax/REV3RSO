@@ -3,7 +3,6 @@ package dto;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import model.Convite;
 
 /**

@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
@@ -16,7 +15,6 @@ import java.util.Date;
 public class DateUtil {
     
     private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
-    private static final String DEFAULT_DATETIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
     private static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
     
     /**

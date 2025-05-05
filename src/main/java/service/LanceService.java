@@ -1,5 +1,6 @@
 package service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -131,7 +132,7 @@ public class LanceService {
      * @return Lance criado
      */
     @Transactional
-    public Lance criarLance(Leilao leilao, Usuario fornecedor, Double valor,
+    public Lance criarLance(Leilao leilao, Usuario fornecedor, BigDecimal valor,
                           String condicoesEntrega, Integer prazoEntrega, Integer prazoPagamento) {
         try {
             // Validações
@@ -147,12 +148,12 @@ public class LanceService {
                 throw new BusinessException("Você não tem permissão para participar deste leilão");
             }
             
-            if (valor <= 0) {
+            if (valor.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new BusinessException("O valor do lance deve ser maior que zero");
             }
             
             // Validar valor de referência
-            if (leilao.valorReferencia != null && valor > leilao.valorReferencia) {
+            if (leilao.valorReferencia != null && valor.compareTo(leilao.valorReferencia) > 0) {
                 throw new BusinessException("O valor do lance não pode ser maior que o valor de referência");
             }
             
@@ -196,7 +197,7 @@ public class LanceService {
      * @return Lance atualizado
      */
     @Transactional
-    public Lance atualizarLance(Long lanceId, Double valor, String condicoesEntrega,
+    public Lance atualizarLance(Long lanceId, BigDecimal valor, String condicoesEntrega,
                               Integer prazoEntrega, Integer prazoPagamento, Usuario fornecedor) {
         try {
             Lance lance = buscarPorId(lanceId);
@@ -215,12 +216,12 @@ public class LanceService {
                 throw new BusinessException("O leilão não está mais aberto para lances");
             }
             
-            if (valor <= 0) {
+            if (valor.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new BusinessException("O valor do lance deve ser maior que zero");
             }
             
             // Validar valor de referência
-            if (lance.leilao.valorReferencia != null && valor > lance.leilao.valorReferencia) {
+            if (lance.leilao.valorReferencia != null && valor.compareTo(lance.leilao.valorReferencia) > 0) {
                 throw new BusinessException("O valor do lance não pode ser maior que o valor de referência");
             }
             
@@ -335,7 +336,7 @@ public class LanceService {
             notificacaoService.criarNotificacao(
                 lance.leilao.criador,
                 "Novo lance em seu leilão",
-                "O fornecedor " + lance.fornecedor.nome + " deu um lance de R$ " + 
+                "O fornecedor " + lance.fornecedor.nomeFantasia + " deu um lance de R$ " + 
                 String.format("%.2f", lance.valor) + " no leilão " + lance.leilao.titulo,
                 "/leiloes/" + lance.leilao.id
             );
@@ -370,7 +371,7 @@ public class LanceService {
             notificacaoService.criarNotificacao(
                 lance.leilao.criador,
                 "Lance atualizado em seu leilão",
-                "O fornecedor " + lance.fornecedor.nome + " atualizou seu lance para R$ " + 
+                "O fornecedor " + lance.fornecedor.nomeFantasia + " atualizou seu lance para R$ " + 
                 String.format("%.2f", lance.valor) + " no leilão " + lance.leilao.titulo,
                 "/leiloes/" + lance.leilao.id
             );
@@ -407,7 +408,7 @@ public class LanceService {
                 notificacaoService.criarNotificacao(
                     lance.leilao.criador,
                     "Lance cancelado em seu leilão",
-                    "O fornecedor " + lance.fornecedor.nome + " cancelou seu lance no leilão " + 
+                    "O fornecedor " + lance.fornecedor.nomeFantasia + " cancelou seu lance no leilão " + 
                     lance.leilao.titulo + ". Motivo: " + lance.motivoCancelamento,
                     "/leiloes/" + lance.leilao.id
                 );

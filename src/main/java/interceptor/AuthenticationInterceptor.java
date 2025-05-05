@@ -1,7 +1,5 @@
 package interceptor;
 
-import java.io.IOException;
-
 import annotation.RequiresAuth;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;

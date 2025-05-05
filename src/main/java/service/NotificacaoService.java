@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import model.Mensagem;
@@ -47,12 +46,12 @@ public class NotificacaoService {
             criarNotificacao(
                 destinatario,
                 titulo,
-                "Nova pergunta de " + mensagem.autor.nome + ": " + 
+                "Nova pergunta de " + mensagem.autor.nomeFantasia + ": " + 
                 (mensagem.conteudo.length() > 100 ? mensagem.conteudo.substring(0, 97) + "..." : mensagem.conteudo),
                 "/mensagens/leilao/" + mensagem.leilao.id
             );
             
-            LOGGER.info("Notificação de nova pergunta enviada para " + destinatario.nome);
+            LOGGER.info("Notificação de nova pergunta enviada para " + destinatario.nomeFantasia);
         } catch (Exception e) {
             LOGGER.severe("Erro ao enviar notificação de nova pergunta: " + e.getMessage());
         }
@@ -74,12 +73,12 @@ public class NotificacaoService {
             criarNotificacao(
                 destinatario,
                 titulo,
-                "Resposta de " + resposta.autor.nome + ": " + 
+                "Resposta de " + resposta.autor.nomeFantasia + ": " + 
                 (resposta.conteudo.length() > 100 ? resposta.conteudo.substring(0, 97) + "..." : resposta.conteudo),
                 "/mensagens/leilao/" + resposta.leilao.id
             );
             
-            LOGGER.info("Notificação de nova resposta enviada para " + destinatario.nome);
+            LOGGER.info("Notificação de nova resposta enviada para " + destinatario.nomeFantasia);
         } catch (Exception e) {
             LOGGER.severe("Erro ao enviar notificação de nova resposta: " + e.getMessage());
         }

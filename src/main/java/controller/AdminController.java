@@ -102,14 +102,14 @@ public class AdminController extends Controller {
         if (validationFailed()) {
             flash("mensagem", "Por favor, corrija os erros no formulário");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/usuarios/editar/" + id);
+            return RedirectUtil.redirectToPathAsObject("/admin/usuarios/editar/" + id);
         }
         
         Usuario usuario = Usuario.findById(id);
         if (usuario == null) {
             flash("mensagem", "Usuu00e1rio não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/usuarios");
+            return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
         }
         
         // Verificar duplicidade de e-mail
@@ -117,11 +117,11 @@ public class AdminController extends Controller {
         if (existente != null && !existente.id.equals(id)) {
             flash("mensagem", "O e-mail informado ju00e1 estu00e1 em uso");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/usuarios/editar/" + id);
+            return RedirectUtil.redirectToPathAsObject("/admin/usuarios/editar/" + id);
         }
         
-        // Atualizar os dados do usuu00e1rio
-        usuario.nome = nome;
+        // Atualizar os dados do usuário
+        usuario.nomeFantasia = nome;
         usuario.email = email;
         usuario.razaoSocial = razaoSocial;
         usuario.nomeFantasia = nomeFantasia;
@@ -149,7 +149,7 @@ public class AdminController extends Controller {
         
         flash("mensagem", "Usuu00e1rio atualizado com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/usuarios");
+        return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
     }
     
     @POST
@@ -162,7 +162,7 @@ public class AdminController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/usuarios");
+            return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
         }
         
         // Resetar a senha para "123456"
@@ -171,7 +171,7 @@ public class AdminController extends Controller {
         
         flash("mensagem", "Senha resetada com sucesso para '123456'");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/usuarios");
+        return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
     }
     
     @POST
@@ -184,7 +184,7 @@ public class AdminController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/usuarios");
+            return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
         }
         
         usuario.status = Usuario.Status.ATIVO;
@@ -192,7 +192,7 @@ public class AdminController extends Controller {
         
         flash("mensagem", "Usuário ativado com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/usuarios");
+        return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
     }
     
     @POST
@@ -205,7 +205,7 @@ public class AdminController extends Controller {
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/usuarios");
+            return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
         }
         
         usuario.status = Usuario.Status.SUSPENSO;
@@ -213,7 +213,7 @@ public class AdminController extends Controller {
         
         flash("mensagem", "Usuário suspenso com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/usuarios");
+        return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
     }
     
     // Gerenciamento de u00e1reas de atuação
@@ -237,7 +237,7 @@ public class AdminController extends Controller {
         if (validationFailed()) {
             flash("mensagem", "Por favor, informe o nome da área");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/areas");
+            return RedirectUtil.redirectToPathAsObject("/admin/areas");
         }
         
         AreaAtuacao area;
@@ -246,7 +246,7 @@ public class AdminController extends Controller {
             if (area == null) {
                 flash("mensagem", "Área não encontrada");
                 flash("tipo", "danger");
-                return RedirectUtil.redirectToPath("/admin/areas");
+                return RedirectUtil.redirectToPathAsObject("/admin/areas");
             }
         } else {
             area = new AreaAtuacao();
@@ -258,7 +258,7 @@ public class AdminController extends Controller {
         
         flash("mensagem", "Área salva com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/areas");
+        return RedirectUtil.redirectToPathAsObject("/admin/areas");
     }
     
     @POST
@@ -271,21 +271,21 @@ public class AdminController extends Controller {
         if (area == null) {
             flash("mensagem", "Área não encontrada");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/areas");
+            return RedirectUtil.redirectToPathAsObject("/admin/areas");
         }
         
         // Verificar se a área está em uso
         if (area.usuarios != null && !area.usuarios.isEmpty()) {
             flash("mensagem", "Essa área está sendo utilizada por usuários e não pode ser excluída");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/areas");
+            return RedirectUtil.redirectToPathAsObject("/admin/areas");
         }
         
         area.delete();
         
         flash("mensagem", "Área excluída com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/areas");
+        return RedirectUtil.redirectToPathAsObject("/admin/areas");
     }
     
     // Gerenciamento de formas de pagamento
@@ -309,7 +309,7 @@ public class AdminController extends Controller {
         if (validationFailed()) {
             flash("mensagem", "Por favor, informe o nome da forma de pagamento");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/formas-pagamento");
+            return RedirectUtil.redirectToPathAsObject("/admin/formas-pagamento");
         }
         
         FormaPagamento forma;
@@ -318,7 +318,7 @@ public class AdminController extends Controller {
             if (forma == null) {
                 flash("mensagem", "Forma de pagamento não encontrada");
                 flash("tipo", "danger");
-                return RedirectUtil.redirectToPath("/admin/formas-pagamento");
+                return RedirectUtil.redirectToPathAsObject("/admin/formas-pagamento");
             }
         } else {
             forma = new FormaPagamento();
@@ -330,7 +330,7 @@ public class AdminController extends Controller {
         
         flash("mensagem", "Forma de pagamento salva com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/formas-pagamento");
+        return RedirectUtil.redirectToPathAsObject("/admin/formas-pagamento");
     }
     
     @POST
@@ -343,21 +343,21 @@ public class AdminController extends Controller {
         if (forma == null) {
             flash("mensagem", "Forma de pagamento não encontrada");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/formas-pagamento");
+            return RedirectUtil.redirectToPathAsObject("/admin/formas-pagamento");
         }
         
         // Verificar se a forma de pagamento está em uso
         if (forma.leiloes != null && !forma.leiloes.isEmpty()) {
             flash("mensagem", "Essa forma de pagamento está sendo utilizada por leilões e não pode ser excluída");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPath("/admin/formas-pagamento");
+            return RedirectUtil.redirectToPathAsObject("/admin/formas-pagamento");
         }
         
         forma.delete();
         
         flash("mensagem", "Forma de pagamento excluída com sucesso!");
         flash("tipo", "success");
-        return RedirectUtil.redirectToPath("/admin/formas-pagamento");
+        return RedirectUtil.redirectToPathAsObject("/admin/formas-pagamento");
     }
     
     // Mu00e9todo auxiliar para verificar se o usuu00e1rio u00e9 administrador

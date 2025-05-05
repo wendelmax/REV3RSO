@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import model.Leilao;
 import model.Lance;
 
@@ -56,7 +55,7 @@ public record LeilaoDTO(
         List<String> anexos = null;
         if (leilao.anexos != null) {
             anexos = leilao.anexos.stream()
-                .map(anexo -> anexo.nomeArquivo)
+                .map(anexo -> anexo.nome)
                 .collect(Collectors.toList());
         }
         

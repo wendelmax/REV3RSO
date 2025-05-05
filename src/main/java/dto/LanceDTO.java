@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import model.Lance;
 
 /**
@@ -43,7 +42,7 @@ public record LanceDTO(
             lance.prazoEntrega,
             lance.prazoPagamento,
             lance.dataCriacao,
-            lance.vencedor
+            lance.isVencedor()
         );
     }
     

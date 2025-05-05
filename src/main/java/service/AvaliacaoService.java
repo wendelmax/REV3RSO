@@ -183,7 +183,7 @@ public class AvaliacaoService {
             avaliacao.avaliado = avaliado;
             avaliacao.nota = nota;
             avaliacao.comentario = comentario;
-            avaliacao.dataCriacao = new Date();
+            avaliacao.dataAvaliacao = new Date();
             
             avaliacao.persist();
             
@@ -281,7 +281,7 @@ public class AvaliacaoService {
             notificacaoService.criarNotificacao(
                 avaliacao.avaliado,
                 "Nova avaliação recebida",
-                "Você recebeu uma avaliação com nota " + avaliacao.nota + " de " + avaliacao.avaliador.nome,
+                "Você recebeu uma avaliação com nota " + avaliacao.nota + " de " + avaliacao.avaliador.nomeFantasia,
                 "/avaliacoes/recebidas"
             );
         } catch (Exception e) {
@@ -299,7 +299,7 @@ public class AvaliacaoService {
             notificacaoService.criarNotificacao(
                 avaliacao.avaliador,
                 "Réplica à sua avaliação",
-                avaliacao.avaliado.nome + " respondeu à sua avaliação no leilão " + avaliacao.leilao.titulo,
+                avaliacao.avaliado.nomeFantasia + " respondeu à sua avaliação no leilão " + avaliacao.leilao.titulo,
                 "/avaliacoes/minhas"
             );
         } catch (Exception e) {

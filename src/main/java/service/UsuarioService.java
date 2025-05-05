@@ -1,10 +1,12 @@
 package service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -23,6 +25,12 @@ public class UsuarioService {
     
     private static final Logger LOGGER = Logger.getLogger(UsuarioService.class.getName());
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+
+    @Inject
+    EmailService emailService;
+
+    @Inject
+    NotificacaoService notificacaoService;
     
     /**
      * Concluir o processo de recuperação de senha, definindo uma nova senha.
@@ -97,7 +105,7 @@ public class UsuarioService {
             
             Usuario usuario = buscarPorEmail(email);
             
-            if (usuario == null || !usuario.ativo) {
+            if (usuario == null || usuario.status != model.Usuario.Status.ATIVO) {
                 return null;
             }
             
@@ -184,6 +192,65 @@ public class UsuarioService {
     }
     
     /**
+     * Inicia o processo de recuperação de senha para um usuário.
+     * 
+     * @param email Email do usuário que deseja recuperar a senha
+     * @return true se o processo foi iniciado com sucesso, false caso contrário
+     */
+    @Transactional
+    public boolean solicitarRecuperacaoSenha(String email) {
+        try {
+            if (email == null || email.isEmpty()) {
+                throw new BusinessException("Email não informado");
+            }
+            
+            if (!isEmailValido(email)) {
+                throw new BusinessException("Formato de email inválido");
+            }
+            
+            Usuario usuario = buscarPorEmail(email);
+            
+            if (usuario == null) {
+                LOGGER.warning("Tentativa de recuperação de senha para email não cadastrado: " + email);
+                return false; // Não informamos ao usuário que o email não existe por segurança
+            }
+            
+            if (usuario.status != model.Usuario.Status.ATIVO) {
+                LOGGER.warning("Tentativa de recuperação de senha para usuário inativo: " + email);
+                return false; // Não informamos ao usuário que a conta está inativa por segurança
+            }
+            
+            // Gerar token
+            String token = gerarTokenRecuperacao();
+            
+            // Salvar token no banco de dados
+            TokenRecuperacao tokenRecuperacao = new TokenRecuperacao();
+            tokenRecuperacao.token = token;
+            tokenRecuperacao.usuario = usuario;
+            tokenRecuperacao.dataCriacao = new Date();
+            
+            // Token válido por 24 horas
+            Calendar calendario = Calendar.getInstance();
+            calendario.add(Calendar.DAY_OF_MONTH, 1);
+            tokenRecuperacao.dataExpiracao = calendario.getTime();
+            
+            tokenRecuperacao.utilizado = false;
+            tokenRecuperacao.persist();
+            
+            // Enviar email com o token
+            enviarEmailRecuperacaoSenha(usuario, token);
+            
+            LOGGER.info("Recuperação de senha solicitada para o usuário ID: " + usuario.id);
+            return true;
+        } catch (BusinessException be) {
+            throw be;
+        } catch (Exception e) {
+            ExceptionUtil.handleException(e, "Erro ao solicitar recuperação de senha");
+            return false;
+        }
+    }
+    
+    /**
      * Busca um usuário pelo seu email.
      * 
      * @param email Email do usuário a ser buscado
@@ -197,6 +264,19 @@ public class UsuarioService {
     }
     
     /**
+     * Busca um usuário pelo seu ID.
+     * 
+     * @param id ID do usuário a ser buscado
+     * @return Usuário encontrado ou null se não existir
+     */
+    public Usuario buscarUsuarioPorId(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return Usuario.findById(id);
+    }
+    
+    /**
      * Envia email de boas-vindas para um novo usuário.
      * 
      * @param usuario Usuário recém-cadastrado
@@ -206,7 +286,7 @@ public class UsuarioService {
             String assunto = "Bem-vindo ao Sistema de Leilões";
             
             StringBuilder corpo = new StringBuilder();
-            corpo.append("Olá, ").append(usuario.nome).append("!\n\n");
+            corpo.append("Olá, ").append(usuario.nomeFantasia).append("!\n\n");
             corpo.append("Seja bem-vindo ao nosso Sistema de Leilões. Sua conta foi criada com sucesso.\n\n");
             
             corpo.append("Dados do seu cadastro:\n");
@@ -226,8 +306,7 @@ public class UsuarioService {
         } catch (Exception e) {
             LOGGER.severe("Erro ao enviar email de boas-vindas: " + e.getMessage());
         }
-    }
-    
+    }    
     /**
      * Envia email de confirmação de alteração de senha.
      * 
@@ -238,7 +317,7 @@ public class UsuarioService {
             String assunto = "Alteração de senha realizada";
             
             StringBuilder corpo = new StringBuilder();
-            corpo.append("Olá, ").append(usuario.nome).append("!\n\n");
+            corpo.append("Olá, ").append(usuario.nomeFantasia).append("!\n\n");
             corpo.append("Sua senha foi alterada com sucesso em nossa plataforma.\n\n");
             
             corpo.append("Se você não realizou esta alteração, entre em contato imediatamente com nossa equipe de suporte.\n\n");
@@ -267,7 +346,7 @@ public class UsuarioService {
             String assunto = "Recuperação de senha";
             
             StringBuilder corpo = new StringBuilder();
-            corpo.append("Olá, ").append(usuario.nome).append("!\n\n");
+            corpo.append("Olá, ").append(usuario.nomeFantasia).append("!\n\n");
             corpo.append("Recebemos uma solicitação para recuperação de senha da sua conta.\n\n");
             
             corpo.append("Para criar uma nova senha, acesse o link abaixo:\n");
@@ -300,7 +379,7 @@ public class UsuarioService {
             String assunto = "Senha recuperada com sucesso";
             
             StringBuilder corpo = new StringBuilder();
-            corpo.append("Olá, ").append(usuario.nome).append("!\n\n");
+            corpo.append("Olá, ").append(usuario.nomeFantasia).append("!\n\n");
             corpo.append("Sua senha foi redefinida com sucesso em nossa plataforma.\n\n");
             
             corpo.append("Você já pode acessar o sistema com sua nova senha através do link: http://sistema.exemplo.com/login\n\n");
@@ -331,7 +410,7 @@ public class UsuarioService {
             String assunto = "Sua conta foi desativada";
             
             StringBuilder corpo = new StringBuilder();
-            corpo.append("Olá, ").append(usuario.nome).append("!\n\n");
+            corpo.append("Olá, ").append(usuario.nomeFantasia).append("!\n\n");
             corpo.append("Sua conta em nosso sistema foi desativada por um administrador.\n\n");
             
             if (motivo != null && !motivo.isEmpty()) {
@@ -363,7 +442,7 @@ public class UsuarioService {
             String assunto = "Sua conta foi reativada";
             
             StringBuilder corpo = new StringBuilder();
-            corpo.append("Olá, ").append(usuario.nome).append("!\n\n");
+            corpo.append("Olá, ").append(usuario.nomeFantasia).append("!\n\n");
             corpo.append("Temos o prazer de informar que sua conta em nosso sistema foi reativada.\n\n");
             
             corpo.append("Você já pode acessar o sistema normalmente através do link: http://sistema.exemplo.com/login\n\n");
@@ -391,30 +470,30 @@ public class UsuarioService {
     @Transactional
     public Usuario promoverAdministrador(Long usuarioId, Usuario administradorAtual) {
         try {
-            Usuario usuario = buscarPorId(usuarioId);
+            Usuario usuarioAlvo = buscarUsuarioPorId(usuarioId);
             
-            if (usuario == null) {
+            if (usuarioAlvo == null) {
                 throw new BusinessException("Usuário não encontrado");
             }
             
             // Verificar permissão
-            if (!administradorAtual.administrador) {
+            if (usuarioAlvo.tipoUsuario != Usuario.TipoUsuario.ADMINISTRADOR) {
                 throw new BusinessException("Apenas administradores podem promover outros usuários");
             }
             
-            if (usuario.administrador) {
+            if (usuarioAlvo.tipoUsuario == Usuario.TipoUsuario.ADMINISTRADOR) {
                 throw new BusinessException("Este usuário já é administrador");
             }
             
             // Promover usuário
-            usuario.administrador = true;
-            usuario.persist();
+            usuarioAlvo.tipoUsuario = Usuario.TipoUsuario.ADMINISTRADOR;
+            usuarioAlvo.persist();
             
             // Notificar o usuário
-            notificarPromocaoAdministrador(usuario);
+            notificarPromocaoAdministrador(usuarioAlvo);
             
-            LOGGER.info("Usuário promovido a administrador. ID: " + usuario.id);
-            return usuario;
+            LOGGER.info("Usuário promovido a administrador. ID: " + usuarioAlvo.id);
+            return usuarioAlvo;
         } catch (BusinessException be) {
             throw be;
         } catch (Exception e) {
@@ -433,29 +512,27 @@ public class UsuarioService {
     @Transactional
     public Usuario removerAdministrador(Long usuarioId, Usuario administradorAtual) {
         try {
-            Usuario usuario = buscarPorId(usuarioId);
+            Usuario usuario = buscarUsuarioPorId(usuarioId);
             
             if (usuario == null) {
                 throw new BusinessException("Usuário não encontrado");
             }
             
             // Verificar permissão
-            if (!administradorAtual.administrador) {
+            if (administradorAtual.tipoUsuario != Usuario.TipoUsuario.ADMINISTRADOR) {
                 throw new BusinessException("Apenas administradores podem remover privilégios de outros usuários");
             }
             
-            if (!usuario.administrador) {
+            if (usuario.tipoUsuario != Usuario.TipoUsuario.ADMINISTRADOR) {
                 throw new BusinessException("Este usuário não é administrador");
             }
             
             // Garantir que pelo menos um administrador permaneça no sistema
-            long totalAdmins = Usuario.count("administrador = true");
+            long totalAdmins = Usuario.count("tipoUsuario = ?1", Usuario.TipoUsuario.ADMINISTRADOR);
             if (totalAdmins <= 1) {
                 throw new BusinessException("Operação não permitida. O sistema deve ter pelo menos um administrador");
             }
             
-            // Remover privilégios
-            usuario.administrador = false;
             usuario.persist();
             
             LOGGER.info("Privilégios de administrador removidos. Usuário ID: " + usuario.id);

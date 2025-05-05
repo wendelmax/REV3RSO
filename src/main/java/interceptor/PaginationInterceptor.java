@@ -58,9 +58,9 @@ public class PaginationInterceptor {
         LOGGER.fine("Detectados parâmetros de paginação nos headers: " + paginationParams);
         
         // Substitui parâmetros de paginação nos argumentos do método
-        Object[] modifiedParams = injectPaginationParams(context, paginationParams);
+        injectPaginationParams(context, paginationParams);
         
-        // Chama o método original com os parâmetros modificados
+        // Chama o método original com os parâmetros já modificados no contexto
         return context.proceed();
     }
     

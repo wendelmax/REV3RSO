@@ -3,7 +3,7 @@ package dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import model.Leilao;
+import model.Categoria;
 
 /**
  * DTO (Data Transfer Object) para a entidade Categoria de Leilão.
@@ -22,7 +22,7 @@ public record CategoriaDTO(
      * 
      * @param categoria A entidade a ser convertida.
      */
-    public static CategoriaDTO fromEntity(Leilao.Categoria categoria) {
+    public static CategoriaDTO fromEntity(Categoria categoria) {
         int leiloesVinculados = 0;
         if (categoria.leiloes != null) {
             leiloesVinculados = categoria.leiloes.size();
@@ -41,8 +41,8 @@ public record CategoriaDTO(
      * 
      * @return Uma nova instância de Categoria com os dados deste DTO.
      */
-    public Leilao.Categoria paraEntidade() {
-        Leilao.Categoria categoria = new Leilao.Categoria();
+    public Categoria paraEntidade() {
+        Categoria categoria = new Categoria();
         categoria.nome = this.nome;
         categoria.descricao = this.descricao;
         return categoria;
@@ -54,7 +54,7 @@ public record CategoriaDTO(
      * @param categorias Lista de entidades Categoria
      * @return Lista de CategoriaDTO
      */
-    public static List<CategoriaDTO> converterLista(List<Leilao.Categoria> categorias) {
+    public static List<CategoriaDTO> converterLista(List<Categoria> categorias) {
         return categorias.stream()
             .map(CategoriaDTO::fromEntity)
             .collect(Collectors.toList());

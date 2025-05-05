@@ -40,6 +40,28 @@
             </ul>
             {#if session:usuarioId}
             <ul class="navbar-nav">
+                <!-- Notificações -->
+                <li class="nav-item dropdown me-2" id="notificacoes-dropdown">
+                  <a class="nav-link position-relative" href="#" id="navbarNotificationLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notificações" title="Ver notificações">
+                    <i class="bi bi-bell-fill"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" id="notificacao-badge" hidden>
+                      0
+                    </span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-end notification-menu" aria-labelledby="navbarNotificationLink" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                    <li>
+                      <h6 class="dropdown-header d-flex justify-content-between">
+                        Notificações
+                        <a href="{uri:NotificacaoController.listar}" class="text-primary small">Ver todas</a>
+                      </h6>
+                    </li>
+                    <li id="notificacoes-container">
+                      <p class="dropdown-item text-center">Carregando...</p>
+                    </li>
+                  </ul>
+                </li>
+                
+                <!-- Perfil do usuário -->
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-person-circle"></i> Minha Conta
@@ -48,6 +70,7 @@
                     <li><a class="dropdown-item" href="{uri:Usuario.perfil}">Meu Perfil</a></li>
                     <li><a class="dropdown-item" href="{uri:Avaliacao.minhasAvaliacoes}">Minhas Avaliações</a></li>
                     <li><a class="dropdown-item" href="{uri:Avaliacao.avaliacoesRecebidas}">Avaliações Recebidas</a></li>
+                    <li><a class="dropdown-item" href="{uri:NotificacaoController.listar}">Minhas Notificações</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{uri:Usuario.logout}">Sair</a></li>
                   </ul>
@@ -97,5 +120,102 @@
     
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+    {#insert scripts /}
+    
+    {#if session:usuarioId}
+    <script>
+    // Função para carregar notificações
+    function carregarNotificacoes() {
+        // Busca notificações recentes
+        fetch('/notificacoes/recentes')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('notificacoes-container');
+                const badge = document.getElementById('notificacao-badge');
+                const count = data.total;
+                
+                // Atualiza o contador do badge
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+                
+                // Limpa o contêiner
+                container.innerHTML = '';
+                
+                // Se não há notificações, exibe mensagem
+                if (data.notificacoes.length === 0) {
+                    container.innerHTML = `<p class="dropdown-item text-center">Você não tem notificações não lidas.</p>`;
+                    return;
+                }
+                
+                // Adiciona cada notificação ao dropdown
+                data.notificacoes.forEach(notificacao => {
+                    // Formata data
+                    const data = new Date(notificacao.dataEnvio);
+                    const dataFormatada = data.toLocaleDateString('pt-BR') + ' ' + 
+                                        data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    
+                    // Cria o item de notificação
+                    const html = `
+                        <a class="dropdown-item notification-item d-flex flex-column" 
+                           href="javascript:void(0)" 
+                           onclick="navegarParaNotificacao('${notificacao.link}', ${notificacao.id})"
+                           title="${notificacao.mensagem}">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold text-truncate">${notificacao.titulo}</span>
+                                <small class="text-muted ms-2">${dataFormatada}</small>
+                            </div>
+                            <small class="text-truncate">${notificacao.mensagem}</small>
+                        </a>
+                    `;
+                    
+                    container.innerHTML += html;
+                });
+                
+                // Adiciona link para ver todas as notificações
+                if (count > data.notificacoes.length) {
+                    container.innerHTML += `
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center text-primary" href="{uri:NotificacaoController.listar}">
+                            Ver todas (${count})
+                        </a></li>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar notificações:', error);
+            });
+    }
+    
+    // Função para navegar para o link da notificação e marcá-la como lida
+    function navegarParaNotificacao(link, id) {
+        // Marca como lida
+        fetch(`/notificacoes/marcar-lida/${id}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            // Redireciona para o link
+            window.location.href = link;
+        });
+    }
+    
+    // Carrega notificações quando a página carrega
+    document.addEventListener('DOMContentLoaded', function() {
+        carregarNotificacoes();
+        
+        // Atualiza as notificações a cada 60 segundos
+        setInterval(carregarNotificacoes, 60000);
+        
+        // Recarrega notificações quando o dropdown é aberto
+        document.getElementById('navbarNotificationLink').addEventListener('click', function() {
+            carregarNotificacoes();
+        });
+    });
+    </script>
+    {/if}
   </body>
 </html>

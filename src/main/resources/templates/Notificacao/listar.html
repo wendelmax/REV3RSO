@@ -1,0 +1,110 @@
+{#include main}
+{#title}Notificações{/title}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Minhas Notificações</h1>
+            
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <button class="btn btn-primary" onclick="marcarTodasLidas()">
+                        Marcar todas como lidas
+                    </button>
+                </div>
+                <div>
+                    <div class="btn-group" role="group">
+                        <button id="btn-todas" class="btn btn-outline-primary active" onclick="filtrarNotificacoes('todas')">
+                            Todas ({notificacoes.size()})
+                        </button>
+                        <button id="btn-nao-lidas" class="btn btn-outline-primary" onclick="filtrarNotificacoes('nao-lidas')">
+                            Não lidas ({naoLidas})
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            {#if notificacoes.isEmpty()}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Você não tem notificações no momento.
+                </div>
+            {#else}
+                <div class="list-group">
+                    {#for notificacao in notificacoes}
+                    <a href="javascript:void(0)" 
+                       onclick="navegarParaNotificacao('{notificacao.link}', '{notificacao.id}')" 
+                       class="list-group-item list-group-item-action notification-item {notificacao.lida ? '' : 'list-group-item-primary not-read'}"
+                       title="{notificacao.titulo}">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{notificacao.titulo}</h5>
+                            <small>{#format notificacao.dataEnvio pattern="dd/MM/yyyy HH:mm" /}</small>
+                        </div>
+                        <p class="mb-1">{notificacao.mensagem}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-1">
+                            <small class="text-muted">Clique para acessar</small>
+                            {#if not notificacao.lida}
+                            <span class="badge bg-primary">Nova</span>
+                            {/if}
+                        </div>
+                    </a>
+                    {/for}
+                </div>
+            {/if}
+        </div>
+    </div>
+</div>
+
+<script>
+// Marca todas as notificações como lidas
+function marcarTodasLidas() {
+    fetch('/notificacoes/marcar-todas-lidas', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        }
+    });
+}
+
+// Filtra notificações (todas ou apenas não lidas)
+function filtrarNotificacoes(tipo) {
+    const todas = document.getElementById('btn-todas');
+    const naoLidas = document.getElementById('btn-nao-lidas');
+    const items = document.querySelectorAll('.notification-item');
+    
+    if (tipo === 'todas') {
+        todas.classList.add('active');
+        naoLidas.classList.remove('active');
+        items.forEach(item => item.style.display = 'block');
+    } else {
+        todas.classList.remove('active');
+        naoLidas.classList.add('active');
+        items.forEach(item => {
+            if (item.classList.contains('not-read')) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+}
+
+// Navega para o link da notificação e marca como lida
+function navegarParaNotificacao(link, id) {
+    // Marca como lida
+    fetch(`/notificacoes/marcar-lida/${id}`, {
+        method: 'POST'
+    })
+    .then(response => {
+        // Redireciona para o link
+        window.location.href = link;
+    });
+}
+</script>
+{/include}

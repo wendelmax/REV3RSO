@@ -3,13 +3,14 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * Representa uma área de atuação para fornecedores no sistema.
@@ -22,8 +23,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"fornecedores"})
-public class AreaAtuacao extends PanacheEntity {
+public class AreaAtuacao extends PanacheEntityBase {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
+    
+    @NotBlank(message = "Nome é obrigatório")
     @Column(nullable = false)
     public String nome;
     

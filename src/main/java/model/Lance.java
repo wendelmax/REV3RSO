@@ -14,9 +14,13 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "lances")
+@Getter
+@Setter
 public class Lance extends PanacheEntity {
     
     @ManyToOne

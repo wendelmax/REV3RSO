@@ -26,13 +26,18 @@ public class DataInitializationService {
      */
     @Transactional
     public void initDevelopmentData(@Observes StartupEvent evt) {
-        // Apenas em modo de desenvolvimento
-        if (LaunchMode.current() == LaunchMode.DEVELOPMENT) {
-            LOGGER.info("Inicializando dados para ambiente de desenvolvimento");
-            
-            initAdminUser();
-            initBusinessAreas();
-            initPaymentMethods();
+        try {
+            // Apenas em modo de desenvolvimento
+            if (LaunchMode.current() == LaunchMode.DEVELOPMENT) {
+                LOGGER.info("Inicializando dados para ambiente de desenvolvimento");
+                
+                initAdminUser();
+                initBusinessAreas();
+                initPaymentMethods();
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao inicializar dados de desenvolvimento: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     

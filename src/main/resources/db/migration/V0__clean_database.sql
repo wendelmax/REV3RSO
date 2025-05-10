@@ -1,13 +1,14 @@
--- Limpa todas as tabelas e sequências existentes
+-- Limpa todas as tabelas existentes
+DROP TABLE IF EXISTS anexos CASCADE;
 DROP TABLE IF EXISTS avaliacoes CASCADE;
 DROP TABLE IF EXISTS lances CASCADE;
 DROP TABLE IF EXISTS leiloes CASCADE;
 DROP TABLE IF EXISTS usuario_areas CASCADE;
 DROP TABLE IF EXISTS usuarios CASCADE;
 DROP TABLE IF EXISTS areas_atuacao CASCADE;
-
-DROP SEQUENCE IF EXISTS avaliacoes_seq;
-DROP SEQUENCE IF EXISTS lances_seq;
-DROP SEQUENCE IF EXISTS leiloes_seq;
-DROP SEQUENCE IF EXISTS usuarios_seq;
-DROP SEQUENCE IF EXISTS areas_atuacao_seq; 
+DROP TABLE IF EXISTS categorias CASCADE;
+DROP TABLE IF EXISTS formas_pagamento CASCADE;
+DROP TABLE IF EXISTS mensagens CASCADE;
+DROP TABLE IF EXISTS notificacao CASCADE;
+DROP TABLE IF EXISTS tokens_recuperacao CASCADE;
+DROP TABLE IF EXISTS convites CASCADE; 

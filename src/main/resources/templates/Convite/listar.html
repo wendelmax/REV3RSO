@@ -75,15 +75,15 @@
                     <h5 class="card-title">Resumo dos Convites</h5>
                     <div class="d-flex justify-content-around">
                       <div class="text-center">
-                        <h4>{convites.stream().filter(c -> c.status == convite.Status.PENDENTE).count()}</h4>
+                        <h4>{convites.stream().filter(c -> c.status == convite_status:PENDENTE).count()}</h4>
                         <p class="mb-0">Pendentes</p>
                       </div>
                       <div class="text-center">
-                        <h4>{convites.stream().filter(c -> c.status == convite.Status.ACEITO).count()}</h4>
+                        <h4>{convites.stream().filter(c -> c.status == convite_status:ACEITO).count()}</h4>
                         <p class="mb-0">Aceitos</p>
                       </div>
                       <div class="text-center">
-                        <h4>{convites.stream().filter(c -> c.status == convite.Status.RECUSADO).count()}</h4>
+                        <h4>{convites.stream().filter(c -> c.status == convite_status:RECUSADO).count()}</h4>
                         <p class="mb-0">Recusados</p>
                       </div>
                     </div>

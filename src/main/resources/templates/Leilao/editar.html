@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="dataFechamento" class="form-label">Data de Fechamento</label>
-                                <input type="datetime-local" class="form-control" id="dataFechamento" name="dataFechamento" value="{#format leilao.dataFechamento pattern='yyyy-MM-dd\'T\'HH:mm' /}" required>
+                                <input type="datetime-local" class="form-control" id="dataFechamento" name="dataFechamento" value="{DateUtil:formatarData(leilao.dataFechamento, 'yyyy-MM-dd\'T\'HH:mm')}" required>
                             </div>
                         </div>
                     </div>

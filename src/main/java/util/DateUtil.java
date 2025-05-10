@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Classe utilitária para manipulação de datas.
@@ -249,5 +250,49 @@ public class DateUtil {
         
         long diffInYears = diffInMonths / 12;
         return diffInYears + " anos";
+    }
+
+    /**
+     * Formata uma data java.util.Date usando o padrão especificado.
+     * 
+     * @param data Data a ser formatada
+     * @param pattern Padrão de formatação
+     * @return Data formatada como string
+     */
+    public static String formatarData(Date data, String pattern) {
+        if (data == null) return "";
+        return new SimpleDateFormat(pattern).format(data);
+    }
+    
+    /**
+     * Formata uma data java.util.Date usando o padrão padrão "dd/MM/yyyy HH:mm".
+     * 
+     * @param data Data a ser formatada
+     * @return Data formatada como string
+     */
+    public static String formatarData(Date data) {
+        return formatarData(data, "dd/MM/yyyy HH:mm");
+    }
+    
+    /**
+     * Formata uma data java.time.LocalDateTime usando o padrão especificado.
+     * 
+     * @param data Data a ser formatada
+     * @param pattern Padrão de formatação
+     * @return Data formatada como string
+     */
+    public static String formatarData(LocalDateTime data, String pattern) {
+        if (data == null) return "";
+        return data.format(DateTimeFormatter.ofPattern(pattern));
+    }
+    
+    /**
+     * Formata uma data java.time.LocalDateTime usando o padrão padrão "dd/MM/yyyy HH:mm".
+     * 
+     * @param data Data a ser formatada
+     * @return Data formatada como string
+     */
+    public static String formatarData(LocalDateTime data) {
+        return formatarData(data, "dd/MM/yyyy HH:mm");
     }
 }

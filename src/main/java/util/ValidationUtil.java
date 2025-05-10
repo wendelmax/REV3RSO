@@ -12,8 +12,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ValidationUtil {
 
-    private static final Pattern EMAIL_PATTERN = 
-            Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
     
     private static final Pattern PHONE_PATTERN = 
             Pattern.compile("^\\(\\d{2}\\)\\s\\d{4,5}-\\d{4}$");
@@ -21,8 +20,9 @@ public class ValidationUtil {
     private static final Pattern CPF_PATTERN = 
             Pattern.compile("^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$");
     
-    private static final Pattern CNPJ_PATTERN = 
-            Pattern.compile("^\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}$");
+    private static final Pattern CNPJ_PATTERN = Pattern.compile("^\\d{2}\\.?\\d{3}\\.?\\d{3}/?\\d{4}-?\\d{2}$");
+    
+    private static final Pattern CEP_PATTERN = Pattern.compile("^\\d{5}-?\\d{3}$");
     
     /**
      * Valida um endereço de e-mail.
@@ -31,10 +31,7 @@ public class ValidationUtil {
      * @return true se o e-mail for válido, false caso contrário
      */
     public static boolean isValidEmail(String email) {
-        if (StringUtils.isBlank(email)) {
-            return false;
-        }
-        return EMAIL_PATTERN.matcher(email).matches();
+        return email != null && EMAIL_PATTERN.matcher(email).matches();
     }
     
     /**
@@ -105,50 +102,40 @@ public class ValidationUtil {
      * @return true se o CNPJ for válido, false caso contrário
      */
     public static boolean isValidCNPJ(String cnpj) {
-        if (StringUtils.isBlank(cnpj)) {
-            return false;
-        }
-        
-        // Verifica o formato
-        if (!CNPJ_PATTERN.matcher(cnpj).matches()) {
+        if (cnpj == null || !CNPJ_PATTERN.matcher(cnpj).matches()) {
             return false;
         }
         
         // Remove caracteres não numéricos
-        cnpj = StringUtils.getDigits(cnpj);
+        cnpj = cnpj.replaceAll("[^0-9]", "");
         
         // Verifica se todos os dígitos são iguais
-        if (StringUtils.containsOnly(cnpj, cnpj.charAt(0))) {
+        if (cnpj.matches("(\\d)\\1{13}")) {
             return false;
         }
         
-        // Calcula o primeiro dígito verificador
-        int sum = 0;
-        int[] weights1 = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+        // Validação do CNPJ
+        int[] multiplicadores1 = {5,4,3,2,9,8,7,6,5,4,3,2};
+        int[] multiplicadores2 = {6,5,4,3,2,9,8,7,6,5,4,3,2};
         
+        int soma = 0;
         for (int i = 0; i < 12; i++) {
-            sum += (cnpj.charAt(i) - '0') * weights1[i];
+            soma += Integer.parseInt(String.valueOf(cnpj.charAt(i))) * multiplicadores1[i];
         }
         
-        int remainder = sum % 11;
-        int digit1 = remainder < 2 ? 0 : 11 - remainder;
+        int resto = soma % 11;
+        int digito1 = resto < 2 ? 0 : 11 - resto;
         
-        if (digit1 != (cnpj.charAt(12) - '0')) {
-            return false;
-        }
-        
-        // Calcula o segundo dígito verificador
-        sum = 0;
-        int[] weights2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
-        
+        soma = 0;
         for (int i = 0; i < 13; i++) {
-            sum += (cnpj.charAt(i) - '0') * weights2[i];
+            soma += Integer.parseInt(String.valueOf(cnpj.charAt(i))) * multiplicadores2[i];
         }
         
-        remainder = sum % 11;
-        int digit2 = remainder < 2 ? 0 : 11 - remainder;
+        resto = soma % 11;
+        int digito2 = resto < 2 ? 0 : 11 - resto;
         
-        return digit2 == (cnpj.charAt(13) - '0');
+        return digito1 == Integer.parseInt(String.valueOf(cnpj.charAt(12))) &&
+               digito2 == Integer.parseInt(String.valueOf(cnpj.charAt(13)));
     }
     
     /**
@@ -189,5 +176,9 @@ public class ValidationUtil {
         }
         
         return errors;
+    }
+
+    public static boolean isValidCEP(String cep) {
+        return cep != null && CEP_PATTERN.matcher(cep).matches();
     }
 }

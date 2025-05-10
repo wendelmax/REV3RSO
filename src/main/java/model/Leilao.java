@@ -30,6 +30,8 @@ import jakarta.validation.constraints.NotNull;
 public class Leilao extends PanacheEntity {
 
     public Date dataCancelamento;
+    @ManyToOne
+    @JoinColumn(name = "lance_vencedor_id")
     public Lance lanceVencedor;
 
     public enum TipoLeilao {

@@ -232,3 +232,139 @@ The application requires a PostgreSQL database. You can configure the database c
 ### API Documentation
 
 RESTful API endpoints are available at: http://localhost:8080/REV3RSO/api/
+
+## Requisitos
+- Java 17
+- Maven
+- PostgreSQL
+
+## Configuração do Banco de Dados
+1. Crie um banco de dados PostgreSQL chamado `rev3rso`
+2. Crie um usuário `rev3rso_user` com senha `rev3rso_password`
+3. Conceda todas as permissões do banco `rev3rso` para o usuário `rev3rso_user`
+
+## Executando a Aplicação
+1. Clone o repositório
+2. Execute `mvn quarkus:dev`
+3. Acesse a aplicação em `http://localhost:8080`
+4. Acesse a documentação da API em `http://localhost:8080/q/swagger-ui/`
+
+## Documentação da API
+
+### Swagger UI
+A documentação interativa da API está disponível em:
+- `http://localhost:8080/q/swagger-ui/` - Interface Swagger UI
+- `http://localhost:8080/q/openapi` - Especificação OpenAPI
+
+### Endpoints JSON
+Os seguintes endpoints retornam respostas em formato JSON:
+
+#### Leilões
+- `GET /leiloes` - Lista paginada de leilões
+- `GET /leiloes/{id}` - Detalhes de um leilão específico
+
+#### Notificações
+- `GET /notificacoes/nao-lidas/count` - Contagem de notificações não lidas
+- `GET /notificacoes/recentes` - Lista de notificações recentes
+
+## Funcionalidades
+- Cadastro de usuários (compradores e fornecedores)
+- Criação e gerenciamento de leilões
+- Sistema de lances
+- Notificações
+- Avaliações
+
+## Recursos Disponíveis
+
+### Endpoints da API
+
+#### Avaliações
+- `POST /avaliacoes/avaliar` - Criar nova avaliação (form-urlencoded)
+- `POST /avaliacoes/replica/{id}` - Replicar avaliação
+- `POST /avaliacoes/replicar` - Replicar avaliação (form-urlencoded)
+- `POST /avaliacoes/salvar` - Salvar avaliação
+- `GET /avaliacoes/avaliar/{leilaoId}/{avaliado}/{avaliadoId}` - Formulário de avaliação
+- `GET /avaliacoes/minhas` - Listar minhas avaliações
+- `GET /avaliacoes/recebidas` - Listar avaliações recebidas
+
+#### Convites
+- `POST /convites/enviar` - Enviar convite (form)
+- `GET /convites/aceitar/{id}/{conviteId}` - Aceitar convite
+- `GET /convites/listar/{leilaoId}` - Listar convites do leilão
+- `GET /convites/recebidos` - Listar convites recebidos
+- `GET /convites/recusar/{id}/{conviteId}` - Recusar convite
+- `GET /convites/selecionar/{leilaoId}` - Selecionar fornecedores para convite
+
+#### Notificações
+- `POST /notificacoes/marcar-lida/{id}` - Marcar notificação como lida
+- `POST /notificacoes/marcar-todas-lidas` - Marcar todas como lidas
+- `GET /notificacoes/listar` - Listar notificações
+
+#### Administração
+- `POST /admin/areas/excluir` - Excluir área
+- `POST /admin/areas/salvar` - Salvar área
+- `POST /admin/formas-pagamento/excluir` - Excluir forma de pagamento
+- `POST /admin/formas-pagamento/salvar` - Salvar forma de pagamento
+- `POST /admin/usuarios/ativar/{id}` - Ativar usuário
+- `POST /admin/usuarios/resetar-senha/{id}` - Resetar senha
+- `POST /admin/usuarios/salvar/{id}` - Salvar usuário
+- `POST /admin/usuarios/suspender/{id}` - Suspender usuário
+- `GET /admin/areas` - Listar áreas
+- `GET /admin/dashboard` - Dashboard administrativo
+- `GET /admin/formas-pagamento` - Listar formas de pagamento
+- `GET /admin/usuarios` - Listar usuários
+- `GET /admin/usuarios/editar/{id}` - Editar usuário
+
+#### Lances
+- `POST /lances/dar` - Dar lance (form)
+- `GET /lances/historico/{leilaoId}` - Histórico de lances
+
+#### Usuários
+- `POST /usuarios/atualizar` - Atualizar usuário (form)
+- `POST /usuarios/autenticar` - Autenticar (form)
+- `POST /usuarios/cadastrar` - Cadastrar (form)
+- `GET /usuarios/cadastro` - Formulário de cadastro
+- `GET /usuarios/editar` - Editar perfil
+- `GET /usuarios/fornecedores` - Listar fornecedores
+- `GET /usuarios/login` - Página de login
+- `GET /usuarios/logout` - Logout
+- `GET /usuarios/perfil` - Meu perfil
+- `GET /usuarios/perfil/{id}` - Perfil de usuário
+
+#### Leilões
+- `POST /leiloes/cancelar/{id}` - Cancelar leilão (form)
+- `POST /leiloes/enviarConvites/{id}/{leilaoId}` - Enviar convites (form)
+- `POST /leiloes/salvar` - Salvar leilão (form)
+- `GET /leiloes` - Listar leilões
+- `GET /leiloes/{id}` - Detalhes do leilão
+- `GET /leiloes/convidar/{id}` - Convidar fornecedores
+- `GET /leiloes/criar` - Criar leilão
+- `GET /leiloes/disponiveis` - Leilões disponíveis
+- `GET /leiloes/listarLeiloes` - Listar leilões
+- `GET /leiloes/meus` - Meus leilões
+- `GET /leiloes/visualizar/{id}` - Visualizar leilão
+
+#### Mensagens
+- `POST /mensagens/perguntar` - Enviar pergunta
+- `POST /mensagens/responder` - Responder mensagem (form)
+- `GET /mensagens/leilao/{id}/{leilaoId}` - Mensagens do leilão
+- `GET /mensagens/responder/{id}/{mensagemId}` - Responder mensagem
+
+### Recursos de Desenvolvimento
+
+#### Dev UI
+- `http://localhost:8080/q/dev-ui` - Interface de desenvolvimento
+- `http://localhost:8080/q/arc` - Visão geral do CDI
+- `http://localhost:8080/q/arc/beans` - Beans CDI ativos
+- `http://localhost:8080/q/arc/observers` - Observadores CDI ativos
+- `http://localhost:8080/q/arc/removed-beans` - Beans CDI removidos
+
+#### Documentação da API
+- `http://localhost:8080/q/openapi` - Documento OpenAPI
+- `http://localhost:8080/q/swagger-ui` - Interface Swagger UI
+
+#### Recursos Estáticos
+- `http://localhost:8080/static/bundle/main.css` - CSS principal
+- `http://localhost:8080/static/bundle/main.js` - JavaScript principal
+- `http://localhost:8080/static/logo.svg` - Logo do sistema
+- `http://localhost:8080/web-bundler.html` - Bundler web

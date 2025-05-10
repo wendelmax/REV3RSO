@@ -38,7 +38,7 @@
                        title="{notificacao.titulo}">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{notificacao.titulo}</h5>
-                            <small>{#format notificacao.dataEnvio pattern="dd/MM/yyyy HH:mm" /}</small>
+                            <small>{DateUtil:formatarData(notificacao.dataEnvio)}</small>
                         </div>
                         <p class="mb-1">{notificacao.mensagem}</p>
                         <div class="d-flex justify-content-between align-items-center mt-1">

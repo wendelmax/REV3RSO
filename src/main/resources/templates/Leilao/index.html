@@ -32,7 +32,7 @@
                                     <span class="badge bg-secondary">{leilao.categoria}</span>
                                 </div>
                                 <p><strong>Valor de referência:</strong> R$ {leilao.valorReferencia}</p>
-                                <p><strong>Data de fechamento:</strong> {#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</p>
+                                <p><strong>Data de fechamento:</strong> {DateUtil:formatarData(leilao.dataFechamento)}</p>
                             </div>
                             <div class="card-footer">
                                 <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-primary">Ver detalhes</a>

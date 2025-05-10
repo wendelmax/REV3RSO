@@ -54,7 +54,7 @@
                                                     <td>{leilao.titulo}</td>
                                                     <td>{leilao.categoria}</td>
                                                     <td>R$ {leilao.valorReferencia}</td>
-                                                    <td>{#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</td>
+                                                    <td>{DateUtil:formatarData(leilao.dataFechamento)}</td>
                                                     <td>{leilao.lances.size()}</td>
                                                     <td>
                                                         <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver</a>
@@ -90,7 +90,7 @@
                                                     <td>R$ {leilao.valorReferencia}</td>
                                                     <td>R$ {leilao.melhorLance.valor}</td>
                                                     <td>{leilao.melhorLance.fornecedor.nomeFantasia}</td>
-                                                    <td>{#format leilao.dataConclusao pattern="dd/MM/yyyy HH:mm" /}</td>
+                                                    <td>{DateUtil:formatarData(leilao.dataAtualizacao)}</td>
                                                     <td>
                                                         <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver</a>
                                                     </td>
@@ -121,7 +121,7 @@
                                                     <td>{leilao.titulo}</td>
                                                     <td>{leilao.categoria}</td>
                                                     <td>R$ {leilao.valorReferencia}</td>
-                                                    <td>{#format leilao.dataCancelamento pattern="dd/MM/yyyy HH:mm" /}</td>
+                                                    <td>{DateUtil:formatarData(leilao.dataCancelamento)}</td>
                                                     <td>{leilao.motivoCancelamento}</td>
                                                     <td>
                                                         <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver</a>

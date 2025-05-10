@@ -14,8 +14,10 @@ import model.Usuario;
 import model.Convite;
 import model.Lance;
 import model.FormaPagamento;
+import dto.PaginatedResponse;
 import exception.BusinessException;
 import util.ExceptionUtil;
+import io.quarkus.panache.common.Page;
 
 /**
  * Serviço responsável por gerenciar as operações relacionadas aos leilões.
@@ -567,6 +569,68 @@ public class LeilaoService {
                 mensagem,
                 "/leiloes/" + leilao.id
             );
+        }
+    }
+    
+    /**
+     * Lista leilões com paginação
+     * 
+     * @param page Número da página (começa em 1)
+     * @param size Tamanho da página
+     * @return Resposta paginada com leilões
+     */
+    public PaginatedResponse<Leilao> listarLeiloesPaginados(int page, int size) {
+        try {
+            // Ajusta o índice da página (Panache usa 0-based)
+            int pageIndex = page - 1;
+            
+            // Busca os leilões paginados
+            var pageResult = Leilao.findAll()
+                .page(io.quarkus.panache.common.Page.of(pageIndex, size));
+            
+            // Calcula o total de páginas
+            int totalPages = (int) Math.ceil((double) pageResult.count() / size);
+            
+            return new PaginatedResponse<>(
+                pageResult.list(),
+                page,
+                totalPages,
+                pageResult.count(),
+                size
+            );
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao listar leilões paginados: " + e.getMessage());
+            throw new BusinessException("Erro ao listar leilões");
+        }
+    }
+    
+    /**
+     * Lista leilões por criador com paginação
+     * 
+     * @param criador Usuário criador
+     * @param page Número da página (começa em 1)
+     * @param size Tamanho da página
+     * @return Resposta paginada com leilões
+     */
+    public PaginatedResponse<Leilao> listarLeiloesPorCriadorPaginados(Usuario criador, int page, int size) {
+        try {
+            int pageIndex = page - 1;
+            
+            var pageResult = Leilao.find("criador = ?1 ORDER BY dataCriacao DESC", criador)
+                .page(io.quarkus.panache.common.Page.of(pageIndex, size));
+            
+            int totalPages = (int) Math.ceil((double) pageResult.count() / size);
+            
+            return new PaginatedResponse<>(
+                pageResult.list(),
+                page,
+                totalPages,
+                pageResult.count(),
+                size
+            );
+        } catch (Exception e) {
+            LOGGER.severe("Erro ao listar leilões do criador: " + e.getMessage());
+            throw new BusinessException("Erro ao listar leilões");
         }
     }
 }

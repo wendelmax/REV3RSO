@@ -33,7 +33,7 @@
                                         <td>{leilao.comprador.nomeFantasia}</td>
                                         <td>{leilao.categoria}</td>
                                         <td>R$ {leilao.valorReferencia}</td>
-                                        <td>{#format leilao.dataFechamento pattern="dd/MM/yyyy HH:mm" /}</td>
+                                        <td>{DateUtil:formatarData(leilao.dataFechamento)}</td>
                                         <td>
                                             <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-sm btn-primary">Ver Detalhes</a>
                                         </td>

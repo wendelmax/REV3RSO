@@ -2,6 +2,9 @@ package controller;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.smallrye.mutiny.Uni;
 
@@ -17,6 +20,8 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
 
 import model.Leilao;
 import model.Usuario;
@@ -31,13 +36,14 @@ public class LanceController extends BaseController {
     
     @CheckedTemplate(basePath = "Lance", requireTypeSafeExpressions = false)
     public static class Templates {
-        public static native TemplateInstance historico(Leilao leilao);
+        public static native TemplateInstance historico(Leilao leilao, List<Lance> lancesOrdenados, Lance menorLance);
     }
     
     // Ação para dar um novo lance
     @POST
     @Path("/dar")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<String> darLance(
             @FormParam("leilaoId") @NotNull Long leilaoId,
             @FormParam("valor") @NotBlank String valorStr,
@@ -151,7 +157,12 @@ public class LanceController extends BaseController {
             return RedirectUtil.redirect(LeilaoController.class);
         }
         
-        return Uni.createFrom().item(Templates.historico(leilao));
+        List<Lance> lancesOrdenados = leilao.lances.stream()
+            .sorted(Comparator.comparing(l -> l.valor))
+            .collect(Collectors.toList());
+        Lance menorLance = lancesOrdenados.isEmpty() ? null : lancesOrdenados.get(0);
+        
+        return Uni.createFrom().item(Templates.historico(leilao, lancesOrdenados, menorLance));
     }
     
     // Usando o método usuarioLogado() herdado de BaseController

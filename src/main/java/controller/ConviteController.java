@@ -15,6 +15,8 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
 
 import model.Usuario;
 import model.Leilao;
@@ -76,6 +78,7 @@ public class ConviteController extends BaseController {
     @POST
     @Path("/enviar")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Object> enviarConvites(
             @FormParam("leilaoId") @NotNull Long leilaoId,
             @FormParam("fornecedorIds") @NotEmpty List<Long> fornecedorIds) {

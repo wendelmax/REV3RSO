@@ -112,6 +112,16 @@
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- OpenAPI/Swagger -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

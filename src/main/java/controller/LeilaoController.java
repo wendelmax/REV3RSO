@@ -18,8 +18,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
 
 import model.Leilao;
 import model.Usuario;
@@ -27,12 +33,27 @@ import model.Lance;
 import model.FormaPagamento;
 import model.Convite;
 import service.NotificacaoService;
+import service.LeilaoService;
+import dto.PaginatedResponse;
+
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/leiloes")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Leilões", description = "Operações relacionadas a leilões")
 public class LeilaoController extends BaseController {
     
     @Inject
     NotificacaoService notificacaoService;
+    
+    @Inject
+    LeilaoService leilaoService;
     
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
     
@@ -71,6 +92,7 @@ public class LeilaoController extends BaseController {
     @POST
     @Path("/salvar")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<String> salvar(
             @FormParam("titulo") @NotBlank String titulo,
             @FormParam("descricao") @NotBlank String descricao,
@@ -156,7 +178,7 @@ public class LeilaoController extends BaseController {
     }
     
     // Visualizar um leilão específico
-    @Path("/{id}")
+    @Path("/visualizar/{id}")
     public TemplateInstance visualizar(@PathParam("id") Long id) {
         Leilao leilao = Leilao.findById(id);
         if (leilao == null) {
@@ -224,6 +246,7 @@ public class LeilaoController extends BaseController {
     @POST
     @Path("/enviarConvites/{id}")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void enviarConvites(
             @PathParam("id") Long leilaoId,
             @FormParam("fornecedores") List<Long> fornecedoresIds,
@@ -317,6 +340,7 @@ public class LeilaoController extends BaseController {
     @POST
     @Path("/cancelar/{id}")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void cancelar(
             @PathParam("id") Long id,
             @FormParam("motivo") @NotBlank String motivo) {
@@ -363,6 +387,46 @@ public class LeilaoController extends BaseController {
         flash("mensagem", "Leilão cancelado com sucesso");
         flash("tipo", "success");
         meusLeiloes();
+    }
+    
+    @GET
+    @Operation(
+        summary = "Lista leilões paginados",
+        description = "Retorna uma lista paginada de leilões"
+    )
+    @APIResponse(
+        responseCode = "200",
+        description = "Lista de leilões retornada com sucesso",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = PaginatedResponse.class))
+    )
+    public PaginatedResponse<Leilao> listarLeiloes(
+        @Parameter(description = "Número da página (começa em 1)") @QueryParam("page") @DefaultValue("1") int page,
+        @Parameter(description = "Tamanho da página") @QueryParam("size") @DefaultValue("10") int size
+    ) {
+        return leilaoService.listarLeiloesPaginados(page, size);
+    }
+    
+    @GET
+    @Path("/{id}")
+    @Operation(
+        summary = "Busca leilão por ID",
+        description = "Retorna os detalhes de um leilão específico"
+    )
+    @APIResponse(
+        responseCode = "200",
+        description = "Leilão encontrado",
+        content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(implementation = Leilao.class))
+    )
+    @APIResponse(
+        responseCode = "404",
+        description = "Leilão não encontrado"
+    )
+    public Leilao buscarPorId(
+        @Parameter(description = "ID do leilão") @PathParam("id") Long id
+    ) {
+        return leilaoService.buscarPorId(id);
     }
     
     // Usando o método usuarioLogado() herdado de BaseController

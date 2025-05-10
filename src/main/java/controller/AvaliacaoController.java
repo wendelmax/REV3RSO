@@ -21,6 +21,8 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
 
 @Path("/avaliacoes")
 public class AvaliacaoController extends BaseController {
@@ -272,5 +274,26 @@ public class AvaliacaoController extends BaseController {
         
         // Quarkus Qute espera apenas um argumento se o template for definido assim
         return Templates.recebidas(avaliacoes.getContent());
+    }
+
+    @POST
+    @Path("/avaliar")
+    @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public void avaliar(
+            @FormParam("leilaoId") @NotNull Long leilaoId,
+            @FormParam("avaliadoId") @NotNull Long avaliadoId,
+            @FormParam("nota") @NotNull @Min(1) @Max(5) Integer nota,
+            @FormParam("comentario") @NotBlank String comentario) {
+        // ... existing code ...
+    }
+
+    @POST
+    @Path("/replicar")
+    @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public void replicar(
+            @FormParam("replica") @NotBlank String replica) {
+        // ... existing code ...
     }
 }

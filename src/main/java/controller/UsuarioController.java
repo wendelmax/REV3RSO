@@ -3,10 +3,9 @@ package controller;
 import java.util.Date;
 import java.util.List;
 import io.smallrye.mutiny.Uni;
-
-
 import util.RedirectUtil;
-
+import util.ValidationUtil;
+import util.PasswordUtil;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
@@ -15,6 +14,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
 import model.Usuario;
 import model.AreaAtuacao;
 import model.Avaliacao;
@@ -49,6 +50,7 @@ public class UsuarioController extends BaseController {
     @POST
     @Path("/cadastrar")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Object> cadastrar(
             @FormParam("razaoSocial") @NotBlank String razaoSocial,
             @FormParam("nomeFantasia") @NotBlank String nomeFantasia,
@@ -65,6 +67,25 @@ public class UsuarioController extends BaseController {
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, corrija os erros no formulário");
+            flash("tipo", "danger");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
+        }
+        
+        // Validações específicas
+        if (!ValidationUtil.isValidEmail(email)) {
+            flash("mensagem", "Email inválido");
+            flash("tipo", "danger");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
+        }
+        
+        if (!ValidationUtil.isValidCNPJ(cnpj)) {
+            flash("mensagem", "CNPJ inválido");
+            flash("tipo", "danger");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
+        }
+        
+        if (!ValidationUtil.isValidCEP(cep)) {
+            flash("mensagem", "CEP inválido");
             flash("tipo", "danger");
             return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
         }
@@ -93,7 +114,7 @@ public class UsuarioController extends BaseController {
         usuario.cep = cep;
         usuario.telefone = telefone;
         usuario.email = email;
-        usuario.senha = senha; // Aqui deveria ter uma criptografia
+        usuario.senha = PasswordUtil.hashPassword(senha); // Criptografando a senha
         usuario.areasAtuacao = areasAtuacao;
         usuario.tipoUsuario = Usuario.TipoUsuario.valueOf(tipoUsuario);
         usuario.dataCadastro = new Date();
@@ -117,6 +138,7 @@ public class UsuarioController extends BaseController {
     // Ação para processar o login
     @POST
     @Path("/autenticar")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Object> autenticar(
             @FormParam("email") @NotBlank String email,
             @FormParam("senha") @NotBlank String senha) {
@@ -219,6 +241,7 @@ public class UsuarioController extends BaseController {
     @POST
     @Path("/atualizar")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Uni<Object> atualizar(
             @FormParam("razaoSocial") @NotBlank String razaoSocial,
             @FormParam("nomeFantasia") @NotBlank String nomeFantasia,

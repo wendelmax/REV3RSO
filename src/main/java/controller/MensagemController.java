@@ -14,6 +14,8 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.core.MediaType;
 
 import annotation.RequiresAuth;
 import model.Usuario;
@@ -148,6 +150,7 @@ public class MensagemController extends BaseController {
     @POST
     @Path("/responder")
     @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @RequiresAuth
     public Uni<Object> enviarResposta(
             @FormParam("mensagemId") @NotNull Long mensagemId,

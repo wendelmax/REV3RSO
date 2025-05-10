@@ -44,8 +44,8 @@
             </tr>
           </thead>
           <tbody>
-            {#for lance in leilao.lances.sort((a, b) -> a.valor.compareTo(b.valor))}
-              <tr {#if lance == leilao.lances.stream().min((a, b) -> a.valor.compareTo(b.valor)).orElse(null)}class="table-success"{/if}>
+            {#for lance in lancesOrdenados}
+              <tr {#if lance == lancesOrdenados.get(0)}class="table-success"{/if}>
                 <td>{lance.dataCriacao.format('dd/MM/yyyy HH:mm:ss')}</td>
                 <td>{lance.fornecedor.nome}</td>
                 <td class="text-end">R$ {lance.valor.toString().replace('.', ',')}</td>
@@ -59,44 +59,39 @@
       </div>
 
       {#if leilao.status == 'CONCLUIDO' && usuarioLogado.equals(leilao.criador)}
-        {#with leilao.lances.stream().min((a, b) -> a.valor.compareTo(b.valor)).orElse(null) as menorLance}
-          {#if menorLance != null}
-            <div class="card mt-4 border-success">
-              <div class="card-header bg-success text-white">
-                <h3 class="mb-0">Fornecedor Vencedor</h3>
-              </div>
-              <div class="card-body">
-                <h4>{menorLance.fornecedor.nome}</h4>
-                <p><strong>Valor:</strong> R$ {menorLance.valor.toString().replace('.', ',')}</p>
-                <p><strong>Prazo de Entrega:</strong> {#if menorLance.prazoEntrega}{menorLance.prazoEntrega} dias{#else}N/A{/if}</p>
-                <p><strong>Prazo de Pagamento:</strong> {#if menorLance.prazoPagamento}{menorLance.prazoPagamento} dias{#else}N/A{/if}</p>
-                <p><strong>Condições de Entrega:</strong> {#if menorLance.condicoesEntrega}{menorLance.condicoesEntrega}{#else}Não especificado{/if}</p>
-                
-                <a href="/avaliacoes/avaliar/{leilao.id}/{menorLance.fornecedor.id}" class="btn btn-primary">
-                  Avaliar Fornecedor
-                </a>
-              </div>
+        {#if menorLance != null}
+          <div class="card mt-4 border-success">
+            <div class="card-header bg-success text-white">
+              <h3 class="mb-0">Fornecedor Vencedor</h3>
             </div>
-          {/if}
-        {/with}
+            <div class="card-body">
+              <h4>{menorLance.fornecedor.nome}</h4>
+              <p><strong>Valor:</strong> R$ {menorLance.valor.toString().replace('.', ',')}</p>
+              <p><strong>Prazo de Entrega:</strong> {#if menorLance.prazoEntrega}{menorLance.prazoEntrega} dias{#else}N/A{/if}</p>
+              <p><strong>Prazo de Pagamento:</strong> {#if menorLance.prazoPagamento}{menorLance.prazoPagamento} dias{#else}N/A{/if}</p>
+              <p><strong>Condições de Entrega:</strong> {#if menorLance.condicoesEntrega}{menorLance.condicoesEntrega}{#else}Não especificado{/if}</p>
+              <a href="/avaliacoes/avaliar/{leilao.id}/{menorLance.fornecedor.id}" class="btn btn-primary">
+                Avaliar Fornecedor
+              </a>
+            </div>
+          </div>
+        {/if}
       {/if}
 
       {#if leilao.status == 'CONCLUIDO' && usuarioLogado.tipoUsuario == 'FORNECEDOR'}
-        {#with leilao.lances.stream().min((a, b) -> a.valor.compareTo(b.valor)).orElse(null) as menorLance}
-          {#if menorLance != null && menorLance.fornecedor.equals(usuarioLogado)}
-            <div class="card mt-4 border-success">
-              <div class="card-header bg-success text-white">
-                <h3 class="mb-0">Parabéns! Seu lance foi vencedor</h3>
-              </div>
-              <div class="card-body">
-                <p>Você ofereceu o melhor lance neste leilão.</p>
-                <a href="/avaliacoes/avaliar/{leilao.id}/{leilao.criador.id}" class="btn btn-primary">
-                  Avaliar Comprador
-                </a>
-              </div>
+        {#if menorLance != null && menorLance.fornecedor.equals(usuarioLogado)}
+          <div class="card mt-4 border-success">
+            <div class="card-header bg-success text-white">
+              <h3 class="mb-0">Parabéns! Seu lance foi vencedor</h3>
             </div>
-          {/if}
-        {/with}
+            <div class="card-body">
+              <p>Você ofereceu o melhor lance neste leilão.</p>
+              <a href="/avaliacoes/avaliar/{leilao.id}/{leilao.criador.id}" class="btn btn-primary">
+                Avaliar Comprador
+              </a>
+            </div>
+          </div>
+        {/if}
       {/if}
     {/if}
 

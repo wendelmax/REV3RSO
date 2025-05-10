@@ -11,7 +11,6 @@ import model.FormaPagamento;
 import model.Usuario;
 import model.Usuario.TipoUsuario;
 import model.Usuario.Status;
-import io.quarkus.runtime.configuration.ProfileManager;
 
 import java.util.Date;
 import java.util.List;
@@ -51,6 +50,9 @@ public class DataInitializationService {
             
             // Inicializa áreas de atuação
             initBusinessAreas();
+            
+            // Inicializa formas de pagamento
+            initPaymentMethods();
             
         } catch (Exception e) {
             System.err.println("Erro ao inicializar dados de desenvolvimento: " + e.getMessage());
@@ -108,11 +110,9 @@ public class DataInitializationService {
             
             // Cria cada área se não existir
             for (String area : areas) {
-                if (AreaAtuacao.find("descricao", area).firstResult() == null) {
+                if (AreaAtuacao.buscarPorDescricao(area) == null) {
                     System.out.println("Criando área de atuação: " + area);
-                    AreaAtuacao novaArea = new AreaAtuacao();
-                    novaArea.nome = area;
-                    novaArea.descricao = area;
+                    AreaAtuacao novaArea = new AreaAtuacao(area, area);
                     novaArea.persist();
                 }
             }

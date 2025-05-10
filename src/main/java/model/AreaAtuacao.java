@@ -26,7 +26,8 @@ import jakarta.validation.constraints.NotBlank;
 public class AreaAtuacao extends PanacheEntityBase {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "areas_atuacao_seq")
+    @SequenceGenerator(name = "areas_atuacao_seq", sequenceName = "areas_atuacao_seq", allocationSize = 1, initialValue = 1)
     public Long id;
     
     @NotBlank(message = "Nome é obrigatório")

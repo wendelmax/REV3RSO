@@ -11,11 +11,14 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import jakarta.persistence.EntityManager;
 
 import model.TokenRecuperacao;
 import model.Usuario;
 import util.ExceptionUtil;
 import exception.BusinessException;
+
+import java.util.List;
 
 /**
  * Serviço responsável pelas operações relacionadas aos usuários do sistema.
@@ -31,6 +34,9 @@ public class UsuarioService {
 
     @Inject
     NotificacaoService notificacaoService;
+    
+    @Inject
+    EntityManager entityManager;
     
     /**
      * Concluir o processo de recuperação de senha, definindo uma nova senha.
@@ -560,6 +566,35 @@ public class UsuarioService {
             );
         } catch (Exception e) {
             LOGGER.severe("Erro ao notificar sobre promoção a administrador: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public List<Usuario> listarTodos() {
+        return entityManager.createQuery("SELECT u FROM Usuario u", Usuario.class)
+            .getResultList();
+    }
+    
+    @Transactional
+    public Usuario buscarPorId(Long id) {
+        return entityManager.find(Usuario.class, id);
+    }
+    
+    @Transactional
+    public void salvar(Usuario usuario) {
+        entityManager.persist(usuario);
+    }
+    
+    @Transactional
+    public void atualizar(Usuario usuario) {
+        entityManager.merge(usuario);
+    }
+    
+    @Transactional
+    public void excluir(Long id) {
+        Usuario usuario = buscarPorId(id);
+        if (usuario != null) {
+            entityManager.remove(usuario);
         }
     }
 }

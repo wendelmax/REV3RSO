@@ -36,7 +36,7 @@ Enterprise-grade reverse auction system developed with Quarkus, where the lowest
 1. Clone o repositório / Clone the repository
 2. Configure o banco de dados em `application.properties` / Configure the database in `application.properties`
 3. Execute as migrações do Flyway / Run Flyway migrations
-4. Inicie a aplicação com `./mvnw quarkus:dev` / Start the application with `./mvnw quarkus:dev`
+4. Inicie a aplicação com `mvn quarkus:dev` / Start the application with `mvn quarkus:dev`
 
 ## 💡 Funcionalidades / Features
 
@@ -105,12 +105,12 @@ quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/rev3rso
 
 2. Execute as migrações / Run migrations:
 ```bash
-./mvnw flyway:migrate
+mvn flyway:migrate
 ```
 
 3. Inicie a aplicação / Start the application:
 ```bash
-./mvnw quarkus:dev
+mvn quarkus:dev
 ```
 
 ## 📝 Licença / License

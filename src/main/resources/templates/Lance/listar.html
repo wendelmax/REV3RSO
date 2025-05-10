@@ -17,7 +17,17 @@
                 <div class="row">
                     <div class="col-md-4">
                         <h5>Status</h5>
-                        <p><span class="badge bg-{#switch leilao.status}{#case ABERTO}success{#case CONCLUIDO}primary{#case CANCELADO}danger{/switch}">{leilao.status}</span></p>
+                        <p>
+                            {#if leilao.status == 'ABERTO'}
+                                <span class="badge bg-success">{leilao.status}</span>
+                            {#else if leilao.status == 'CONCLUIDO'}
+                                <span class="badge bg-primary">{leilao.status}</span>
+                            {#else if leilao.status == 'CANCELADO'}
+                                <span class="badge bg-danger">{leilao.status}</span>
+                            {#else}
+                                <span class="badge bg-secondary">{leilao.status}</span>
+                            {/if}
+                        </p>
                     </div>
                     <div class="col-md-4">
                         <h5>Total de Lances</h5>
@@ -66,9 +76,15 @@
                                         <td>R$ {lance.valor}</td>
                                         <td>{lance.dataCriacao.format('dd/MM/yyyy HH:mm')}</td>
                                         <td>
-                                            <span class="badge bg-{#switch lance.status}{#case ATIVO}success{#case CANCELADO}danger{#case VENCEDOR}primary{/switch}">
-                                                {lance.status}
-                                            </span>
+                                            {#if lance.status == 'ATIVO'}
+                                                <span class="badge bg-success">{lance.status}</span>
+                                            {#else if lance.status == 'CANCELADO'}
+                                                <span class="badge bg-danger">{lance.status}</span>
+                                            {#else if lance.status == 'VENCEDOR'}
+                                                <span class="badge bg-primary">{lance.status}</span>
+                                            {#else}
+                                                <span class="badge bg-secondary">{lance.status}</span>
+                                            {/if}
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalCondicoes{lance.id}">

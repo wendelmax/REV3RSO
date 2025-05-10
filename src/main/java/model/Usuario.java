@@ -44,6 +44,10 @@ public class Usuario extends PanacheEntity {
         INATIVO
     }
     
+    @NotBlank(message = "Nome é obrigatório")
+    @Column(nullable = false)
+    public String nome;
+    
     @NotBlank(message = "Razão social é obrigatória")
     @Column(name = "razao_social", nullable = false)
     public String razaoSocial;

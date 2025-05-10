@@ -16,12 +16,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 
 @Entity
 @Table(name = "lances")
 @Getter
 @Setter
 public class Lance extends PanacheEntity {
+    
+    public enum Status {
+        ATIVO,      // Lance válido e ativo
+        CANCELADO,  // Lance cancelado pelo fornecedor
+        VENCEDOR    // Lance vencedor do leilão
+    }
     
     @ManyToOne
     @JoinColumn(name = "leilao_id", nullable = false)
@@ -67,6 +75,10 @@ public class Lance extends PanacheEntity {
     
     @Column(name = "vencedor")
     public boolean vencedor = false;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    public Status status = Status.ATIVO;
     
     public Lance() {
         this.dataCriacao = new Date();
@@ -141,5 +153,22 @@ public class Lance extends PanacheEntity {
     public void definirComoVencedor() {
         this.vencedor = true;
         this.persist();
+    }
+
+    /**
+     * Retorna a posição deste lance no ranking do leilão.
+     * A posição é determinada pelo valor do lance, onde o menor valor tem a melhor posição.
+     * 
+     * @return Posição no ranking (1 é a melhor posição)
+     */
+    public int getPosicaoRanking() {
+        if (leilao == null || leilao.lances == null || leilao.lances.isEmpty()) {
+            return 1;
+        }
+        
+        // Conta quantos lances não cancelados têm valor menor que este
+        return (int) leilao.lances.stream()
+            .filter(l -> l.status != Status.CANCELADO && l.valor.compareTo(this.valor) < 0)
+            .count() + 1;
     }
 }

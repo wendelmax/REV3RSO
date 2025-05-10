@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -203,14 +204,40 @@ public class Leilao extends PanacheEntity {
         if (lances == null || lances.isEmpty()) {
             return null;
         }
-        
-        Lance menorLance = null;
-        for (Lance lance : lances) {
-            if (menorLance == null || lance.valor.compareTo(menorLance.valor) < 0) {
-                menorLance = lance;
-            }
+        return lances.stream()
+            .filter(l -> l.status != Lance.Status.CANCELADO)
+            .min(Comparator.comparing(Lance::getValor))
+            .orElse(null);
+    }
+    
+    /**
+     * Retorna o total de lances no leilão.
+     * 
+     * @return Número total de lances
+     */
+    public int getTotalLances() {
+        if (lances == null || lances.isEmpty()) {
+            return 0;
         }
-        return menorLance;
+        return (int) lances.stream()
+            .filter(l -> l.status != Lance.Status.CANCELADO)
+            .count();
+    }
+    
+    /**
+     * Retorna o total de fornecedores únicos que deram lances no leilão.
+     * 
+     * @return Número total de fornecedores
+     */
+    public int getTotalFornecedores() {
+        if (lances == null || lances.isEmpty()) {
+            return 0;
+        }
+        return (int) lances.stream()
+            .filter(l -> l.status != Lance.Status.CANCELADO)
+            .map(l -> l.fornecedor)
+            .distinct()
+            .count();
     }
     
     public boolean isConvidado(Usuario fornecedor) {

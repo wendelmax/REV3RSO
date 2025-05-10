@@ -18,12 +18,19 @@ Enterprise-grade reverse auction system developed with Quarkus, where the lowest
 
 ## 🚀 Tecnologias / Technologies
 
-- Java 17
-- Quarkus 3.8.1
-- PostgreSQL 15
-- Flyway para migrações / for migrations
-- Bootstrap 5 para interface / for interface
-- Thymeleaf para templates / for templates
+- **Backend**: 
+  - Java 17
+  - Quarkus 3.8.1
+  - Hibernate ORM
+  - Flyway para migrações / for migrations
+
+- **Frontend**:
+  - Bootstrap 5
+  - [Materio Bootstrap Admin Template](https://github.com/themeselection/materio-bootstrap-html-admin-template-free)
+  - Qute para templates / for templates
+
+- **Banco de Dados / Database**:
+  - PostgreSQL 15
 
 ## 📋 Pré-requisitos / Prerequisites
 
@@ -54,10 +61,14 @@ Enterprise-grade reverse auction system developed with Quarkus, where the lowest
 - 3ª desistência: banimento permanente / 3rd withdrawal: permanent ban
 
 ### Interface Visual / Visual Interface
-- Ranking visual com cores (verde/amarelo/vermelho) / Visual ranking with colors (green/yellow/red)
-- Status dos lances (ATIVO/CANCELADO/VENCEDOR) / Bid status (ACTIVE/CANCELLED/WINNER)
-- Histórico detalhado de alterações / Detailed change history
-- Modal com condições de cada lance / Modal with conditions for each bid
+- Design moderno e responsivo com Materio
+- Componentes Bootstrap 5 otimizados
+- Layout vertical com menu lateral
+- Suporte a temas claro/escuro
+- Componentes UI ricos e personalizáveis
+- Ícones Remix
+- Formulários e tabelas avançadas
+- Suporte a múltiplos navegadores
 
 ## 📦 Estrutura do Projeto / Project Structure
 
@@ -73,7 +84,7 @@ src/
 │   └── resources/
 │       ├── db/
 │       │   └── migration/ # Scripts SQL / SQL Scripts
-│       └── templates/     # Templates Thymeleaf / Thymeleaf Templates
+│       └── templates/     # Templates Qute / Qute Templates
 ```
 
 ## 🔐 Segurança / Security
@@ -117,3 +128,7 @@ mvn quarkus:dev
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 This project is under the MIT license. See the [LICENSE](LICENSE) file for more details.
+
+## Créditos / Credits
+
+- Template UI: [Materio Bootstrap Admin Template](https://github.com/themeselection/materio-bootstrap-html-admin-template-free) por ThemeSelection

@@ -20,350 +20,172 @@
         <div class="card">
           <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h3 class="mb-0">{leilao.titulo}</h3>
-            <span class="badge bg-{#switch leilao.status}{#case ABERTO}success{#case ENCERRADO}secondary{#case CONCLUIDO}primary{#case CANCELADO}danger{/switch}">
+            <span class="badge bg-{#if leilao.status == 'ABERTO'}success{#else if leilao.status == 'CONCLUIDO'}primary{#else if leilao.status == 'CANCELADO'}danger{#else}secondary{/if}">
               {leilao.status}
             </span>
           </div>
           <div class="card-body">
-            <div class="row mb-4">
-              <div class="col-md-8">
-                <div class="mb-3">
-                  <h5>Descrição</h5>
-                  <p class="border p-3 bg-light rounded">{leilao.descricao}</p>
+            <div class="row">
+              <div class="col-md-6">
+                <h5>Informações Básicas</h5>
+                <table class="table">
+                  <tr>
+                    <th>ID:</th>
+                    <td>{leilao.id}</td>
+                  </tr>
+                  <tr>
+                    <th>Criador:</th>
+                    <td>{leilao.criador.nomeFantasia}</td>
+                  </tr>
+                  <tr>
+                    <th>Tipo:</th>
+                    <td>{leilao.tipoLeilao}</td>
+                  </tr>
+                  <tr>
+                    <th>Data de Criação:</th>
+                    <td>{leilao.dataCriacao.format('dd/MM/yyyy HH:mm')}</td>
+                  </tr>
+                  <tr>
+                    <th>Data de Início:</th>
+                    <td>{leilao.dataInicio.format('dd/MM/yyyy HH:mm')}</td>
+                  </tr>
+                  <tr>
+                    <th>Data de Término:</th>
+                    <td>{leilao.dataFim.format('dd/MM/yyyy HH:mm')}</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h5>Valores</h5>
+                <table class="table">
+                  <tr>
+                    <th>Valor Inicial:</th>
+                    <td>R$ {leilao.valorInicial}</td>
+                  </tr>
+                  <tr>
+                    <th>Valor de Referência:</th>
+                    <td>R$ {leilao.valorReferencia}</td>
+                  </tr>
+                  <tr>
+                    <th>Melhor Oferta:</th>
+                    <td>R$ {leilao.melhorOferta ?: 'Nenhuma'}</td>
+                  </tr>
+                  <tr>
+                    <th>Valor Vencedor:</th>
+                    <td>R$ {leilao.valorVencedor ?: 'Nenhum'}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-12">
+                <h5>Descrição</h5>
+                <p>{leilao.descricao}</p>
+              </div>
+            </div>
+
+            {#if leilao.especificacoesTecnicas}
+              <div class="row mt-4">
+                <div class="col-12">
+                  <h5>Especificações Técnicas</h5>
+                  <p>{leilao.especificacoesTecnicas}</p>
                 </div>
-                
-                <div class="row mb-3">
-                  <div class="col-md-6">
-                    <h5>Informações do Leilão</h5>
-                    <table class="table table-sm">
-                      <tbody>
-                        <tr>
-                          <th>ID</th>
-                          <td>{leilao.id}</td>
-                        </tr>
-                        <tr>
-                          <th>Comprador</th>
-                          <td>
-                            <a href="{uri:Admin.editarUsuario(leilao.comprador.id)}">
-                              {leilao.comprador.nome}
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th>Valor Estimado</th>
-                          <td>R$ {String.format("%.2f", leilao.valorEstimado)}</td>
-                        </tr>
-                        <tr>
-                          <th>Forma de Pagamento</th>
-                          <td>{leilao.formaPagamento.nome}</td>
-                        </tr>
-                        <tr>
-                          <th>Prazo de Entrega</th>
-                          <td>{leilao.prazoEntrega} dias</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  
-                  <div class="col-md-6">
-                    <h5>Datas</h5>
-                    <table class="table table-sm">
-                      <tbody>
-                        <tr>
-                          <th>Criação</th>
-                          <td>
-                            {#if leilao.dataCriacao != null}
-                              {leilao.dataCriacao.format('dd/MM/yyyy HH:mm')}
-                            {#else}
-                              -
-                            {/if}
-                          </td>
-                        </tr>
-                        <tr>
-                          <th>Início</th>
-                          <td>
-                            {#if leilao.dataInicial != null}
-                              {leilao.dataInicial.format('dd/MM/yyyy HH:mm')}
-                            {#else}
-                              -
-                            {/if}
-                          </td>
-                        </tr>
-                        <tr>
-                          <th>Encerramento</th>
-                          <td>
-                            {#if leilao.dataFinal != null}
-                              {leilao.dataFinal.format('dd/MM/yyyy HH:mm')}
-                            {#else}
-                              -
-                            {/if}
-                          </td>
-                        </tr>
-                        {#if leilao.status == Leilao.Status.CANCELADO && leilao.dataCancelamento != null}
-                        <tr>
-                          <th>Cancelamento</th>
-                          <td>{leilao.dataCancelamento.format('dd/MM/yyyy HH:mm')}</td>
-                        </tr>
-                        {/if}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                
-                {#if leilao.status == Leilao.Status.CANCELADO && leilao.motivoCancelamento != null}
-                <div class="alert alert-danger mb-3">
+              </div>
+            {/if}
+
+            {#if leilao.motivoCancelamento}
+              <div class="row mt-4">
+                <div class="col-12">
                   <h5>Motivo do Cancelamento</h5>
-                  <p>{leilao.motivoCancelamento}</p>
+                  <p class="text-danger">{leilao.motivoCancelamento}</p>
                 </div>
-                {/if}
               </div>
-              
-              <div class="col-md-4">
-                <div class="card h-100">
-                  <div class="card-header bg-light">
-                    <h5 class="mb-0">Lance Vencedor</h5>
-                  </div>
-                  <div class="card-body">
-                    {#if leilao.fornecedorVencedor != null}
-                      <div class="text-center mb-3">
-                        <div class="avatar-circle mx-auto mb-2">
-                          {leilao.fornecedorVencedor.nome.substring(0,1).toUpperCase()}
+            {/if}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4>Lances</h4>
+          </div>
+          <div class="card-body">
+            {#if leilao.lances.empty}
+              <div class="alert alert-info">
+                Nenhum lance registrado.
+              </div>
+            {#else}
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Posição</th>
+                      <th>Fornecedor</th>
+                      <th>Valor</th>
+                      <th>Data</th>
+                      <th>Status</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {#for lance in leilao.lances}
+                      <tr class="{#if lance.posicaoRanking <= 3}table-success{#else if lance.posicaoRanking <= 6}table-warning{#else}table-danger{/if}">
+                        <td>
+                          <span class="badge bg-{#if lance.posicaoRanking <= 3}success{#else if lance.posicaoRanking <= 6}warning{#else}danger{/if}">
+                            {lance.posicaoRanking}º
+                          </span>
+                        </td>
+                        <td>{lance.fornecedor.nomeFantasia}</td>
+                        <td>R$ {lance.valor}</td>
+                        <td>{lance.dataCriacao.format('dd/MM/yyyy HH:mm')}</td>
+                        <td>
+                          {#if lance.status == 'ATIVO'}
+                            <span class="badge bg-success">{lance.status}</span>
+                          {#else if lance.status == 'CANCELADO'}
+                            <span class="badge bg-danger">{lance.status}</span>
+                          {#else if lance.status == 'VENCEDOR'}
+                            <span class="badge bg-primary">{lance.status}</span>
+                          {#else}
+                            <span class="badge bg-secondary">{lance.status}</span>
+                          {/if}
+                        </td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalCondicoes{lance.id}">
+                            <i class="bi bi-info-circle"></i>
+                          </button>
+                        </td>
+                      </tr>
+
+                      <!-- Modal de Condições -->
+                      <div class="modal fade" id="modalCondicoes{lance.id}" tabindex="-1">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Condições do Lance</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                              <p><strong>Prazo de Entrega:</strong> {lance.prazoEntrega} dias</p>
+                              <p><strong>Prazo de Pagamento:</strong> {lance.prazoPagamento} dias</p>
+                              <p><strong>Condições de Entrega:</strong></p>
+                              <p>{lance.condicoesEntrega}</p>
+                            </div>
+                          </div>
                         </div>
-                        <h5 class="mb-0">{leilao.fornecedorVencedor.nome}</h5>
-                        <p class="text-muted small">{leilao.fornecedorVencedor.email}</p>
                       </div>
-                      
-                      <div class="text-center mb-3">
-                        <h3 class="text-success mb-0">R$ {String.format("%.2f", leilao.valorVencedor)}</h3>
-                        <p class="text-muted small">Valor Vencedor</p>
-                      </div>
-                      
-                      <div class="d-grid gap-2">
-                        <a href="{uri:Admin.editarUsuario(leilao.fornecedorVencedor.id)}" class="btn btn-outline-primary btn-sm">
-                          <i class="bi bi-person"></i> Ver Perfil do Fornecedor
-                        </a>
-                      </div>
-                    {#else}
-                      <div class="text-center">
-                        <i class="bi bi-x-circle text-muted display-1"></i>
-                        <p class="mt-3">Não há lance vencedor definido.</p>
-                      </div>
-                    {/if}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Abas para exibir Lances e Convites -->
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="lances-tab" data-bs-toggle="tab" data-bs-target="#lances" type="button" role="tab" aria-controls="lances" aria-selected="true">
-                  <i class="bi bi-cash"></i> Lances <span class="badge bg-primary">{lances.size()}</span>
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="convites-tab" data-bs-toggle="tab" data-bs-target="#convites" type="button" role="tab" aria-controls="convites" aria-selected="false">
-                  <i class="bi bi-envelope"></i> Convites <span class="badge bg-secondary">{convites.size()}</span>
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" id="mensagens-tab" data-bs-toggle="tab" data-bs-target="#mensagens" type="button" role="tab" aria-controls="mensagens" aria-selected="false">
-                  <i class="bi bi-chat-dots"></i> Mensagens <span class="badge bg-info">{mensagens.size()}</span>
-                </button>
-              </li>
-            </ul>
-            <div class="tab-content p-3 border border-top-0 rounded-bottom" id="myTabContent">
-              <!-- Aba de Lances -->
-              <div class="tab-pane fade show active" id="lances" role="tabpanel" aria-labelledby="lances-tab">
-                {#if lances.isEmpty()}
-                  <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> Não há lances registrados para este leilão.
-                  </div>
-                {#else}
-                  <div class="table-responsive">
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Fornecedor</th>
-                          <th>Valor</th>
-                          <th>Data</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {#for lance in lances}
-                        <tr class="{#if leilao.fornecedorVencedor != null && lance.fornecedor.id == leilao.fornecedorVencedor.id}table-success{/if}">
-                          <td>{lance.id}</td>
-                          <td>
-                            <a href="{uri:Admin.editarUsuario(lance.fornecedor.id)}" class="text-decoration-none">
-                              {lance.fornecedor.nome}
-                            </a>
-                          </td>
-                          <td>R$ {String.format("%.2f", lance.valor)}</td>
-                          <td>{lance.dataCriacao.format('dd/MM/yyyy HH:mm')}</td>
-                          <td>
-                            <span class="badge bg-{#switch lance.status}{#case ATIVO}success{#case CANCELADO}danger{#case VENCEDOR}primary{/switch}">
-                              {lance.status}
-                            </span>
-                          </td>
-                        </tr>
-                        {/for}
-                      </tbody>
-                    </table>
-                  </div>
-                {/if}
-              </div>
-              
-              <!-- Aba de Convites -->
-              <div class="tab-pane fade" id="convites" role="tabpanel" aria-labelledby="convites-tab">
-                {#if convites.isEmpty()}
-                  <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> Não há convites enviados para este leilão.
-                  </div>
-                {#else}
-                  <div class="table-responsive">
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Fornecedor</th>
-                          <th>Data Envio</th>
-                          <th>Status</th>
-                          <th>Data Resposta</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {#for convite in convites}
-                        <tr>
-                          <td>{convite.id}</td>
-                          <td>
-                            <a href="{uri:Admin.editarUsuario(convite.fornecedor.id)}" class="text-decoration-none">
-                              {convite.fornecedor.nome}
-                            </a>
-                          </td>
-                          <td>{convite.dataEnvio.format('dd/MM/yyyy HH:mm')}</td>
-                          <td>
-                            <span class="badge bg-{#switch convite.status}{#case convite_status:PENDENTE}warning{#case convite_status:ACEITO}success{#case convite_status:RECUSADO}danger{/switch}">
-                              {convite.status}
-                            </span>
-                          </td>
-                          <td>
-                            {#if convite.dataResposta != null}
-                              {convite.dataResposta.format('dd/MM/yyyy HH:mm')}
-                            {#else}
-                              -
-                            {/if}
-                          </td>
-                        </tr>
-                        {/for}
-                      </tbody>
-                    </table>
-                  </div>
-                {/if}
-              </div>
-              
-              <!-- Aba de Mensagens -->
-              <div class="tab-pane fade" id="mensagens" role="tabpanel" aria-labelledby="mensagens-tab">
-                {#if mensagens.isEmpty()}
-                  <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> Não há mensagens registradas para este leilão.
-                  </div>
-                {#else}
-                  <div class="list-group">
-                    {#for mensagem in mensagens}
-                    <div class="list-group-item list-group-item-action">
-                      <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1">
-                          De: <a href="{uri:Admin.editarUsuario(mensagem.remetente.id)}" class="text-decoration-none">{mensagem.remetente.nome}</a>
-                          Para: <a href="{uri:Admin.editarUsuario(mensagem.destinatario.id)}" class="text-decoration-none">{mensagem.destinatario.nome}</a>
-                        </h6>
-                        <small>{mensagem.dataEnvio.format('dd/MM/yyyy HH:mm')}</small>
-                      </div>
-                      <p class="mb-1">{mensagem.conteudo}</p>
-                      <small class="text-muted">
-                        {#if mensagem.dataLeitura != null}
-                          Lida em: {mensagem.dataLeitura.format('dd/MM/yyyy HH:mm')}
-                        {#else}
-                          Não lida
-                        {/if}
-                      </small>
-                    </div>
                     {/for}
-                  </div>
-                {/if}
+                  </tbody>
+                </table>
               </div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <div class="d-flex justify-content-between">
-              <a href="{uri:Admin.leiloes}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Voltar para Lista de Leilões
-              </a>
-              
-              <div>
-                <a href="{uri:Admin.editarLeilao(leilao.id)}" class="btn btn-primary">
-                  <i class="bi bi-pencil-square"></i> Editar Leilão
-                </a>
-                
-                {#if leilao.status == Leilao.Status.ABERTO || leilao.status == Leilao.Status.ENCERRADO}
-                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalCancelarLeilao">
-                    <i class="bi bi-x-circle"></i> Cancelar Leilão
-                  </button>
-                {/if}
-              </div>
-            </div>
+            {/if}
           </div>
         </div>
       </div>
     </div>
   </div>
-  
-  <!-- Modal de Cancelamento de Leilão -->
-  <div class="modal fade" id="modalCancelarLeilao" tabindex="-1" aria-labelledby="modalCancelarLeilaoLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title" id="modalCancelarLeilaoLabel">Cancelar Leilão</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-        </div>
-        <form action="{uri:Admin.cancelarLeilao(leilao.id)}" method="post">
-          <div class="modal-body">
-            <p>Você está prestes a cancelar o leilão: <strong>{leilao.titulo}</strong>.</p>
-            <div class="mb-3">
-              <label for="motivoCancelamento" class="form-label">Motivo do cancelamento:</label>
-              <textarea class="form-control" id="motivoCancelamento" name="motivoCancelamento" rows="3" required></textarea>
-            </div>
-            <div class="alert alert-warning">
-              <i class="bi bi-exclamation-triangle-fill"></i>
-              Essa ação é irreversível e enviará notificações a todos os fornecedores envolvidos.
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  
-  {#insert moreScripts}
-  <style>
-    /* Estilo para avatar circular */
-    .avatar-circle {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: #6c757d;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  </style>
-  {/insert}
   {/content}
 {/include}

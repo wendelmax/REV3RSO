@@ -52,7 +52,7 @@
                     <td>{usuario.id}</td>
                     <td>
                       <div class="d-flex align-items-center">
-                        <div class="avatar-circle avatar-circle-sm me-2 text-bg-{#switch usuario.tipoUsuario}{#case ADMINISTRADOR}primary{#case COMPRADOR}success{#case FORNECEDOR}warning{/switch}">
+                        <div class="avatar-circle avatar-circle-sm me-2 text-bg-{#if usuario.tipoUsuario eq 'ADMINISTRADOR'}primary{#else if usuario.tipoUsuario eq 'COMPRADOR'}success{#else if usuario.tipoUsuario eq 'FORNECEDOR'}warning{/if}">
                           {usuario.nome.substring(0,1).toUpperCase()}
                         </div>
                         <div>
@@ -63,12 +63,12 @@
                     </td>
                     <td>{usuario.email}</td>
                     <td>
-                      <span class="badge bg-{#switch usuario.tipoUsuario}{#case ADMINISTRADOR}primary{#case COMPRADOR}success{#case FORNECEDOR}warning{/switch}">
+                      <span class="badge bg-{#if usuario.tipoUsuario eq 'ADMINISTRADOR'}primary{#else if usuario.tipoUsuario eq 'COMPRADOR'}success{#else if usuario.tipoUsuario eq 'FORNECEDOR'}warning{/if}">
                         {usuario.tipoUsuario}
                       </span>
                     </td>
                     <td>
-                      <span class="badge bg-{#switch usuario.status}{#case ATIVO}success{#case SUSPENSO}warning{#case INATIVO}danger{/switch}">
+                      <span class="badge bg-{#if usuario.status eq 'ATIVO'}success{#else if usuario.status eq 'SUSPENSO'}warning{#else if usuario.status eq 'INATIVO'}danger{/if}">
                         {usuario.status}
                       </span>
                     </td>

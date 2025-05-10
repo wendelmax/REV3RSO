@@ -17,7 +17,17 @@
                 <div class="row">
                     <div class="col-md-3">
                         <h5>Status</h5>
-                        <p><span class="badge bg-{#switch leilao.status}{#case ABERTO}success{#case CONCLUIDO}primary{#case CANCELADO}danger{/switch}">{leilao.status}</span></p>
+                        <p>
+                            {#if leilao.status == 'ABERTO'}
+                                <span class="badge bg-success">{leilao.status}</span>
+                            {#else if leilao.status == 'CONCLUIDO'}
+                                <span class="badge bg-primary">{leilao.status}</span>
+                            {#else if leilao.status == 'CANCELADO'}
+                                <span class="badge bg-danger">{leilao.status}</span>
+                            {#else}
+                                <span class="badge bg-secondary">{leilao.status}</span>
+                            {/if}
+                        </p>
                     </div>
                     <div class="col-md-3">
                         <h5>Tipo</h5>
@@ -40,9 +50,8 @@
                 <h4>Histórico de Alterações</h4>
             </div>
             <div class="card-body">
-                {#if historicoLances.isEmpty()}
+                {#if historico.empty}
                     <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i>
                         Nenhuma alteração registrada.
                     </div>
                 {#else}
@@ -52,27 +61,23 @@
                                 <tr>
                                     <th>Data/Hora</th>
                                     <th>Fornecedor</th>
-                                    <th>Tipo de Alteração</th>
+                                    <th>Tipo</th>
                                     <th>Valor Anterior</th>
-                                    <th>Valor Novo</th>
+                                    <th>Novo Valor</th>
                                     <th>Posição Anterior</th>
-                                    <th>Posição Nova</th>
+                                    <th>Nova Posição</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {#for historico in historicoLances}
+                                {#for alteracao in historico}
                                     <tr>
-                                        <td>{historico.dataAlteracao.format('dd/MM/yyyy HH:mm')}</td>
-                                        <td>{historico.lance.fornecedor.nomeFantasia}</td>
-                                        <td>
-                                            <span class="badge bg-{#switch historico.tipoAlteracao}{#case NOVO_LANCE}success{#case ATUALIZACAO_RANKING}info{#case CANCELAMENTO}danger{/switch}">
-                                                {historico.tipoAlteracao}
-                                            </span>
-                                        </td>
-                                        <td>{historico.valorAnterior ? 'R$ ' + historico.valorAnterior : '-'}</td>
-                                        <td>{historico.valorNovo ? 'R$ ' + historico.valorNovo : '-'}</td>
-                                        <td>{historico.posicaoAnterior ? historico.posicaoAnterior + 'º' : '-'}</td>
-                                        <td>{historico.posicaoNova ? historico.posicaoNova + 'º' : '-'}</td>
+                                        <td>{alteracao.dataHora.format('dd/MM/yyyy HH:mm')}</td>
+                                        <td>{alteracao.fornecedor.nomeFantasia}</td>
+                                        <td>{alteracao.tipoAlteracao}</td>
+                                        <td>R$ {alteracao.valorAnterior}</td>
+                                        <td>R$ {alteracao.novoValor}</td>
+                                        <td>{alteracao.posicaoAnterior}º</td>
+                                        <td>{alteracao.novaPosicao}º</td>
                                     </tr>
                                 {/for}
                             </tbody>
@@ -82,15 +87,14 @@
             </div>
         </div>
         
-        <div class="card mb-4">
+        <div class="card">
             <div class="card-header">
                 <h4>Lances Atuais</h4>
             </div>
             <div class="card-body">
-                {#if leilao.lances.isEmpty()}
+                {#if leilao.lances.empty}
                     <div class="alert alert-info">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Nenhum lance registrado ainda.
+                        Nenhum lance registrado.
                     </div>
                 {#else}
                     <div class="table-responsive">
@@ -100,7 +104,7 @@
                                     <th>Posição</th>
                                     <th>Fornecedor</th>
                                     <th>Valor</th>
-                                    <th>Data/Hora</th>
+                                    <th>Data</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -116,9 +120,15 @@
                                         <td>R$ {lance.valor}</td>
                                         <td>{lance.dataCriacao.format('dd/MM/yyyy HH:mm')}</td>
                                         <td>
-                                            <span class="badge bg-{#switch lance.status}{#case ATIVO}success{#case CANCELADO}danger{#case VENCEDOR}primary{/switch}">
-                                                {lance.status}
-                                            </span>
+                                            {#if lance.status == 'ATIVO'}
+                                                <span class="badge bg-success">{lance.status}</span>
+                                            {#else if lance.status == 'CANCELADO'}
+                                                <span class="badge bg-danger">{lance.status}</span>
+                                            {#else if lance.status == 'VENCEDOR'}
+                                                <span class="badge bg-primary">{lance.status}</span>
+                                            {#else}
+                                                <span class="badge bg-secondary">{lance.status}</span>
+                                            {/if}
                                         </td>
                                     </tr>
                                 {/for}

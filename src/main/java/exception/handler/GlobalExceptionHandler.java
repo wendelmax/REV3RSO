@@ -3,6 +3,7 @@ package exception.handler;
 import exception.BusinessException;
 import io.quarkus.qute.Template;
 import io.quarkus.qute.TemplateInstance;
+import io.quarkus.runtime.LaunchMode;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -37,7 +38,16 @@ public class GlobalExceptionHandler implements ExceptionMapper<Throwable> {
      */
     @Override
     public Response toResponse(Throwable exception) {
-        LOGGER.log(Level.SEVERE, "Erro não tratado: ", exception);
+        // Verifica se estamos em modo de desenvolvimento
+        boolean isDevMode = LaunchMode.current() == LaunchMode.DEVELOPMENT;
+        
+        if (isDevMode) {
+            // Em modo de desenvolvimento, loga a exceção completa com stack trace
+            LOGGER.log(Level.SEVERE, "Erro não tratado na classe " + exception.getClass().getName() + ": " + exception.getMessage(), exception);
+        } else {
+            // Em produção, loga apenas a mensagem básica
+            LOGGER.log(Level.SEVERE, "Erro não tratado: " + exception.getMessage());
+        }
         
         if (exception instanceof BusinessException) {
             return handleBusinessException((BusinessException) exception);

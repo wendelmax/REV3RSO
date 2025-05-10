@@ -62,7 +62,7 @@ public class UsuarioController extends BaseController {
             @FormParam("telefone") @NotBlank String telefone,
             @FormParam("email") @NotBlank String email,
             @FormParam("senha") @NotBlank String senha,
-            @FormParam("areasAtuacao") @NotBlank List<AreaAtuacao> areasAtuacao,
+            @FormParam("areasAtuacao") List<Long> areaIds,
             @FormParam("tipoUsuario") @NotBlank String tipoUsuario) {
         
         if (validationFailed()) {
@@ -71,39 +71,20 @@ public class UsuarioController extends BaseController {
             return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
         }
         
-        // Validações específicas
-        if (!ValidationUtil.isValidEmail(email)) {
-            flash("mensagem", "Email inválido");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
-        }
-        
-        if (!ValidationUtil.isValidCNPJ(cnpj)) {
-            flash("mensagem", "CNPJ inválido");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
-        }
-        
-        if (!ValidationUtil.isValidCEP(cep)) {
-            flash("mensagem", "CEP inválido");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
-        }
-        
-        // Verificar se já existe usuário com o mesmo CNPJ ou email
-        if (Usuario.encontrarPorCnpj(cnpj) != null) {
-            flash("mensagem", "Já existe um usuário cadastrado com este CNPJ");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
-        }
-        
+        // Verificar duplicidade de e-mail
         if (Usuario.encontrarPorEmail(email) != null) {
-            flash("mensagem", "Já existe um usuário cadastrado com este email");
+            flash("mensagem", "O e-mail informado já está em uso");
             flash("tipo", "danger");
             return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
         }
         
-        // Criar novo usuário
+        // Verificar duplicidade de CNPJ
+        if (Usuario.encontrarPorCnpj(cnpj) != null) {
+            flash("mensagem", "O CNPJ informado já está em uso");
+            flash("tipo", "danger");
+            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
+        }
+        
         Usuario usuario = new Usuario();
         usuario.razaoSocial = razaoSocial;
         usuario.nomeFantasia = nomeFantasia;
@@ -115,7 +96,17 @@ public class UsuarioController extends BaseController {
         usuario.telefone = telefone;
         usuario.email = email;
         usuario.senha = PasswordUtil.hashPassword(senha); // Criptografando a senha
-        usuario.areasAtuacao = areasAtuacao;
+        
+        // Buscar e adicionar as áreas de atuação
+        if (areaIds != null && !areaIds.isEmpty()) {
+            for (Long areaId : areaIds) {
+                AreaAtuacao area = AreaAtuacao.findById(areaId);
+                if (area != null) {
+                    usuario.areasAtuacao.add(area);
+                }
+            }
+        }
+        
         usuario.tipoUsuario = Usuario.TipoUsuario.valueOf(tipoUsuario);
         usuario.dataCadastro = new Date();
         
@@ -250,7 +241,7 @@ public class UsuarioController extends BaseController {
             @FormParam("uf") @NotBlank String uf,
             @FormParam("cep") @NotBlank String cep,
             @FormParam("telefone") @NotBlank String telefone,
-            @FormParam("areaAtuacao") @NotBlank List<AreaAtuacao> areaAtuacao) {
+            @FormParam("areasAtuacao") List<Long> areaIds) {
         
         Usuario usuario = usuarioLogado();
         if (usuario == null) {
@@ -273,7 +264,18 @@ public class UsuarioController extends BaseController {
         usuario.uf = uf;
         usuario.cep = cep;
         usuario.telefone = telefone;
-        usuario.areasAtuacao = areaAtuacao;
+        
+        // Atualizar áreas de atuação
+        usuario.areasAtuacao.clear();
+        if (areaIds != null && !areaIds.isEmpty()) {
+            for (Long areaId : areaIds) {
+                AreaAtuacao area = AreaAtuacao.findById(areaId);
+                if (area != null) {
+                    usuario.areasAtuacao.add(area);
+                }
+            }
+        }
+        
         usuario.ultimaAtualizacao = new Date();
         
         usuario.persist();

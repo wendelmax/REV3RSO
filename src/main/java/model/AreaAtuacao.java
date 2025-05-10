@@ -24,6 +24,9 @@ import lombok.ToString;
 @ToString(exclude = {"fornecedores"})
 public class AreaAtuacao extends PanacheEntity {
     
+    @Column(nullable = false)
+    public String nome;
+    
     @Column(nullable = false, unique = true)
     public String descricao;
     
@@ -37,9 +40,11 @@ public class AreaAtuacao extends PanacheEntity {
     /**
      * Construtor com parâmetros para criação.
      * 
+     * @param nome Nome da área de atuação
      * @param descricao Descrição da área de atuação
      */
-    public AreaAtuacao(String descricao) {
+    public AreaAtuacao(String nome, String descricao) {
+        this.nome = nome;
         this.descricao = descricao;
     }
     

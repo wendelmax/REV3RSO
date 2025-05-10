@@ -141,6 +141,7 @@ public class Usuario extends PanacheEntity {
     public Usuario() {
         this.dataCadastro = new Date();
         this.status = Status.ATIVO;
+        this.tipoUsuario = TipoUsuario.FORNECEDOR; // Tipo padrão
         this.pontuacao = 0;
         this.totalAvaliacoes = 0;
     }

@@ -80,6 +80,7 @@ public class DataInitializationService {
                 LOGGER.info("Criando área de atuação: " + areas[i]);
                 
                 AreaAtuacao area = new AreaAtuacao();
+                area.nome = areas[i];
                 area.descricao = areas[i];
                 area.detalhes = descriptions[i];
                 area.persist();

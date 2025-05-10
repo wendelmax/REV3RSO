@@ -12,6 +12,7 @@ import model.AreaAtuacao;
  */
 public record AreaAtuacaoDTO(
     Long id,
+    String nome,
     String descricao,
     int fornecedoresVinculados
 ) {
@@ -29,6 +30,7 @@ public record AreaAtuacaoDTO(
         
         return new AreaAtuacaoDTO(
             areaAtuacao.id,
+            areaAtuacao.nome,
             areaAtuacao.descricao,
             fornecedoresVinculados
         );
@@ -41,6 +43,7 @@ public record AreaAtuacaoDTO(
      */
     public AreaAtuacao paraEntidade() {
         AreaAtuacao areaAtuacao = new AreaAtuacao();
+        areaAtuacao.nome = this.nome;
         areaAtuacao.descricao = this.descricao;
         return areaAtuacao;
     }

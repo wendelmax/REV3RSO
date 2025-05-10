@@ -12,15 +12,20 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
 import model.Usuario;
 import model.AreaAtuacao;
 import model.Avaliacao;
 import service.NotificacaoService;
 import service.UsuarioService;
+import util.SessionUtil;
 
 @Path("/usuarios")
 public class UsuarioController extends BaseController {
@@ -31,7 +36,10 @@ public class UsuarioController extends BaseController {
     @Inject
     UsuarioService usuarioService;
     
-    @CheckedTemplate(basePath = "Usuarios", requireTypeSafeExpressions = false)
+    @Inject
+    HttpServletRequest request;
+    
+    @CheckedTemplate(basePath = "Usuarios")
     public static class Templates {
         public static native TemplateInstance cadastro();
         public static native TemplateInstance login();
@@ -41,6 +49,7 @@ public class UsuarioController extends BaseController {
     }
     
     // Página inicial para cadastro de usuário
+    @GET
     @Path("/cadastro")
     public TemplateInstance cadastro() {
         return Templates.cadastro();
@@ -121,6 +130,7 @@ public class UsuarioController extends BaseController {
     }
     
     // Página de login
+    @GET
     @Path("/login")
     public TemplateInstance login() {
         return Templates.login();
@@ -129,58 +139,43 @@ public class UsuarioController extends BaseController {
     // Ação para processar o login
     @POST
     @Path("/autenticar")
+    @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Uni<Object> autenticar(
+    public Response autenticar(
             @FormParam("email") @NotBlank String email,
             @FormParam("senha") @NotBlank String senha) {
         
         if (validationFailed()) {
-            flash("mensagem", "Email e senha são obrigatórios");
+            flash("mensagem", "Por favor, preencha todos os campos");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         
-        Usuario usuario = Usuario.encontrarPorEmail(email);
-        
-        // Tenta realizar login via AutenticacaoService
-        Usuario usuarioAutenticado = autenticacaoService.login(email, senha);
-        
-        if (usuarioAutenticado == null) {
-            flash("mensagem", "Email ou senha incorretos");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
-        }
-        
-        // Verificar se o usuário está ativo
-        if (usuarioAutenticado.status != Usuario.Status.ATIVO) {
-            // Forçar logout caso o usuário tenha sido autenticado mas esteja inativo
-            autenticacaoService.logout();
+        try {
+            Usuario usuario = usuarioService.autenticar(email, senha);
             
-            flash("mensagem", "Sua conta está suspensa ou inativa");
+            if (usuario == null) {
+                flash("mensagem", "Email ou senha inválidos");
+                flash("tipo", "danger");
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+            
+            // Registrar o usuário na sessão usando SessionUtil
+            SessionUtil.setUsuarioLogado(request, usuario);
+            
+            // Redirecionar para a página inicial
+            return Response.ok().build();
+        } catch (Exception e) {
+            flash("mensagem", "Erro ao realizar login. Por favor, tente novamente.");
             flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
-        }
-        
-        // O serviço de autenticação já salvou o ID do usuário e o tipo de usuário na sessão
-        
-        flash("mensagem", "Login realizado com sucesso!");
-        flash("tipo", "success");
-        
-        // Redirecionar para a página adequada com base no tipo de usuário
-        if (usuario.tipoUsuario == Usuario.TipoUsuario.ADMINISTRADOR) {
-            return RedirectUtil.redirect(AdminController.class);
-        } else if (usuario.tipoUsuario == Usuario.TipoUsuario.COMPRADOR) {
-            return RedirectUtil.redirect(LeilaoController.class);
-        } else {
-            return RedirectUtil.redirectToPathAsObject("/leiloes/disponiveis");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
     
     // Logout
     @Path("/logout")
     public Uni<Object> logout() {
-        // Usando o serviço de autenticação para fazer logout
-        autenticacaoService.logout();
+        SessionUtil.logout(request);
         
         flash("mensagem", "Logout realizado com sucesso!");
         flash("tipo", "success");
@@ -190,7 +185,7 @@ public class UsuarioController extends BaseController {
     // Visualizar perfil do usuário
     @Path("/perfil")
     public TemplateInstance perfil() {
-        Usuario usuario = usuarioLogado();
+        Usuario usuario = SessionUtil.getUsuarioLogado(request, usuarioService);
         if (usuario == null) {
             flash("mensagem", "Você precisa estar logado para acessar esta página");
             flash("tipo", "danger");

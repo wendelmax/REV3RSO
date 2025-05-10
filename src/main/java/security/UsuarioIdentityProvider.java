@@ -28,7 +28,7 @@ public class UsuarioIdentityProvider implements IdentityProvider<UsernamePasswor
         return Uni.createFrom().item(() -> {
             Usuario usuario = usuarioService.buscarPorEmail(request.getUsername());
             
-            if (usuario != null && usuario.senha.equals(request.getPassword())) {
+            if (usuario != null && usuarioService.verificarSenha(new String(request.getPassword().getPassword()), usuario.senha)) {
                 return QuarkusSecurityIdentity.builder()
                     .setPrincipal(() -> usuario.email)
                     .addRole(usuario.tipoUsuario.name())

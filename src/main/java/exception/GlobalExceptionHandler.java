@@ -12,7 +12,7 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
     
     @Override
     public Response toResponse(Exception exception) {
-        LOGGER.severe("Erro não tratado: " + exception.getMessage());
+        LOGGER.severe("Erro não tratado: " + exception.getMessage() + " - " + exception.getClass().getName());
         
         if (exception instanceof BusinessException) {
             return Response.status(Response.Status.BAD_REQUEST)

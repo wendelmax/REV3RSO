@@ -6,8 +6,7 @@ import java.util.Map;
 
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
-import util.RedirectUtil;
-import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +14,7 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 import io.smallrye.mutiny.Uni;
@@ -24,10 +23,19 @@ import model.AreaAtuacao;
 import model.FormaPagamento;
 import model.Leilao;
 import model.Usuario;
+import service.NotificacaoService;
+import util.RedirectUtil;
+import security.RequiresAuth;
+import security.RequiresRole;
 
 @Path("/admin")
-@RolesAllowed("ADMINISTRADOR")
+@Produces(MediaType.TEXT_HTML)
+@RequiresAuth
+@RequiresRole(Usuario.TipoUsuario.ADMINISTRADOR)
 public class AdminController extends BaseController {
+    
+    @Inject
+    NotificacaoService notificacaoService;
     
     @CheckedTemplate(basePath = "Admin", requireTypeSafeExpressions = false)
     public static class Templates {
@@ -42,8 +50,6 @@ public class AdminController extends BaseController {
     // Dashboard admin
     @Path("/dashboard")
     public TemplateInstance dashboard() {
-        verificarAdministrador();
-        
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalUsuarios", Usuario.count());
         stats.put("totalLeiloes", Leilao.count());
@@ -53,18 +59,15 @@ public class AdminController extends BaseController {
         return Templates.dashboard(stats);
     }
     
-    // Gerenciamento de usuu00e1rios
+    // Gerenciamento de usuários
     @Path("/usuarios")
     public TemplateInstance usuarios() {
-        verificarAdministrador();
         List<Usuario> usuarios = Usuario.listAll();
         return Templates.usuarios(usuarios);
     }
     
     @Path("/usuarios/editar/{id}")
     public TemplateInstance editarUsuario(@PathParam("id") Long id) {
-        verificarAdministrador();
-        
         Usuario usuario = Usuario.findById(id);
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
@@ -94,8 +97,6 @@ public class AdminController extends BaseController {
                                   @FormParam("status") @NotNull Usuario.Status status,
                                   @FormParam("areaIds") List<Long> areaIds) {
         
-        verificarAdministrador();
-        
         if (validationFailed()) {
             flash("mensagem", "Por favor, corrija os erros no formulário");
             flash("tipo", "danger");
@@ -104,7 +105,7 @@ public class AdminController extends BaseController {
         
         Usuario usuario = Usuario.findById(id);
         if (usuario == null) {
-            flash("mensagem", "Usuu00e1rio não encontrado");
+            flash("mensagem", "Usuário não encontrado");
             flash("tipo", "danger");
             return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
         }
@@ -112,7 +113,7 @@ public class AdminController extends BaseController {
         // Verificar duplicidade de e-mail
         Usuario existente = Usuario.encontrarPorEmail(email);
         if (existente != null && !existente.id.equals(id)) {
-            flash("mensagem", "O e-mail informado ju00e1 estu00e1 em uso");
+            flash("mensagem", "O e-mail informado já está em uso");
             flash("tipo", "danger");
             return RedirectUtil.redirectToPathAsObject("/admin/usuarios/editar/" + id);
         }
@@ -131,7 +132,7 @@ public class AdminController extends BaseController {
         usuario.tipoUsuario = tipoUsuario;
         usuario.status = status;
         
-        // Atualizar u00e1reas de atuação
+        // Atualizar áreas de atuação
         usuario.areasAtuacao.clear();
         if (areaIds != null && !areaIds.isEmpty()) {
             for (Long areaId : areaIds) {
@@ -144,7 +145,7 @@ public class AdminController extends BaseController {
         
         usuario.persist();
         
-        flash("mensagem", "Usuu00e1rio atualizado com sucesso!");
+        flash("mensagem", "Usuário atualizado com sucesso!");
         flash("tipo", "success");
         return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
     }
@@ -153,8 +154,6 @@ public class AdminController extends BaseController {
     @Path("/usuarios/resetar-senha/{id}")
     @Transactional
     public Uni<Object> resetarSenha(@PathParam("id") Long id) {
-        verificarAdministrador();
-        
         Usuario usuario = Usuario.findById(id);
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
@@ -175,8 +174,6 @@ public class AdminController extends BaseController {
     @Path("/usuarios/ativar/{id}")
     @Transactional
     public Uni<Object> ativarUsuario(@PathParam("id") Long id) {
-        verificarAdministrador();
-        
         Usuario usuario = Usuario.findById(id);
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
@@ -196,8 +193,6 @@ public class AdminController extends BaseController {
     @Path("/usuarios/suspender/{id}")
     @Transactional
     public Uni<Object> suspenderUsuario(@PathParam("id") Long id) {
-        verificarAdministrador();
-        
         Usuario usuario = Usuario.findById(id);
         if (usuario == null) {
             flash("mensagem", "Usuário não encontrado");
@@ -213,10 +208,9 @@ public class AdminController extends BaseController {
         return RedirectUtil.redirectToPathAsObject("/admin/usuarios");
     }
     
-    // Gerenciamento de u00e1reas de atuação
+    // Gerenciamento de áreas de atuação
     @Path("/areas")
     public TemplateInstance areas() {
-        verificarAdministrador();
         List<AreaAtuacao> areas = AreaAtuacao.listAll();
         return Templates.areas(areas);
     }
@@ -228,8 +222,6 @@ public class AdminController extends BaseController {
             @FormParam("id") Long id,
             @FormParam("descricao") @NotBlank String descricao,
             @FormParam("detalhes") String detalhes) {
-        
-        verificarAdministrador();
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, informe o nome da área");
@@ -262,8 +254,6 @@ public class AdminController extends BaseController {
     @Path("/areas/excluir")
     @Transactional
     public Uni<Object> excluirArea(@FormParam("id") Long id) {
-        verificarAdministrador();
-        
         AreaAtuacao area = AreaAtuacao.findById(id);
         if (area == null) {
             flash("mensagem", "Área não encontrada");
@@ -288,7 +278,6 @@ public class AdminController extends BaseController {
     // Gerenciamento de formas de pagamento
     @Path("/formas-pagamento")
     public TemplateInstance formasPagamento() {
-        verificarAdministrador();
         List<FormaPagamento> formasPagamento = FormaPagamento.listAll();
         return Templates.formasPagamento(formasPagamento);
     }
@@ -300,8 +289,6 @@ public class AdminController extends BaseController {
             @FormParam("id") Long id,
             @FormParam("nome") @NotBlank String nome,
             @FormParam("descricao") String descricao) {
-        
-        verificarAdministrador();
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, informe o nome da forma de pagamento");
@@ -333,8 +320,6 @@ public class AdminController extends BaseController {
     @Path("/formas-pagamento/excluir")
     @Transactional
     public Uni<Object> excluirFormaPagamento(@FormParam("id") Long id) {
-        verificarAdministrador();
-        
         FormaPagamento forma = FormaPagamento.findById(id);
         if (forma == null) {
             flash("mensagem", "Forma de pagamento não encontrada");
@@ -356,14 +341,10 @@ public class AdminController extends BaseController {
         return RedirectUtil.redirectToPathAsObject("/admin/formas-pagamento");
     }
     
-    // Mu00e9todo auxiliar para verificar se o usuu00e1rio u00e9 administrador
-    private void verificarAdministrador() {
-        Usuario usuario = usuarioLogado();
-        if (usuario == null || usuario.tipoUsuario != Usuario.TipoUsuario.ADMINISTRADOR) {
-            flash("mensagem", "Você não tem permissão para acessar essa u00e1rea");
-            flash("tipo", "danger");
-            // não retorna valor, apenas exibe a mensagem
-        }
+    // Gerenciamento de leilões
+    @Path("/leiloes")
+    public TemplateInstance leiloes() {
+        List<Leilao> leiloes = Leilao.listAll();
+        return Templates.leiloes(leiloes);
     }
-    
 }

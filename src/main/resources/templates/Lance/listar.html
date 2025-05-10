@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lances do Leilão - {leilao.titulo}</title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Lances do Leilão - {leilao.titulo}</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Informações do Leilão</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Status</h5>
+                        <p><span class="badge bg-{#switch leilao.status}{#case ABERTO}success{#case CONCLUIDO}primary{#case CANCELADO}danger{/switch}">{leilao.status}</span></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Total de Lances</h5>
+                        <p>{leilao.totalLances}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Fornecedores Participantes</h5>
+                        <p>{leilao.totalFornecedores}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4>Lista de Lances</h4>
+            </div>
+            <div class="card-body">
+                {#if leilao.lances.empty}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Nenhum lance registrado ainda.
+                    </div>
+                {#else}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Posição</th>
+                                    <th>Fornecedor</th>
+                                    <th>Valor</th>
+                                    <th>Data/Hora</th>
+                                    <th>Status</th>
+                                    <th>Condições</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {#for lance in leilao.lances}
+                                    <tr class="{#if lance.posicaoRanking <= 3}table-success{#else if lance.posicaoRanking <= 6}table-warning{#else}table-danger{/if}">
+                                        <td>
+                                            <span class="badge bg-{#if lance.posicaoRanking <= 3}success{#else if lance.posicaoRanking <= 6}warning{#else}danger{/if}">
+                                                {lance.posicaoRanking}º
+                                            </span>
+                                        </td>
+                                        <td>{lance.fornecedor.razaoSocial}</td>
+                                        <td>R$ {lance.valor}</td>
+                                        <td>{lance.dataCriacao.format('dd/MM/yyyy HH:mm')}</td>
+                                        <td>
+                                            <span class="badge bg-{#switch lance.status}{#case ATIVO}success{#case CANCELADO}danger{#case VENCEDOR}primary{/switch}">
+                                                {lance.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#modalCondicoes{lance.id}">
+                                                <i class="bi bi-info-circle"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Modal de Condições -->
+                                    <div class="modal fade" id="modalCondicoes{lance.id}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Condições do Lance</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <h6>Condições de Entrega</h6>
+                                                        <p>{lance.condicoesEntrega ?: 'Não especificado'}</p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h6>Prazo de Entrega</h6>
+                                                            <p>{lance.prazoEntrega ? lance.prazoEntrega + ' dias' : 'Não especificado'}</p>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <h6>Prazo de Pagamento</h6>
+                                                            <p>{lance.prazoPagamento ? lance.prazoPagamento + ' dias' : 'Não especificado'}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {/for}
+                            </tbody>
+                        </table>
+                    </div>
+                {/if}
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <a href="/leiloes/visualizar/{leilao.id}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Voltar
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 
-
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import util.RedirectUtil;
@@ -34,6 +33,8 @@ import model.FormaPagamento;
 import model.Convite;
 import service.NotificacaoService;
 import service.LeilaoService;
+import security.RequiresAuth;
+import security.RequiresRole;
 import dto.PaginatedResponse;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -77,14 +78,9 @@ public class LeilaoController extends BaseController {
     
     // Formulário para criar um novo leilão
     @Path("/criar")
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.COMPRADOR)
     public TemplateInstance criar() {
-        Usuario usuario = usuarioLogado();
-        if (usuario == null || usuario.tipoUsuario != Usuario.TipoUsuario.COMPRADOR) {
-            flash("mensagem", "Você não tem permissão para criar leilões");
-            flash("tipo", "danger");
-            return index();
-        }
-        
         return Templates.criar();
     }
     
@@ -93,6 +89,8 @@ public class LeilaoController extends BaseController {
     @Path("/salvar")
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.COMPRADOR)
     public Uni<String> salvar(
             @FormParam("titulo") @NotBlank String titulo,
             @FormParam("descricao") @NotBlank String descricao,
@@ -104,13 +102,6 @@ public class LeilaoController extends BaseController {
             @FormParam("quantidade") Integer quantidade,
             @FormParam("unidadeMedida") String unidadeMedida,
             @FormParam("valorReferencia") String valorReferenciaStr) {
-        
-        Usuario usuario = usuarioLogado();
-        if (usuario == null || usuario.tipoUsuario != Usuario.TipoUsuario.COMPRADOR) {
-            flash("mensagem", "Você não tem permissão para criar leilões");
-            flash("tipo", "danger");
-            return Uni.createFrom().item("index");
-        }
         
         if (validationFailed()) {
             flash("mensagem", "Por favor, corrija os erros no formulário");
@@ -152,7 +143,7 @@ public class LeilaoController extends BaseController {
         leilao.formaPagamento = formaPagamento;
         leilao.quantidade = quantidade;
         leilao.unidadeMedida = unidadeMedida;
-        leilao.criador = usuario;
+        leilao.criador = usuarioLogado();
         
         if (valorReferenciaStr != null && !valorReferenciaStr.isEmpty()) {
             try {
@@ -223,6 +214,8 @@ public class LeilaoController extends BaseController {
     
     // Página para convidar fornecedores para um leilão fechado
     @Path("/convidar/{id}")
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.COMPRADOR)
     public TemplateInstance convidar(@PathParam("id") Long id) {
         Leilao leilao = Leilao.findById(id);
         if (leilao == null) {
@@ -232,7 +225,7 @@ public class LeilaoController extends BaseController {
         }
         
         Usuario usuario = usuarioLogado();
-        if (usuario == null || !usuario.equals(leilao.criador)) {
+        if (!usuario.equals(leilao.criador)) {
             flash("mensagem", "Você não tem permissão para convidar fornecedores");
             flash("tipo", "danger");
             return index();
@@ -247,6 +240,8 @@ public class LeilaoController extends BaseController {
     @Path("/enviarConvites/{id}")
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.COMPRADOR)
     public void enviarConvites(
             @PathParam("id") Long leilaoId,
             @FormParam("fornecedores") List<Long> fornecedoresIds,
@@ -261,7 +256,7 @@ public class LeilaoController extends BaseController {
         }
         
         Usuario usuario = usuarioLogado();
-        if (usuario == null || !usuario.equals(leilao.criador)) {
+        if (!usuario.equals(leilao.criador)) {
             flash("mensagem", "Você não tem permissão para convidar fornecedores");
             flash("tipo", "danger");
             index();
@@ -300,39 +295,19 @@ public class LeilaoController extends BaseController {
     
     // Listar leilões criados pelo usuário logado (para compradores)
     @Path("/meus")
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.COMPRADOR)
     public TemplateInstance meusLeiloes() {
-        Usuario usuario = usuarioLogado();
-        if (usuario == null) {
-            flash("mensagem", "Você precisa estar logado para acessar esta página");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectTemplate("/usuarios/login");
-        }
-        
-        List<Leilao> leiloes = new ArrayList<>();
-        
-        if (usuario.tipoUsuario == Usuario.TipoUsuario.COMPRADOR) {
-            leiloes = Leilao.listarLeiloesPorCriador(usuario);
-        }
-        
+        List<Leilao> leiloes = Leilao.listarLeiloesPorCriador(usuarioLogado());
         return Templates.meusLeiloes(leiloes);
     }
     
     // Listar leilões disponíveis para participação (para fornecedores)
     @Path("/disponiveis")
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.FORNECEDOR)
     public TemplateInstance disponiveis() {
-        Usuario usuario = usuarioLogado();
-        if (usuario == null) {
-            flash("mensagem", "Você precisa estar logado para acessar esta página");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectTemplate("/usuarios/login");
-        }
-        
-        List<Leilao> leiloes = new ArrayList<>();
-        
-        if (usuario.tipoUsuario == Usuario.TipoUsuario.FORNECEDOR) {
-            leiloes = Leilao.listarLeiloesPorFornecedor(usuario);
-        }
-        
+        List<Leilao> leiloes = Leilao.listarLeiloesPorFornecedor(usuarioLogado());
         return Templates.disponiveis(leiloes);
     }
     
@@ -341,6 +316,8 @@ public class LeilaoController extends BaseController {
     @Path("/cancelar/{id}")
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.COMPRADOR)
     public void cancelar(
             @PathParam("id") Long id,
             @FormParam("motivo") @NotBlank String motivo) {
@@ -354,7 +331,7 @@ public class LeilaoController extends BaseController {
         }
         
         Usuario usuario = usuarioLogado();
-        if (usuario == null || !usuario.equals(leilao.criador)) {
+        if (!usuario.equals(leilao.criador)) {
             flash("mensagem", "Você não tem permissão para cancelar este leilão");
             flash("tipo", "danger");
             index();

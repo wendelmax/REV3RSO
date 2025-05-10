@@ -7,7 +7,7 @@
             <h1>{leilao.titulo}</h1>
             <div class="d-flex align-items-center mb-3">
                 <span class="badge bg-primary me-2">{leilao.status}</span>
-                <span class="badge bg-secondary me-2">{leilao.categoria}</span>
+                <span class="badge bg-secondary me-2">{leilao.tipoLeilao}</span>
                 <span class="text-muted">Criado em: {leilao.dataCriacao.format('dd/MM/yyyy HH:mm')}</span>
             </div>
             
@@ -22,17 +22,25 @@
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <h5>Valor de Referência</h5>
-                            <p class="lead">R$ {leilao.valorReferencia}</p>
+                            <h5>Valor Inicial</h5>
+                            <p class="lead">R$ {leilao.valorInicial}</p>
                         </div>
                         <div class="col-md-6">
                             <h5>Data de Fechamento</h5>
-                            <p class="lead">{leilao.dataFechamento.format('dd/MM/yyyy HH:mm')}</p>
+                            <p class="lead">{leilao.dataFim.format('dd/MM/yyyy HH:mm')}</p>
                         </div>
                     </div>
                     
-                    <h5>Requisitos e Condições</h5>
-                    <p>{leilao.requisitos}</p>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>Total de Lances</h5>
+                            <p class="lead">{leilao.totalLances}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Fornecedores Participantes</h5>
+                            <p class="lead">{leilao.totalFornecedores}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -40,7 +48,7 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Lances</h4>
-                    {#if podeParticiplar}
+                    {#if podeParticipar}
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDarLance">
                         Dar Lance
                     </button>
@@ -57,17 +65,73 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>Posição</th>
                                     <th>Fornecedor</th>
                                     <th>Valor</th>
                                     <th>Data</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {#for lance in lances}
-                                <tr>
+                                <tr class="{#if lance.posicaoRanking <= 3}table-success{#else if lance.posicaoRanking <= 6}table-warning{#else}table-danger{/if}">
+                                    <td>
+                                        <span class="badge bg-{#if lance.posicaoRanking <= 3}success{#else if lance.posicaoRanking <= 6}warning{#else}danger{/if}">
+                                            {lance.posicaoRanking}º
+                                        </span>
+                                    </td>
                                     <td>{lance.fornecedor.nomeFantasia}</td>
                                     <td>R$ {lance.valor}</td>
-                                    <td>{lance.dataLance.format('dd/MM/yyyy HH:mm')}</td>
+                                    <td>{lance.dataCriacao.format('dd/MM/yyyy HH:mm')}</td>
+                                    <td>
+                                        <span class="badge bg-{#switch lance.status}{#case ATIVO}success{#case CANCELADO}danger{#case VENCEDOR}primary{/switch}">
+                                            {lance.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {/for}
+                            </tbody>
+                        </table>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+            
+            <!-- Histórico de Lances -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Histórico de Alterações</h4>
+                </div>
+                <div class="card-body">
+                    {#if historicoLances.isEmpty()}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Nenhuma alteração registrada.
+                    </div>
+                    {#else}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Fornecedor</th>
+                                    <th>Tipo</th>
+                                    <th>Valor Anterior</th>
+                                    <th>Valor Novo</th>
+                                    <th>Posição Anterior</th>
+                                    <th>Posição Nova</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {#for historico in historicoLances}
+                                <tr>
+                                    <td>{historico.dataAlteracao.format('dd/MM/yyyy HH:mm')}</td>
+                                    <td>{historico.lance.fornecedor.nomeFantasia}</td>
+                                    <td>{historico.tipoAlteracao}</td>
+                                    <td>{historico.valorAnterior ? 'R$ ' + historico.valorAnterior : '-'}</td>
+                                    <td>{historico.valorNovo ? 'R$ ' + historico.valorNovo : '-'}</td>
+                                    <td>{historico.posicaoAnterior ? historico.posicaoAnterior + 'º' : '-'}</td>
+                                    <td>{historico.posicaoNova ? historico.posicaoNova + 'º' : '-'}</td>
                                 </tr>
                                 {/for}
                             </tbody>
@@ -85,14 +149,13 @@
                     <h4>Comprador</h4>
                 </div>
                 <div class="card-body">
-                    <h5>{leilao.comprador.nomeFantasia}</h5>
-                    <p><strong>Email:</strong> {leilao.comprador.email}</p>
-                    <!-- Outras informações do comprador -->
+                    <h5>{leilao.criador.nomeFantasia}</h5>
+                    <p><strong>Email:</strong> {leilao.criador.email}</p>
                 </div>
             </div>
             
             <!-- Ações para o Comprador -->
-            {#if leilao.comprador.id == usuarioLogado.id}
+            {#if leilao.criador.id == usuarioLogado.id}
             <div class="card mb-4">
                 <div class="card-header">
                     <h4>Ações</h4>
@@ -116,6 +179,28 @@
                 </div>
             </div>
             {/if}
+            
+            <!-- Penalidades Ativas -->
+            {#if penalidadesAtivas.size() > 0}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Penalidades Ativas</h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {#for penalidade in penalidadesAtivas}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{penalidade.usuario.nomeFantasia}</h6>
+                            <p class="mb-1">Motivo: {penalidade.motivo}</p>
+                            <small class="text-muted">
+                                Válida até: {penalidade.dataFimPenalidade.format('dd/MM/yyyy HH:mm')}
+                            </small>
+                        </div>
+                        {/for}
+                    </div>
+                </div>
+            </div>
+            {/if}
         </div>
     </div>
 </div>
@@ -132,13 +217,36 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Atenção: Após enviar um lance, você não poderá alterá-lo, apenas cancelá-lo.
+                        Cancelamentos podem resultar em penalidades.
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="valorLance" class="form-label">Valor do Lance (R$)</label>
                         <input type="number" step="0.01" min="0" class="form-control" id="valorLance" name="valor" required>
+                        <div class="form-text">O valor deve ser menor que o menor lance atual.</div>
                     </div>
+                    
                     <div class="mb-3">
-                        <label for="observacoes" class="form-label">Observações (opcional)</label>
-                        <textarea class="form-control" id="observacoes" name="observacoes" rows="3"></textarea>
+                        <label for="condicoesEntrega" class="form-label">Condições de Entrega</label>
+                        <textarea class="form-control" id="condicoesEntrega" name="condicoesEntrega" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="prazoEntrega" class="form-label">Prazo de Entrega (dias)</label>
+                                <input type="number" class="form-control" id="prazoEntrega" name="prazoEntrega" min="1">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="prazoPagamento" class="form-label">Prazo de Pagamento (dias)</label>
+                                <input type="number" class="form-control" id="prazoPagamento" name="prazoPagamento" min="1">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -156,11 +264,15 @@
         <div class="modal-content">
             <form action="/leiloes/cancelar/{leilao.id}" method="post">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalCancelarLeilaoLabel">Confirmar Cancelamento</h5>
+                    <h5 class="modal-title" id="modalCancelarLeilaoLabel">Cancelar Leilão</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Tem certeza que deseja cancelar este leilão? Esta ação não poderá ser desfeita.</p>
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Atenção: Esta ação não pode ser desfeita. Todos os lances serão cancelados.
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="motivoCancelamento" class="form-label">Motivo do Cancelamento</label>
                         <textarea class="form-control" id="motivoCancelamento" name="motivoCancelamento" rows="3" required></textarea>

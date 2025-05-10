@@ -20,15 +20,20 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.core.MediaType;
+import io.quarkus.panache.common.Sort;
 
 import model.Leilao;
 import model.Usuario;
 import model.Lance;
 import service.NotificacaoService;
+import security.RequiresAuth;
+import security.RequiresRole;
 
 @Path("/lances")
+@Produces(MediaType.TEXT_HTML)
 public class LanceController extends BaseController {
     
     @Inject
@@ -36,7 +41,8 @@ public class LanceController extends BaseController {
     
     @CheckedTemplate(basePath = "Lance", requireTypeSafeExpressions = false)
     public static class Templates {
-        public static native TemplateInstance historico(Leilao leilao, List<Lance> lancesOrdenados, Lance menorLance);
+        public static native TemplateInstance historico(Leilao leilao);
+        public static native TemplateInstance listar(Leilao leilao);
     }
     
     // Ação para dar um novo lance
@@ -44,6 +50,8 @@ public class LanceController extends BaseController {
     @Path("/dar")
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.FORNECEDOR)
     public Uni<String> darLance(
             @FormParam("leilaoId") @NotNull Long leilaoId,
             @FormParam("valor") @NotBlank String valorStr,
@@ -131,39 +139,122 @@ public class LanceController extends BaseController {
     
     // Visualizar histórico de lances de um leilão
     @Path("/historico/{leilaoId}")
-    public Uni<Object> historico(@PathParam("leilaoId") Long leilaoId) {
+    @RequiresAuth
+    public TemplateInstance historico(@PathParam("leilaoId") Long leilaoId) {
         Leilao leilao = Leilao.findById(leilaoId);
         if (leilao == null) {
             flash("mensagem", "Leilão não encontrado");
             flash("tipo", "danger");
-            return RedirectUtil.redirect(LeilaoController.class);
+            return null;
         }
         
         Usuario usuario = usuarioLogado();
-        if (usuario == null) {
-            flash("mensagem", "Você precisa estar logado para acessar esta página");
+        
+        // Verificar se o usuário pode ver os lances
+        if (!usuario.equals(leilao.criador) && 
+            (leilao.tipoLeilao == Leilao.TipoLeilao.FECHADO && !leilao.isConvidado(usuario))) {
+            flash("mensagem", "Você não tem permissão para ver os lances deste leilão");
             flash("tipo", "danger");
-            return RedirectUtil.redirect(UsuarioController.class);
+            return null;
         }
         
-        // Apenas o criador do leilão ou participantes podem ver o histórico
-        boolean autorizado = usuario.equals(leilao.criador) || 
-                            (usuario.tipoUsuario == Usuario.TipoUsuario.FORNECEDOR && 
-                             (leilao.tipoLeilao == Leilao.TipoLeilao.ABERTO || leilao.isConvidado(usuario)));
-        
-        if (!autorizado) {
-            flash("mensagem", "Você não tem permissão para acessar esta página");
-            flash("tipo", "danger");
-            return RedirectUtil.redirect(LeilaoController.class);
-        }
-        
-        List<Lance> lancesOrdenados = leilao.lances.stream()
-            .sorted(Comparator.comparing(l -> l.valor))
-            .collect(Collectors.toList());
-        Lance menorLance = lancesOrdenados.isEmpty() ? null : lancesOrdenados.get(0);
-        
-        return Uni.createFrom().item(Templates.historico(leilao, lancesOrdenados, menorLance));
+        return Templates.historico(leilao);
     }
     
-    // Usando o método usuarioLogado() herdado de BaseController
+    // Registrar um novo lance
+    @POST
+    @Path("/registrar/{leilaoId}")
+    @Transactional
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @RequiresAuth
+    @RequiresRole(Usuario.TipoUsuario.FORNECEDOR)
+    public void registrar(
+            @PathParam("leilaoId") Long leilaoId,
+            @FormParam("valor") @NotNull(message = "O valor do lance é obrigatório") String valorStr) {
+        
+        Leilao leilao = Leilao.findById(leilaoId);
+        if (leilao == null) {
+            flash("mensagem", "Leilão não encontrado");
+            flash("tipo", "danger");
+            return;
+        }
+        
+        Usuario fornecedor = usuarioLogado();
+        
+        // Verificar se o fornecedor pode participar do leilão
+        if (leilao.tipoLeilao == Leilao.TipoLeilao.FECHADO && !leilao.isConvidado(fornecedor)) {
+            flash("mensagem", "Você não está convidado para participar deste leilão");
+            flash("tipo", "danger");
+            return;
+        }
+        
+        // Verificar se o leilão está aberto
+        if (leilao.status != Leilao.Status.ABERTO) {
+            flash("mensagem", "Este leilão não está aberto para lances");
+            flash("tipo", "danger");
+            return;
+        }
+        
+        // Converter o valor do lance
+        BigDecimal valor;
+        try {
+            valor = new BigDecimal(valorStr.replace(",", "."));
+        } catch (NumberFormatException e) {
+            flash("mensagem", "Valor do lance inválido");
+            flash("tipo", "danger");
+            return;
+        }
+        
+        // Verificar se o valor é válido
+        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+            flash("mensagem", "O valor do lance deve ser maior que zero");
+            flash("tipo", "danger");
+            return;
+        }
+        
+        // Verificar se o valor é menor que o lance anterior
+        Lance ultimoLance = Lance.find("leilao = ?1 order by dataHora desc", leilao).firstResult();
+        if (ultimoLance != null && valor.compareTo(ultimoLance.valor) >= 0) {
+            flash("mensagem", "O valor do lance deve ser menor que o lance anterior");
+            flash("tipo", "danger");
+            return;
+        }
+        
+        // Criar e salvar o lance
+        Lance lance = new Lance();
+        lance.leilao = leilao;
+        lance.fornecedor = fornecedor;
+        lance.valor = valor;
+        lance.persist();
+        
+        // Notificar o comprador sobre o novo lance
+        notificacaoService.notificarNovoLance(lance);
+        
+        flash("mensagem", "Lance registrado com sucesso!");
+        flash("tipo", "success");
+    }
+    
+    // Listar lances de um leilão
+    @Path("/listar/{leilaoId}")
+    @RequiresAuth
+    public TemplateInstance listar(@PathParam("leilaoId") Long leilaoId) {
+        Leilao leilao = Leilao.findById(leilaoId);
+        if (leilao == null) {
+            flash("mensagem", "Leilão não encontrado");
+            flash("tipo", "danger");
+            return null;
+        }
+        
+        Usuario usuario = usuarioLogado();
+        
+        // Verificar se o usuário pode ver os lances
+        if (!usuario.equals(leilao.criador) && 
+            (leilao.tipoLeilao == Leilao.TipoLeilao.FECHADO && !leilao.isConvidado(usuario))) {
+            flash("mensagem", "Você não tem permissão para ver os lances deste leilão");
+            flash("tipo", "danger");
+            return null;
+        }
+        
+        return Templates.listar(leilao);
+    }
 }

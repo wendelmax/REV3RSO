@@ -571,30 +571,39 @@ public class UsuarioService {
 
     @Transactional
     public List<Usuario> listarTodos() {
-        return entityManager.createQuery("SELECT u FROM Usuario u", Usuario.class)
-            .getResultList();
+        return Usuario.listAll();
     }
     
     @Transactional
     public Usuario buscarPorId(Long id) {
-        return entityManager.find(Usuario.class, id);
+        return Usuario.findById(id);
     }
     
     @Transactional
     public void salvar(Usuario usuario) {
-        entityManager.persist(usuario);
+        usuario.persist();
     }
     
     @Transactional
     public void atualizar(Usuario usuario) {
-        entityManager.merge(usuario);
+        Usuario usuarioExistente = buscarPorId(usuario.id);
+        if (usuarioExistente != null) {
+            usuario.persist();
+        }
     }
     
     @Transactional
     public void excluir(Long id) {
-        Usuario usuario = buscarPorId(id);
-        if (usuario != null) {
-            entityManager.remove(usuario);
-        }
+        Usuario.deleteById(id);
+    }
+
+    @Transactional
+    public List<Usuario> listarFornecedoresAtivos() {
+        return Usuario.listarFornecedoresAtivos();
+    }
+
+    @Transactional
+    public List<Usuario> buscarPorAreaAtuacao(Long areaId) {
+        return Usuario.encontrarPorAreaAtuacao(areaId);
     }
 }

@@ -46,9 +46,13 @@ public class UsuarioResource {
     @Autenticado
     @RequerPermissao({RequerPermissao.TipoPermissao.ADMIN, RequerPermissao.TipoPermissao.COMPRADOR})
     public Response atualizar(@PathParam("id") Long id, Usuario usuario) {
-        usuario.setId(id);
-        usuarioService.atualizar(usuario);
-        return Response.ok().build();
+        Usuario usuarioExistente = usuarioService.buscarPorId(id);
+        if (usuarioExistente != null) {
+            usuario.id = id; // Usando o campo id diretamente do PanacheEntity
+            usuarioService.atualizar(usuario);
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
     
     @DELETE

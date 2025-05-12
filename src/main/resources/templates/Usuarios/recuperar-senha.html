@@ -132,25 +132,22 @@
               <form id="formRecuperarSenha" class="mb-5" action="/usuarios/recuperar-senha" method="post">
                 <div class="form-floating form-floating-outline mb-5">
                   <input
-                    type="email"
+                    type="text"
                     class="form-control"
                     id="email"
                     name="email"
-                    placeholder="Digite seu e-mail"
-                    autofocus />
+                    placeholder="Digite seu e-mail" />
                   <label for="email">E-mail</label>
                 </div>
-                <div class="mb-5">
-                  <button class="btn btn-primary d-grid w-100" type="submit">Enviar link de recuperação</button>
-                </div>
+                <button class="btn btn-primary d-grid w-100">Enviar Link de Recuperação</button>
               </form>
 
-              <p class="text-center mb-5">
-                <span>Lembrou sua senha?</span>
-                <a href="/usuarios/login">
-                  <span>Faça login</span>
+              <div class="text-center">
+                <a href="/usuarios/login" class="d-flex align-items-center justify-content-center">
+                  <i class="ri-arrow-left-line scaleX-n1-rtl me-1"></i>
+                  Voltar para login
                 </a>
-              </p>
+              </div>
             </div>
           </div>
           <!-- /Forgot Password -->

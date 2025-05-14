@@ -1,3 +1,78 @@
+# REV3RSO - Sistema de E-Procurement por Leilão Reverso
+
+O REV3RSO é uma plataforma inovadora que conecta compradores e fornecedores através de leilões reversos, proporcionando transparência, eficiência e economia em suas compras corporativas.
+
+## Características
+
+- Sistema de leilão reverso para compras corporativas
+- Interface moderna e responsiva usando o tema Materio
+- Suporte a diferentes tipos de usuários (Compradores e Fornecedores)
+- Dashboard personalizado por tipo de usuário
+- Sistema de notificações em tempo real
+- Histórico de leilões e lances
+- Relatórios e análises de compras
+
+## Tecnologias Utilizadas
+
+- Java 17
+- Quarkus Framework
+- PostgreSQL
+- Flyway para migrações
+- Qute Templates
+- Bootstrap 5
+- Remix Icon
+- ApexCharts
+
+## Requisitos
+
+- Java 17 ou superior
+- PostgreSQL 12 ou superior
+- Maven 3.8 ou superior
+
+## Configuração
+
+1. Clone o repositório
+2. Configure o banco de dados no `application.properties`
+3. Execute as migrações do Flyway
+4. Execute o projeto com `mvn quarkus:dev`
+
+## Estrutura do Projeto
+
+```
+src/
+├── main/
+│   ├── java/
+│   │   ├── controller/    # Controladores da aplicação
+│   │   ├── model/        # Modelos de dados
+│   │   ├── repository/   # Repositórios JPA
+│   │   ├── service/      # Serviços de negócio
+│   │   └── util/         # Utilitários
+│   └── resources/
+│       ├── META-INF/
+│       │   └── resources/
+│       │       ├── html/  # Templates Qute
+│       │       ├── css/   # Estilos
+│       │       └── js/    # Scripts
+│       └── db/
+│           └── migration/ # Scripts de migração Flyway
+```
+
+## Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## Contato
+
+Para mais informações, entre em contato através do email: contato@rev3rso.com.br
+
 # REV3RSO - Sistema de Leilões Reversos
 # REV3RSO - Reverse Auction System
 

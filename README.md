@@ -45,6 +45,10 @@ Enterprise-grade reverse auction system developed with Quarkus, where the lowest
 3. Execute as migrações do Flyway / Run Flyway migrations
 4. Inicie a aplicação com `mvn quarkus:dev` / Start the application with `mvn quarkus:dev`
 
+### Credenciais do Administrador / Admin Credentials
+- Email: `admin@rev3rso.com` ou `admin@rev3rso.com.br`
+- Senha: `admin123` ou `admin`
+
 ## 💡 Funcionalidades / Features
 
 ### Sistema de Leilões / Auction System

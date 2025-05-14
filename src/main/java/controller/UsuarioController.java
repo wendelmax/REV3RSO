@@ -16,6 +16,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -60,7 +61,8 @@ public class UsuarioController extends BaseController {
     @Path("/cadastrar")
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Uni<Object> cadastrar(
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response cadastrar(
             @FormParam("razaoSocial") @NotBlank String razaoSocial,
             @FormParam("nomeFantasia") @NotBlank String nomeFantasia,
             @FormParam("cnpj") @NotBlank String cnpj,
@@ -74,59 +76,94 @@ public class UsuarioController extends BaseController {
             @FormParam("areasAtuacao") List<Long> areaIds,
             @FormParam("tipoUsuario") @NotBlank String tipoUsuario) {
         
-        if (validationFailed()) {
-            flash("mensagem", "Por favor, corrija os erros no formulário");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
-        }
-        
-        // Verificar duplicidade de e-mail
-        if (Usuario.encontrarPorEmail(email) != null) {
-            flash("mensagem", "O e-mail informado já está em uso");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
-        }
-        
-        // Verificar duplicidade de CNPJ
-        if (Usuario.encontrarPorCnpj(cnpj) != null) {
-            flash("mensagem", "O CNPJ informado já está em uso");
-            flash("tipo", "danger");
-            return RedirectUtil.redirectToPathAsObject("/usuarios/cadastro");
-        }
-        
-        Usuario usuario = new Usuario();
-        usuario.razaoSocial = razaoSocial;
-        usuario.nomeFantasia = nomeFantasia;
-        usuario.cnpj = cnpj;
-        usuario.endereco = endereco;
-        usuario.cidade = cidade;
-        usuario.uf = uf;
-        usuario.cep = cep;
-        usuario.telefone = telefone;
-        usuario.email = email;
-        usuario.senha = PasswordUtil.hashPassword(senha); // Criptografando a senha
-        
-        // Buscar e adicionar as áreas de atuação
-        if (areaIds != null && !areaIds.isEmpty()) {
-            for (Long areaId : areaIds) {
-                AreaAtuacao area = AreaAtuacao.findById(areaId);
-                if (area != null) {
-                    usuario.areasAtuacao.add(area);
+        try {
+            // Validar dados obrigatórios
+            if (razaoSocial == null || razaoSocial.trim().isEmpty() ||
+                nomeFantasia == null || nomeFantasia.trim().isEmpty() ||
+                cnpj == null || cnpj.trim().isEmpty() ||
+                endereco == null || endereco.trim().isEmpty() ||
+                cidade == null || cidade.trim().isEmpty() ||
+                uf == null || uf.trim().isEmpty() ||
+                cep == null || cep.trim().isEmpty() ||
+                telefone == null || telefone.trim().isEmpty() ||
+                email == null || email.trim().isEmpty() ||
+                senha == null || senha.trim().isEmpty() ||
+                tipoUsuario == null || tipoUsuario.trim().isEmpty()) {
+                
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Todos os campos são obrigatórios")
+                    .build();
+            }
+            
+            // Validar formato do email
+            if (!usuarioService.isEmailValido(email)) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Formato de email inválido")
+                    .build();
+            }
+            
+            // Verificar duplicidade de e-mail
+            if (Usuario.encontrarPorEmail(email) != null) {
+                return Response.status(Response.Status.CONFLICT)
+                    .entity("O e-mail informado já está em uso")
+                    .build();
+            }
+            
+            // Verificar duplicidade de CNPJ
+            if (Usuario.encontrarPorCnpj(cnpj) != null) {
+                return Response.status(Response.Status.CONFLICT)
+                    .entity("O CNPJ informado já está em uso")
+                    .build();
+            }
+            
+            // Validar tipo de usuário
+            try {
+                Usuario.TipoUsuario.valueOf(tipoUsuario);
+            } catch (IllegalArgumentException e) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Tipo de usuário inválido")
+                    .build();
+            }
+            
+            Usuario usuario = new Usuario();
+            usuario.razaoSocial = razaoSocial;
+            usuario.nomeFantasia = nomeFantasia;
+            usuario.cnpj = cnpj;
+            usuario.endereco = endereco;
+            usuario.cidade = cidade;
+            usuario.uf = uf;
+            usuario.cep = cep;
+            usuario.telefone = telefone;
+            usuario.email = email;
+            usuario.senha = usuarioService.criptografarSenha(senha);
+            usuario.tipoUsuario = Usuario.TipoUsuario.valueOf(tipoUsuario);
+            usuario.dataCadastro = new Date();
+            usuario.status = Usuario.Status.ATIVO;
+            
+            // Buscar e adicionar as áreas de atuação
+            if (areaIds != null && !areaIds.isEmpty()) {
+                for (Long areaId : areaIds) {
+                    AreaAtuacao area = AreaAtuacao.findById(areaId);
+                    if (area != null) {
+                        usuario.areasAtuacao.add(area);
+                    }
                 }
             }
+            
+            usuario.persist();
+            
+            // Enviar email de boas vindas
+            usuarioService.enviarEmailBoasVindas(usuario);
+            
+            return Response.status(Response.Status.CREATED)
+                .entity("Usuário cadastrado com sucesso")
+                .build();
+                
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Erro ao cadastrar usuário: " + e.getMessage())
+                .build();
         }
-        
-        usuario.tipoUsuario = Usuario.TipoUsuario.valueOf(tipoUsuario);
-        usuario.dataCadastro = new Date();
-        
-        usuario.persist();
-        
-        // Enviar email de boas vindas
-        usuarioService.enviarEmailBoasVindas(usuario);
-        
-        flash("mensagem", "Cadastro realizado com sucesso! Por favor, faça login.");
-        flash("tipo", "success");
-        return RedirectUtil.redirectToPathAsObject("/usuarios/login");
     }
     
     // Página de login
@@ -141,34 +178,41 @@ public class UsuarioController extends BaseController {
     @Path("/autenticar")
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response autenticar(
-            @FormParam("email") @NotBlank String email,
-            @FormParam("senha") @NotBlank String senha) {
-        
-        if (validationFailed()) {
-            flash("mensagem", "Por favor, preencha todos os campos");
-            flash("tipo", "danger");
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
+    @Produces(MediaType.TEXT_HTML)
+    public Uni<Object> autenticar(
+            @FormParam("email") String email,
+            @FormParam("senha") String senha) {
         
         try {
-            Usuario usuario = usuarioService.autenticar(email, senha);
+            if (email == null || email.trim().isEmpty() || senha == null || senha.trim().isEmpty()) {
+                flash("mensagem", "Por favor, preencha todos os campos");
+                flash("tipo", "danger");
+                return RedirectUtil.redirectToPathAsObject("/usuarios/login");
+            }
+            
+            Usuario usuario = usuarioService.autenticar(email.trim(), senha);
             
             if (usuario == null) {
                 flash("mensagem", "Email ou senha inválidos");
                 flash("tipo", "danger");
-                return Response.status(Response.Status.UNAUTHORIZED).build();
+                return RedirectUtil.redirectToPathAsObject("/usuarios/login");
             }
             
-            // Registrar o usuário na sessão usando SessionUtil
+            // Registrar o usuário na sessão
             SessionUtil.setUsuarioLogado(request, usuario);
             
+            // Registrar último acesso
+            usuarioService.registrarAcesso(usuario);
+            
             // Redirecionar para a página inicial
-            return Response.ok().build();
+            flash("mensagem", "Login realizado com sucesso!");
+            flash("tipo", "success");
+            return RedirectUtil.redirectToPathAsObject("/");
+                
         } catch (Exception e) {
-            flash("mensagem", "Erro ao realizar login. Por favor, tente novamente.");
+            flash("mensagem", "Erro ao realizar login: " + e.getMessage());
             flash("tipo", "danger");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            return RedirectUtil.redirectToPathAsObject("/usuarios/login");
         }
     }
     

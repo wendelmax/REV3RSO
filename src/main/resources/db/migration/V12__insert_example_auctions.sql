@@ -1,0 +1,6 @@
+-- Inserção de leilões de exemplo para a página inicial
+INSERT INTO leiloes (id, titulo, descricao, valor_inicial, data_inicio, data_fim, quantidade, unidade_medida, tipo_leilao, status, criador_id, forma_pagamento_id, tipo_requisicao, data_criacao, data_atualizacao, total_lances, total_fornecedores) 
+VALUES (4, 'Aquisição de Equipamentos de TI', 'Compra de equipamentos de TI para modernização da infraestrutura', 150000.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '15 days', 1, 'lote', 'ABERTO', 'ABERTO', 2, 2, 'COMPRA', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0, 0);
+
+INSERT INTO leiloes (id, titulo, descricao, valor_inicial, data_inicio, data_fim, quantidade, unidade_medida, tipo_leilao, status, criador_id, forma_pagamento_id, tipo_requisicao, data_criacao, data_atualizacao, total_lances, total_fornecedores) 
+VALUES (5, 'Serviços de Manutenção Predial', 'Contratação de serviços de manutenção predial para o período de 12 meses', 80000.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '10 days', 1, 'serviço', 'ABERTO', 'ABERTO', 3, 3, 'SERVICO', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0, 0); 

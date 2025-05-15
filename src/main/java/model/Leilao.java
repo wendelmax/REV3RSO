@@ -87,6 +87,18 @@ public class Leilao extends PanacheEntity {
     @Column(name = "melhor_oferta")
     public BigDecimal melhorOferta;
     
+    /**
+     * Retorna o valor de referência formatado com 2 casas decimais.
+     * 
+     * @return Valor de referência formatado
+     */
+    public String getValorReferenciaFormatado() {
+        if (valorReferencia == null) {
+            return null;
+        }
+        return valorReferencia.setScale(2, RoundingMode.HALF_UP).toString();
+    }
+    
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @NotNull(message = "O tipo de leilão é obrigatório")
@@ -152,7 +164,18 @@ public class Leilao extends PanacheEntity {
     
     // Métodos estáticos para consultas frequentes
     public static List<Leilao> listarLeiloesAbertos() {
-        return list("status = ?1", Status.ABERTO);
+        try {
+            List<Leilao> leiloes = list("status = ?1", Status.ABERTO);
+            System.out.println("Leilões encontrados: " + leiloes.size());
+            for (Leilao leilao : leiloes) {
+                System.out.println("Leilão ID: " + leilao.id + ", Título: " + leilao.titulo + ", Status: " + leilao.status);
+            }
+            return leiloes;
+        } catch (Exception e) {
+            System.out.println("Erro ao listar leilões: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     
     public static List<Leilao> listarLeiloesPorCriador(Usuario criador) {

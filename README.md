@@ -1,3 +1,54 @@
+# REV3RSO
+
+<img src="src/main/resources/META-INF/resources/img/logo.svg" alt="REV3RSO Logo" width="120" height="172">
+
+## Sobre o Projeto
+
+O REV3RSO é um sistema de leilões reversos desenvolvido para facilitar a aquisição de bens e serviços.
+
+## Funcionalidades
+
+- Cadastro e autenticação de usuários
+- Criação e gerenciamento de leilões
+- Participação em leilões
+- Histórico de leilões
+
+## Tecnologias Utilizadas
+
+- Java
+- Quarkus
+- HTML/CSS/JavaScript
+- Bootstrap
+- PostgreSQL
+
+## Como Executar
+
+1. Clone o repositório
+2. Configure o banco de dados
+3. Execute o projeto com `./mvnw quarkus:dev`
+
+## Screenshots
+
+### Login
+![Tela de Login](/home/wendel/Projetos/REV3RSO/docs/print screens/login.png)
+
+### Cadastro
+![Tela de Cadastro](/home/wendel/Projetos/REV3RSO/docs/print screens/cadastro.png)
+
+### Dashboard
+![Dashboard](/home/wendel/Projetos/REV3RSO/docs/print screens/dashboard.png)
+
+### Leilões
+![Leilões](/home/wendel/Projetos/REV3RSO/docs/print screens/leiloes.png)
+
+## Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+
+## Licença
+
+Este projeto está sob a licença MIT.
+
 # REV3RSO - Sistema de E-Procurement por Leilão Reverso
 
 O REV3RSO é uma plataforma inovadora que conecta compradores e fornecedores através de leilões reversos, proporcionando transparência, eficiência e economia em suas compras corporativas.

@@ -1,131 +1,16 @@
 # REV3RSO
 
-<img src="src/main/resources/META-INF/resources/img/logo.svg" alt="REV3RSO Logo" width="120" height="172">
-
-## Sobre o Projeto
-
-O REV3RSO é um sistema de leilões reversos desenvolvido para facilitar a aquisição de bens e serviços.
-
-## Funcionalidades
-
-- Cadastro e autenticação de usuários
-- Criação e gerenciamento de leilões
-- Participação em leilões
-- Histórico de leilões
-
-## Tecnologias Utilizadas
-
-- Java
-- Quarkus
-- HTML/CSS/JavaScript
-- Bootstrap
-- PostgreSQL
-
-## Como Executar
-
-1. Clone o repositório
-2. Configure o banco de dados
-3. Execute o projeto com `./mvnw quarkus:dev`
-
-## Screenshots
-
-### Login
-![Tela de Login](/home/wendel/Projetos/REV3RSO/docs/print screens/login.png)
-
-### Cadastro
-![Tela de Cadastro](/home/wendel/Projetos/REV3RSO/docs/print screens/cadastro.png)
-
-### Dashboard
-![Dashboard](/home/wendel/Projetos/REV3RSO/docs/print screens/dashboard.png)
-
-### Leilões
-![Leilões](/home/wendel/Projetos/REV3RSO/docs/print screens/leiloes.png)
-
-## Contribuição
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
-
-## Licença
-
-Este projeto está sob a licença MIT.
-
-# REV3RSO - Sistema de E-Procurement por Leilão Reverso
-
-O REV3RSO é uma plataforma inovadora que conecta compradores e fornecedores através de leilões reversos, proporcionando transparência, eficiência e economia em suas compras corporativas.
-
-## Características
-
-- Sistema de leilão reverso para compras corporativas
-- Interface moderna e responsiva usando o tema Materio
-- Suporte a diferentes tipos de usuários (Compradores e Fornecedores)
-- Dashboard personalizado por tipo de usuário
-- Sistema de notificações em tempo real
-- Histórico de leilões e lances
-- Relatórios e análises de compras
-
-## Tecnologias Utilizadas
-
-- Java 17
-- Quarkus Framework
-- PostgreSQL
-- Flyway para migrações
-- Qute Templates
-- Bootstrap 5
-- Remix Icon
-- ApexCharts
-
-## Requisitos
-
-- Java 17 ou superior
-- PostgreSQL 12 ou superior
-- Maven 3.8 ou superior
-
-## Configuração
-
-1. Clone o repositório
-2. Configure o banco de dados no `application.properties`
-3. Execute as migrações do Flyway
-4. Execute o projeto com `mvn quarkus:dev`
-
-## Estrutura do Projeto
-
-```
-src/
-├── main/
-│   ├── java/
-│   │   ├── controller/    # Controladores da aplicação
-│   │   ├── model/        # Modelos de dados
-│   │   ├── repository/   # Repositórios JPA
-│   │   ├── service/      # Serviços de negócio
-│   │   └── util/         # Utilitários
-│   └── resources/
-│       ├── META-INF/
-│       │   └── resources/
-│       │       ├── html/  # Templates Qute
-│       │       ├── css/   # Estilos
-│       │       └── js/    # Scripts
-│       └── db/
-│           └── migration/ # Scripts de migração Flyway
-```
-
-## Contribuição
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
-4. Push para a branch (`git push origin feature/nova-feature`)
-5. Abra um Pull Request
-
-## Licença
-
-Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-## Contato
-
-Para mais informações, entre em contato através do email: contato@rev3rso.com.br
-
-# REV3RSO - Sistema de Leilões Reversos
-# REV3RSO - Reverse Auction System
+<div align="center" style="display: flex; align-items: center; justify-content: center; gap: 16px;">
+  <svg width="34" height="48" viewBox="440 220 320 460" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke-width="2">
+      <path stroke="#8d8d8d" d="M495.57 245.96c-17.98-.47-39.76.98-61.87.06q-.73-.03-.32.57l46.98 68.23a1 .97-16.6 0 0 .82.43h98.78q.54 0 .24-.44l-45.68-68.11a1.66 1.64-17.3 0 0-1.41-.73q-18.71.48-37.54-.01m175.3 70.73c34.5 8.58 50.18 50.06 27.72 78.68q-13.8 17.58-36.37 19.47a.3.3 0 0 0-.23.46l31.77 47.41a1.75 1.75 0 0 0 1.45.77q3.74.02 7.84.03c5.01 0 6.91-1.27 11-3.7q35.77-21.28 47.68-60.18c17.17-56.07-1.92-117.25-58.53-141.39-18.38-7.84-36.89-11.52-56.95-11.91q-47.58-.93-70.19-.22-13.28.41-26.79-.14-.84-.03-.37.66l45.71 68.19a1.03 1.01-16.5 0 0 .85.45q30.03-.07 59.92.02 9.97.03 15.49 1.4m38.98 330.68a94.825 94.825 0 0 0 52.62-59.7 1.8 1.79-53.9 0 0-.23-1.49l-114.69-171a.98.98 0 0 0-.81-.43h-96.98q-.62 0-.27.51l159.59 231.89a.63.62 60.4 0 0 .77.22" vector-effect="non-scaling-stroke"/>
+      <path stroke="#e6e6e6" d="M768.11 572.39a.34.34 0 0 0 .42.01c1.29-1 .97-16.39.86-17.83-2.56-35.31-24.53-67.31-57.8-80.68q-4.79-1.92-10.35-.77a.34.34 0 0 0-.22.52q31.89 47.58 63.64 95.14 1.29 1.92 3.45 3.61m-323.17 81.89q117.37-.41 234.75-.16 9.26.02 17.6-2.8a.41.41 0 0 0 .21-.61l-43.18-63.42q-1-1.46-2.76-1.29c-4.95.49-10.97.05-14.53.04q-85.52-.16-172.81.09a1.36 1.35-77.1 0 0-1.22.77l-32.21 66.71a.44.44 0 0 0 .39.64q6.82.06 13.76.03" vector-effect="non-scaling-stroke"/>
+    </g>
+    <path fill="#6f42c1" d="M495.57 245.96q18.83.49 37.54.01a1.66 1.64-17.3 0 1 1.41.73l45.68 68.11q.3.44-.24.44h-98.78a1 .97-16.6 0 1-.82-.43l-46.98-68.23q-.41-.6.32-.57c22.11.92 43.89-.53 61.87-.06Zm159.81 69.33q-29.89-.09-59.92-.02a1.03 1.01-16.5 0 1-.85-.45l-45.71-68.19q-.47-.69.37-.66 13.51.55 26.79.14 22.61-.71 70.19.22c20.06.39 38.57 4.07 56.95 11.91 56.61 24.14 75.7 85.32 58.53 141.39q-11.91 38.9-47.68 60.18c-4.09 2.43-5.99 3.7-11 3.7q-4.1-.01-7.84-.03a1.75 1.75 0 0 1-1.45-.77l-31.77-47.41a.3.3 0 0 1 .23-.46q22.57-1.89 36.37-19.47c22.46-28.62 6.78-70.1-27.72-78.68q-5.52-1.37-15.49-1.4Zm107.09 272.38a94.825 94.825 0 0 1-52.62 59.7.63.62 60.4 0 1-.77-.22L549.49 415.26q-.35-.51.27-.51h96.98a.98.98 0 0 1 .81.43l114.69 171a1.8 1.79-53.9 0 1 .23 1.49Z"/>
+    <path fill="#b197fc" d="M768.11 572.39q-2.16-1.69-3.45-3.61-31.75-47.56-63.64-95.14a.34.34 0 0 1 .22-.52q5.56-1.15 10.35.77c33.27 13.37 55.24 45.37 57.8 80.68.11 1.44.43 16.83-.86 17.83a.34.34 0 0 1-.42-.01Zm-323.17 81.89q-6.94.03-13.76-.03a.44.44 0 0 1-.39-.64L463 586.9a1.36 1.35-77.1 0 1 1.22-.77q87.29-.25 172.81-.09c3.56.01 9.58.45 14.53-.04q1.76-.17 2.76 1.29l43.18 63.42a.41.41 0 0 1-.21.61q-8.34 2.82-17.6 2.8-117.38-.25-234.75.16Z"/>
+  </svg>
+  <span style="color: #6f42c1; font-size: 3rem; font-weight: 700; margin-left: 24px;">REV3RSO</span>
+</div>
 
 [![Quarkus](https://design.jboss.org/quarkus/logo/final/PNG/quarkus_logo_horizontal_rgb_1280px_default.png#gh-light-mode-only)](https://quarkus.io/#gh-light-mode-only)
 [![Quarkus](https://design.jboss.org/quarkus/logo/final/PNG/quarkus_logo_horizontal_rgb_1280px_reverse.png#gh-dark-mode-only)](https://quarkus.io/#gh-dark-mode-only)
@@ -253,6 +138,17 @@ mvn flyway:migrate
 ```bash
 mvn quarkus:dev
 ```
+
+## 📸 Screenshots
+
+### Login
+![Tela de Login](docs/print%20screens/Tela%20login.png)
+
+### Tela Inicial
+![Tela Inicial](docs/print%20screens/Tela%20inicial.png)
+
+### Cadastro
+![Tela de Cadastro](docs/print%20screens/Tela%20cadastrar.png)
 
 ## 📝 Licença / License
 
